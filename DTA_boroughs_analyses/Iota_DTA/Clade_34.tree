@@ -1,0 +1,19 @@
+#NEXUS
+
+Begin taxa;
+	Dimensions ntax=3;
+	Taxlabels
+		hCoV-19/USA/NY-MSHSPSP-PV36409/2021
+		hCoV-19/USA/NY-MSHSPSP-PV36410/2021
+		hCoV-19/USA/NY-NYULH607/2021
+		;
+End;
+
+Begin trees;
+	Translate
+		1 hCoV-19/USA/NY-MSHSPSP-PV36409/2021,
+		2 hCoV-19/USA/NY-MSHSPSP-PV36410/2021,
+		3 hCoV-19/USA/NY-NYULH607/2021
+		;
+tree TREE1 = [&R] (3[&length=0.018624927439999845,location.rate_95%_HPD={2.0481453109940575,2.3669653055150057},location="NewYork",location.prob=1.0,location.rate_median=2.2079014328444946,location.set={"NewYork"},location.set.prob={1.0},location.rate_range={1.9342205575654698,2.4469261747725244},height=0.11199999999999843,location.rate=2.208589941938232]:0.018624927439999994,(2[&length=0.028816352439999825,location.rate_95%_HPD={2.0481453109940575,2.3669653055150057},location="Suffolk",location.prob=1.0,location.rate_median=2.2079014328444946,location.set={"Suffolk"},location.set.prob={1.0},location.rate_range={1.9342205575654698,2.4469261747725244},height=0.0,location.rate=2.208589941938232]:0.028816352440000012,1[&length=0.028816352439999825,location.rate_95%_HPD={2.0481453109940575,2.3669653055150057},location="Nassau",location.prob=1.0,location.rate_median=2.2079014328444946,location.set={"Nassau"},location.set.prob={1.0},location.rate_range={1.9342205575654698,2.4469261747725244},height=0.0,location.rate=2.208589941938232]:0.028816352440000012)[&length=0.1018085750000019,posterior=1.0,location.rate_95%_HPD={2.0481453109940575,2.3669653055150057},location="Nassau",location.prob=0.8833333333333333,location.rate_median=2.2079014328444946,location.set={"Nassau","Queens","NewYork","Bronx","Kings"},location.set.prob={0.8833333333333333,0.0011111111111111111,0.11333333333333333,0.0011111111111111111,0.0011111111111111111},location.rate_range={1.9342205575654698,2.4469261747725244},height=0.028816352439999825,location.rate=2.208589941938232]:0.101808575)[&length=0.0,posterior=1.0,location="NewYork",location.prob=0.9388888888888889,location.set={"Queens","Nassau","NewYork","Bronx","Kings"},location.set.prob={0.0033333333333333335,0.0022222222222222222,0.9388888888888889,0.05,0.005555555555555556},height=0.13062492743999893];
+End;

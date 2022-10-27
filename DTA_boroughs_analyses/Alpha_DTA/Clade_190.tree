@@ -1,0 +1,19 @@
+#NEXUS
+
+Begin taxa;
+	Dimensions ntax=3;
+	Taxlabels
+		hCoV-19/USA/NY-Wadsworth-21052139-01/2021
+		hCoV-19/USA/NY-Wadsworth-21052606-01/2021
+		hCoV-19/USA/NY-Wadsworth-21052659-01/2021
+		;
+End;
+
+Begin trees;
+	Translate
+		1 hCoV-19/USA/NY-Wadsworth-21052139-01/2021,
+		2 hCoV-19/USA/NY-Wadsworth-21052606-01/2021,
+		3 hCoV-19/USA/NY-Wadsworth-21052659-01/2021
+		;
+tree TREE1 = [&R] (2[&length=0.0697614761499993,location.rate_95%_HPD={1.9280407131821704,2.453566884761337},location="Kings",location.prob=1.0,location.rate_median=2.1692205562820046,location.set={"Kings"},location.set.prob={1.0},location.rate_range={1.8223827479700998,2.6946589916863912},height=0.025000000005000488,location.rate=2.1739597953036784]:0.06976147615,(1[&length=0.08274209036,location.rate_95%_HPD={1.9280407131821704,2.453566884761337},location="Nassau",location.prob=1.0,location.rate_median=2.1692205562820046,location.set={"Nassau"},location.set.prob={1.0},location.rate_range={1.8223827479700998,2.6946589916863912},height=0.010999999999999916,location.rate=2.1739597953036784]:0.08274209036,3[&length=0.09374209035999982,location.rate_95%_HPD={1.9280407131821704,2.453566884761337},location="Bronx",location.prob=1.0,location.rate_median=2.1692205562820046,location.set={"Bronx"},location.set.prob={1.0},location.rate_range={1.8223827479700998,2.6946589916863912},height=0.0,location.rate=2.1739597953036784]:0.09374209036)[&length=0.0010193857950000192,posterior=1.0,location.rate_95%_HPD={1.9280407131821704,2.453566884761337},location="Nassau",location.prob=0.7544444444444445,location.rate_median=2.1692205562820046,location.set={"Nassau","Queens","NewYork","Kings","Bronx"},location.set.prob={0.7544444444444445,0.06111111111111111,0.1622222222222222,0.0077777777777777776,0.014444444444444444},location.rate_range={1.8223827479700998,2.6946589916863912},height=0.09374209035999982,location.rate=2.1739597953036784]:0.001019385794999994)[&length=0.0,posterior=1.0,location="Nassau",location.prob=0.7533333333333333,location.set={"Nassau","Queens","NewYork","Kings","Bronx"},location.set.prob={0.7533333333333333,0.06222222222222222,0.16333333333333333,0.0077777777777777776,0.013333333333333334},height=0.09476147615499998];
+End;

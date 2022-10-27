@@ -1,0 +1,48 @@
+
+Operator analysis
+Operator                                          Tuning   Count      Time     Time/Op  Pr(accept) Smoothed_Pr(accept)
+scale(coordinates.diffusion.rates9)               0.133   4218630    403625   0.1      0.2341      0.2         
+scale(coordinates.diffusion.rates18)              0.12    4216543    399488   0.09     0.2341      0.24        
+scale(coordinates.diffusion.rates58)              0.117   4219529    391540   0.09     0.2339      0.24        
+scale(coordinates.diffusion.rates78)              0.134   4219688    394139   0.09     0.234       0.18        
+scale(coordinates.diffusion.rates129)             0.13    4219247    388366   0.09     0.234       0.2         
+scale(coordinates.diffusion.rates141)             0.119   4218245    389617   0.09     0.2341      0.28        
+scale(coordinates.diffusion.rates142)             0.12    4220617    404996   0.1      0.2341      0.24        
+scale(coordinates.diffusion.rates182)             0.128   4220075    389832   0.09     0.2341      0.25        
+scale(coordinates.diffusion.rates232)             0.096   4218814    390162   0.09     0.234       0.28        
+scale(coordinates.diffusion.rates294)             0.138   4220642    391246   0.09     0.234       0.28        
+scale(coordinates.diffusion.rates363)             0.125   4218268    391532   0.09     0.2339      0.16        
+scale(coordinates.diffusion.rates388)             0.099   4219844    392398   0.09     0.2339      0.2         
+scale(coordinates.diffusion.rates428)             0.122   4217283    396764   0.09     0.234       0.24        
+scale(coordinates.diffusion.rates458)             0.165   4214417    399841   0.09     0.2337      0.23        
+scale(coordinates.diffusion.rates474)             0.105   4218714    393744   0.09     0.2339      0.22        
+scale(coordinates.diffusion.rates475)             0.11    4216852    394263   0.09     0.2338      0.26        
+scale(coordinates.diffusion.rates503)             0.128   4220559    397297   0.09     0.234       0.23        
+scale(coordinates.diffusion.rates515)             0.115   4221118    400511   0.09     0.2342      0.26        
+scale(coordinates.diffusion.rates533)             0.119   4216474    399616   0.09     0.2338      0.34        
+scale(coordinates.diffusion.rates568)             0.188   4221453    397959   0.09     0.2339      0.2         
+scale(coordinates.diffusion.rates616)             0.137   4217761    400609   0.09     0.2339      0.29        
+scale(coordinates.diffusion.rates720)             0.123   4218590    400664   0.09     0.2341      0.25        
+precisionGibbsOperator                                    281222     36155    0.13     1.0         1.0         
+precisionGibbsOperator                                    282437     36352    0.13     1.0         1.0         
+precisionGibbsOperator                                    280948     35802    0.13     1.0         1.0         
+precisionGibbsOperator                                    281182     36265    0.13     1.0         1.0         
+precisionGibbsOperator                                    281249     36062    0.13     1.0         1.0         
+precisionGibbsOperator                                    281553     35343    0.13     1.0         1.0         
+precisionGibbsOperator                                    281630     36006    0.13     1.0         1.0         
+precisionGibbsOperator                                    280913     35983    0.13     1.0         1.0         
+precisionGibbsOperator                                    281040     35894    0.13     1.0         1.0         
+precisionGibbsOperator                                    280711     35976    0.13     1.0         1.0         
+precisionGibbsOperator                                    281584     35529    0.13     1.0         1.0         
+precisionGibbsOperator                                    281190     35822    0.13     1.0         1.0         
+precisionGibbsOperator                                    281020     35881    0.13     1.0         1.0         
+precisionGibbsOperator                                    280294     35758    0.13     1.0         1.0         
+precisionGibbsOperator                                    281382     36119    0.13     1.0         1.0         
+precisionGibbsOperator                                    281260     36039    0.13     1.0         1.0         
+precisionGibbsOperator                                    281374     36576    0.13     1.0         1.0         
+precisionGibbsOperator                                    280599     35785    0.13     1.0         1.0         
+precisionGibbsOperator                                    280973     36332    0.13     1.0         1.0         
+precisionGibbsOperator                                    281643     35806    0.13     1.0         1.0         
+precisionGibbsOperator                                    280891     36036    0.13     1.0         1.0         
+precisionGibbsOperator                                    281542     36250    0.13     1.0         1.0         
+

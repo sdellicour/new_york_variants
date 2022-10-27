@@ -1,0 +1,21 @@
+#NEXUS
+
+Begin taxa;
+	Dimensions ntax=4;
+	Taxlabels
+		hCoV-19/USA/NY-MSHSPSP-PV28921/2021
+		hCoV-19/USA/NY-MSHSPSP-PV35698/2021
+		hCoV-19/USA/NY-MSHSPSP-PV37252/2021
+		hCoV-19/USA/NY-NYULH1372/2021
+		;
+End;
+
+Begin trees;
+	Translate
+		1 hCoV-19/USA/NY-MSHSPSP-PV28921/2021,
+		2 hCoV-19/USA/NY-MSHSPSP-PV35698/2021,
+		3 hCoV-19/USA/NY-MSHSPSP-PV37252/2021,
+		4 hCoV-19/USA/NY-NYULH1372/2021
+		;
+tree TREE1 = [&R] ((3[&length=0.12068578560000177,location.rate_95%_HPD={2.0481453109940575,2.3669653055150057},location="Queens",location.prob=1.0,location.rate_median=2.2079014328444946,location.set={"Queens"},location.set.prob={1.0},location.rate_range={1.9342205575654698,2.4469261747725244},height=0.0,location.rate=2.208589941938232]:0.12068578559999998,4[&length=0.07368578562999933,location.rate_95%_HPD={2.0481453109940575,2.3669653055150057},location="Richmond",location.prob=1.0,location.rate_median=2.2079014328444946,location.set={"Richmond"},location.set.prob={1.0},location.rate_range={1.9342205575654698,2.4469261747725244},height=0.04699999996999998,location.rate=2.208589941938232]:0.07368578563)[&length=0.058000203779999204,posterior=1.0,location.rate_95%_HPD={2.0481453109940575,2.3669653055150057},location="Queens",location.prob=0.8655555555555555,location.rate_median=2.2079014328444946,location.set={"Queens","NewYork","Kings","Bronx"},location.set.prob={0.8655555555555555,0.10111111111111111,0.03,0.0033333333333333335},location.rate_range={1.9342205575654698,2.4469261747725244},height=0.12068578560000177,location.rate=2.208589941938232]:0.05800020378000001,(1[&length=0.0043397766119999395,location.rate_95%_HPD={2.0481453109940575,2.3669653055150057},location="Queens",location.prob=1.0,location.rate_median=2.2079014328444946,location.set={"Queens"},location.set.prob={1.0},location.rate_range={1.9342205575654698,2.4469261747725244},height=0.1649999999710013,location.rate=2.208589941938232]:0.004339776611999996,2[&length=0.042339776609999595,location.rate_95%_HPD={2.0481453109940575,2.3669653055150057},location="Queens",location.prob=1.0,location.rate_median=2.2079014328444946,location.set={"Queens"},location.set.prob={1.0},location.rate_range={1.9342205575654698,2.4469261747725244},height=0.12699999997299793,location.rate=2.208589941938232]:0.04233977660999999)[&length=0.009346212797000148,posterior=1.0,location.rate_95%_HPD={2.0481453109940575,2.3669653055150057},location="Queens",location.prob=1.0,location.rate_median=2.2079014328444946,location.set={"Queens"},location.set.prob={1.0},location.rate_range={1.9342205575654698,2.4469261747725244},height=0.16933977658300117,location.rate=2.208589941938232]:0.009346212797000014)[&length=0.0,posterior=1.0,location="Queens",location.prob=0.9633333333333334,location.set={"Queens","Westchester","NewYork","Bronx","Kings"},location.set.prob={0.9633333333333334,0.0011111111111111111,0.025555555555555557,0.006666666666666667,0.0033333333333333335},height=0.17868598937999994];
+End;

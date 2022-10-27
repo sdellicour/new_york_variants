@@ -1,0 +1,19 @@
+#NEXUS
+
+Begin taxa;
+	Dimensions ntax=3;
+	Taxlabels
+		hCoV-19/USA/NY-Wadsworth-21028837-01/2021
+		hCoV-19/USA/NY-Wadsworth-21030068-01/2021
+		hCoV-19/USA/NY-Wadsworth-21030068-01/2021|EPI_ISL_1397924|2021-02-26
+		;
+End;
+
+Begin trees;
+	Translate
+		1 hCoV-19/USA/NY-Wadsworth-21028837-01/2021,
+		2 hCoV-19/USA/NY-Wadsworth-21030068-01/2021,
+		3 hCoV-19/USA/NY-Wadsworth-21030068-01/2021|EPI_ISL_1397924|2021-02-26
+		;
+tree TREE1 = [&R] (1[&length=0.045039938610000343,location.rate_95%_HPD={1.9280407131821704,2.453566884761337},location="Westchester",location.prob=1.0,location.rate_median=2.1692205562820046,location.set={"Westchester"},location.set.prob={1.0},location.rate_range={1.8223827479700998,2.6946589916863912},height=0.007999999997999888,location.rate=2.1739597953036784]:0.04503993861,(3[&length=0.005077419517999917,location.rate_95%_HPD={1.9280407131821704,2.453566884761337},location="Westchester",location.prob=1.0,location.rate_median=2.1692205562820046,location.set={"Westchester"},location.set.prob={1.0},location.rate_range={1.8223827479700998,2.6946589916863912},height=0.0,location.rate=2.1739597953036784]:0.005077419518000004,2[&length=0.005077419517999917,location.rate_95%_HPD={1.9280407131821704,2.453566884761337},location="Westchester",location.prob=1.0,location.rate_median=2.1692205562820046,location.set={"Westchester"},location.set.prob={1.0},location.rate_range={1.8223827479700998,2.6946589916863912},height=0.0,location.rate=2.1739597953036784]:0.005077419518000004)[&length=0.047962519089999614,posterior=1.0,location.rate_95%_HPD={1.9280407131821704,2.453566884761337},location="Westchester",location.prob=1.0,location.rate_median=2.1692205562820046,location.set={"Westchester"},location.set.prob={1.0},location.rate_range={1.8223827479700998,2.6946589916863912},height=0.005077419517999917,location.rate=2.1739597953036784]:0.04796251909)[&length=0.0,posterior=1.0,location="Westchester",location.prob=0.9977777777777778,location.set={"Westchester","Nassau","NewYork"},location.set.prob={0.9977777777777778,0.0011111111111111111,0.0011111111111111111},height=0.05303993860800023];
+End;

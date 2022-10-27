@@ -1,0 +1,19 @@
+#NEXUS
+
+Begin taxa;
+	Dimensions ntax=3;
+	Taxlabels
+		hCoV-19/USA/NY-WMC2021-105/2021
+		hCoV-19/USA/NY-Wadsworth-21039616-01/2021
+		hCoV-19/USA/NY-Wadsworth-21039617-01/2021
+		;
+End;
+
+Begin trees;
+	Translate
+		1 hCoV-19/USA/NY-WMC2021-105/2021,
+		2 hCoV-19/USA/NY-Wadsworth-21039616-01/2021,
+		3 hCoV-19/USA/NY-Wadsworth-21039617-01/2021
+		;
+tree TREE1 = [&R] (1[&length=0.2745352084999983,location.rate_95%_HPD={1.9280407131821704,2.453566884761337},location="Westchester",location.prob=1.0,location.rate_median=2.1692205562820046,location.set={"Westchester"},location.set.prob={1.0},location.rate_range={1.8223827479700998,2.6946589916863912},height=0.0,location.rate=2.1739597953036784]:0.2745352085,(2[&length=0.0051470429940000135,location.rate_95%_HPD={1.9280407131821704,2.453566884761337},location="Suffolk",location.prob=1.0,location.rate_median=2.1692205562820046,location.set={"Suffolk"},location.set.prob={1.0},location.rate_range={1.8223827479700998,2.6946589916863912},height=0.26300000002800056,location.rate=2.1739597953036784]:0.0051470429940000395,3[&length=0.0051470429940000135,location.rate_95%_HPD={1.9280407131821704,2.453566884761337},location="Suffolk",location.prob=1.0,location.rate_median=2.1692205562820046,location.set={"Suffolk"},location.set.prob={1.0},location.rate_range={1.8223827479700998,2.6946589916863912},height=0.26300000002800056,location.rate=2.1739597953036784]:0.0051470429940000395)[&length=0.006388165477999889,posterior=1.0,location.rate_95%_HPD={1.9280407131821704,2.453566884761337},location="Suffolk",location.prob=0.9988888888888889,location.rate_median=2.1692205562820046,location.set={"Nassau","Suffolk"},location.set.prob={0.0011111111111111111,0.9988888888888889},location.rate_range={1.8223827479700998,2.6946589916863912},height=0.2681470430219978,location.rate=2.1739597953036784]:0.006388165477999974)[&length=0.0,posterior=1.0,location="Suffolk",location.prob=0.8744444444444445,location.set={"Nassau","Westchester","Suffolk","NewYork","Kings"},location.set.prob={0.07444444444444444,0.0011111111111111111,0.8744444444444445,0.04777777777777778,0.0022222222222222222},height=0.2745352084999983];
+End;

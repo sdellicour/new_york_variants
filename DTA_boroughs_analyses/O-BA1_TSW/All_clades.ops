@@ -1,0 +1,265 @@
+
+Operator analysis
+Operator                                          Tuning   Count      Time     Time/Op  Pr(accept) Smoothed_Pr(accept)
+scale(location.clock.rate)                        0.643   3608730    2226247  0.62     0.2339      0.24        
+scale(location.rates)                             0.993   18024651   5377242  0.3      0.229       0.15        
+bitFlip(location.indicators)                              8410205    2753040  0.33     0.1         0.04        
+deltaExchange(location.root.frequencies_36)       0.486   1201007    63337    0.05     0.2339      0.22        
+deltaExchange(location.root.frequencies_37)       0.413   1199454    62678    0.05     0.234       0.2         
+deltaExchange(location.root.frequencies_47)       0.545   1199156    63116    0.05     0.234       0.3         
+deltaExchange(location.root.frequencies_48)       0.41    1202348    62945    0.05     0.2341      0.23        
+deltaExchange(location.root.frequencies_73)       0.418   1199988    62589    0.05     0.234       0.21        
+deltaExchange(location.root.frequencies_90)       0.475   1203643    63291    0.05     0.2339      0.25        
+deltaExchange(location.root.frequencies_106)      0.529   1201857    61189    0.05     0.234       0.22        
+deltaExchange(location.root.frequencies_122)      0.444   1203019    63685    0.05     0.234       0.23        
+deltaExchange(location.root.frequencies_145)      0.461   1200431    63032    0.05     0.234       0.21        
+deltaExchange(location.root.frequencies_153)      0.55    1202550    61883    0.05     0.234       0.28        
+deltaExchange(location.root.frequencies_169)      0.448   1202926    61861    0.05     0.2341      0.2         
+deltaExchange(location.root.frequencies_205)      0.467   1200525    62813    0.05     0.2342      0.25        
+deltaExchange(location.root.frequencies_215)      0.612   1201504    62958    0.05     0.234       0.24        
+deltaExchange(location.root.frequencies_217)      0.452   1197949    62988    0.05     0.234       0.29        
+deltaExchange(location.root.frequencies_229)      0.533   1201350    62301    0.05     0.2338      0.23        
+deltaExchange(location.root.frequencies_234)      0.463   1201027    62401    0.05     0.234       0.18        
+deltaExchange(location.root.frequencies_246)      0.405   1201357    64018    0.05     0.2342      0.16        
+deltaExchange(location.root.frequencies_252)      0.548   1201544    63992    0.05     0.2342      0.27        
+deltaExchange(location.root.frequencies_275)      0.439   1201641    63291    0.05     0.2339      0.24        
+deltaExchange(location.root.frequencies_277)      0.388   1202276    63133    0.05     0.2338      0.26        
+deltaExchange(location.root.frequencies_279)      0.467   1201891    62811    0.05     0.2342      0.23        
+deltaExchange(location.root.frequencies_289)      0.477   1201605    62589    0.05     0.2342      0.21        
+deltaExchange(location.root.frequencies_290)      0.519   1203020    62989    0.05     0.234       0.27        
+deltaExchange(location.root.frequencies_305)      0.461   1201187    61702    0.05     0.234       0.24        
+deltaExchange(location.root.frequencies_307)      0.344   1200718    71517    0.06     0.2341      0.22        
+deltaExchange(location.root.frequencies_308)      0.454   1201878    62510    0.05     0.2339      0.23        
+deltaExchange(location.root.frequencies_310)      0.59    1200820    64314    0.05     0.234       0.22        
+deltaExchange(location.root.frequencies_313)      0.768   1202680    62922    0.05     0.2341      0.31        
+deltaExchange(location.root.frequencies_321)      0.477   1201423    63217    0.05     0.234       0.24        
+deltaExchange(location.root.frequencies_331)      0.511   1200719    67516    0.06     0.2339      0.26        
+deltaExchange(location.root.frequencies_336)      0.465   1200897    64009    0.05     0.234       0.23        
+deltaExchange(location.root.frequencies_347)      0.484   1201321    63829    0.05     0.234       0.27        
+deltaExchange(location.root.frequencies_383)      0.455   1200332    64176    0.05     0.2338      0.22        
+deltaExchange(location.root.frequencies_391)      0.565   1201438    62694    0.05     0.234       0.19        
+deltaExchange(location.root.frequencies_418)      0.417   1199968    64209    0.05     0.2339      0.2         
+deltaExchange(location.root.frequencies_436)      0.472   1203676    62468    0.05     0.2339      0.21        
+deltaExchange(location.root.frequencies_449)      0.46    1200428    63767    0.05     0.2339      0.21        
+deltaExchange(location.root.frequencies_458)      0.579   1201999    62789    0.05     0.2341      0.22        
+deltaExchange(location.root.frequencies_463)      0.441   1201166    62082    0.05     0.2339      0.23        
+deltaExchange(location.root.frequencies_468)      0.542   1202650    63439    0.05     0.2342      0.25        
+deltaExchange(location.root.frequencies_477)      0.307   1201019    63151    0.05     0.2339      0.19        
+deltaExchange(location.root.frequencies_488)      0.645   1201248    63661    0.05     0.2342      0.29        
+deltaExchange(location.root.frequencies_547)      0.521   1201958    63322    0.05     0.2338      0.27        
+deltaExchange(location.root.frequencies_557)      0.455   1202582    62707    0.05     0.234       0.2         
+deltaExchange(location.root.frequencies_565)      0.72    1201536    62397    0.05     0.2341      0.3         
+deltaExchange(location.root.frequencies_568)      0.564   1203535    62360    0.05     0.234       0.26        
+deltaExchange(location.root.frequencies_571)      0.479   1200022    63800    0.05     0.2339      0.23        
+deltaExchange(location.root.frequencies_573)      0.513   1200120    63122    0.05     0.2341      0.21        
+deltaExchange(location.root.frequencies_581)      0.492   1200279    64193    0.05     0.2338      0.22        
+deltaExchange(location.root.frequencies_584)      0.416   1199060    62991    0.05     0.234       0.2         
+deltaExchange(location.root.frequencies_591)      0.452   1202089    63064    0.05     0.2338      0.19        
+deltaExchange(location.root.frequencies_613)      0.584   1202569    63483    0.05     0.2338      0.24        
+deltaExchange(location.root.frequencies_642)      0.448   1200818    63591    0.05     0.2341      0.23        
+deltaExchange(location.root.frequencies_659)      0.398   1201018    64145    0.05     0.2339      0.22        
+deltaExchange(location.root.frequencies_668)      0.389   1199878    63869    0.05     0.234       0.2         
+deltaExchange(location.root.frequencies_671)      0.512   1201495    64638    0.05     0.234       0.24        
+deltaExchange(location.root.frequencies_673)      0.41    1202278    64097    0.05     0.2341      0.22        
+deltaExchange(location.root.frequencies_681)      0.383   1201876    64535    0.05     0.234       0.17        
+deltaExchange(location.root.frequencies_695)      0.392   1200622    63668    0.05     0.234       0.21        
+deltaExchange(location.root.frequencies_702)      0.574   1201496    64427    0.05     0.2341      0.25        
+deltaExchange(location.root.frequencies_708)      0.48    1201408    63907    0.05     0.2339      0.22        
+deltaExchange(location.root.frequencies_729)      0.549   1201733    63203    0.05     0.234       0.25        
+deltaExchange(location.root.frequencies_730)      0.607   1203820    63525    0.05     0.234       0.24        
+deltaExchange(location.root.frequencies_735)      0.418   1200649    64969    0.05     0.2341      0.21        
+deltaExchange(location.root.frequencies_739)      0.385   1200493    63704    0.05     0.2341      0.21        
+deltaExchange(location.root.frequencies_754)      0.414   1201829    63776    0.05     0.2341      0.19        
+deltaExchange(location.root.frequencies_766)      0.535   1202453    63495    0.05     0.234       0.26        
+deltaExchange(location.root.frequencies_768)      0.422   1201017    63735    0.05     0.234       0.19        
+deltaExchange(location.root.frequencies_778)      0.412   1199520    64277    0.05     0.2339      0.22        
+deltaExchange(location.root.frequencies_811)      0.473   1202020    62989    0.05     0.234       0.26        
+deltaExchange(location.root.frequencies_812)      0.463   1198901    65019    0.05     0.234       0.23        
+deltaExchange(location.root.frequencies_832)      0.488   1201855    62692    0.05     0.2339      0.24        
+deltaExchange(location.root.frequencies_838)      0.449   1202158    65125    0.05     0.2338      0.19        
+deltaExchange(location.root.frequencies_866)      0.397   1201580    63661    0.05     0.2341      0.24        
+deltaExchange(location.root.frequencies_905)      0.457   1201330    65076    0.05     0.234       0.28        
+deltaExchange(location.root.frequencies_906)      0.43    1202099    64976    0.05     0.2341      0.27        
+deltaExchange(location.root.frequencies_915)      0.433   1201024    65163    0.05     0.234       0.17        
+deltaExchange(location.root.frequencies_948)      0.403   1201600    62784    0.05     0.2341      0.21        
+deltaExchange(location.root.frequencies_1005)     0.521   1201518    65136    0.05     0.2341      0.22        
+deltaExchange(location.root.frequencies_1026)     0.524   1202047    65058    0.05     0.2339      0.22        
+deltaExchange(location.root.frequencies_1056)     0.519   1201732    65383    0.05     0.2339      0.25        
+deltaExchange(location.root.frequencies_1105)     0.42    1201489    63875    0.05     0.2339      0.23        
+deltaExchange(location.root.frequencies_1117)     0.48    1201023    63644    0.05     0.234       0.25        
+deltaExchange(location.root.frequencies_1131)     0.445   1201687    64939    0.05     0.234       0.17        
+deltaExchange(location.root.frequencies_1136)     0.689   1203528    66762    0.06     0.234       0.3         
+deltaExchange(location.root.frequencies_1146)     0.409   1198795    64449    0.05     0.2339      0.24        
+deltaExchange(location.root.frequencies_1147)     0.501   1203085    69283    0.06     0.234       0.25        
+deltaExchange(location.root.frequencies_1161)     0.614   1200289    65162    0.05     0.234       0.25        
+deltaExchange(location.root.frequencies_1164)     0.541   1201096    63702    0.05     0.2341      0.21        
+deltaExchange(location.root.frequencies_1188)     0.465   1200047    66023    0.06     0.2342      0.19        
+deltaExchange(location.root.frequencies_1201)     0.499   1200701    65380    0.05     0.234       0.25        
+deltaExchange(location.root.frequencies_1231)     0.53    1202804    65371    0.05     0.234       0.3         
+deltaExchange(location.root.frequencies_1261)     0.556   1201401    65357    0.05     0.234       0.26        
+deltaExchange(location.root.frequencies_1294)     0.521   1200692    66498    0.06     0.234       0.24        
+deltaExchange(location.root.frequencies_1306)     0.448   1202641    65714    0.05     0.2339      0.24        
+deltaExchange(location.root.frequencies_1337)     0.488   1203073    66249    0.06     0.2339      0.22        
+deltaExchange(location.root.frequencies_1353)     0.451   1203181    64983    0.05     0.2341      0.22        
+deltaExchange(location.root.frequencies_1354)     0.441   1200760    65718    0.05     0.2341      0.24        
+deltaExchange(location.root.frequencies_1365)     0.442   1201982    65765    0.05     0.234       0.18        
+deltaExchange(location.root.frequencies_1379)     0.372   1201729    64683    0.05     0.2342      0.17        
+deltaExchange(location.root.frequencies_1396)     0.4     1201029    66000    0.05     0.2341      0.26        
+deltaExchange(location.root.frequencies_1416)     0.57    1201157    64631    0.05     0.234       0.25        
+deltaExchange(location.root.frequencies_1430)     0.358   1201165    66060    0.05     0.2338      0.16        
+deltaExchange(location.root.frequencies_1437)     0.437   1200732    70282    0.06     0.2339      0.21        
+deltaExchange(location.root.frequencies_1480)     0.486   1200822    66747    0.06     0.234       0.24        
+deltaExchange(location.root.frequencies_1481)     0.349   1202792    67340    0.06     0.2339      0.19        
+deltaExchange(location.root.frequencies_1502)     0.628   1201873    65775    0.05     0.2339      0.26        
+deltaExchange(location.root.frequencies_1510)     0.515   1201605    66447    0.06     0.2339      0.2         
+deltaExchange(location.root.frequencies_1519)     0.419   1201525    67990    0.06     0.2341      0.2         
+deltaExchange(location.root.frequencies_1534)     0.356   1202100    66241    0.06     0.2338      0.26        
+deltaExchange(location.root.frequencies_1556)     0.532   1200974    67035    0.06     0.2341      0.23        
+deltaExchange(location.root.frequencies_1659)     0.625   1201328    69351    0.06     0.234       0.25        
+deltaExchange(location.root.frequencies_1666)     0.49    1200165    66794    0.06     0.2341      0.3         
+deltaExchange(location.root.frequencies_1714)     0.513   1201613    66318    0.06     0.234       0.22        
+deltaExchange(location.root.frequencies_1717)     0.581   1203102    67765    0.06     0.2341      0.3         
+deltaExchange(location.root.frequencies_1790)     0.528   1201336    66541    0.06     0.234       0.29        
+deltaExchange(location.root.frequencies_1816)     0.516   1202054    68889    0.06     0.2339      0.25        
+deltaExchange(location.root.frequencies_1888)     0.418   1202153    68089    0.06     0.2339      0.18        
+deltaExchange(location.root.frequencies_1903)     0.471   1201043    66429    0.06     0.2342      0.24        
+deltaExchange(location.root.frequencies_1958)     0.445   1203175    67712    0.06     0.234       0.2         
+deltaExchange(location.root.frequencies_1994)     0.379   1202176    66024    0.05     0.2339      0.17        
+deltaExchange(location.root.frequencies_2035)     0.441   1201794    67030    0.06     0.2339      0.29        
+deltaExchange(location.root.frequencies_2148)     0.555   1201205    67899    0.06     0.2339      0.25        
+deltaExchange(location.root.frequencies_2166)     0.463   1200951    68280    0.06     0.2341      0.24        
+deltaExchange(location.root.frequencies_2184)     0.42    1198955    66982    0.06     0.234       0.19        
+deltaExchange(location.root.frequencies_2224)     0.594   1200878    67159    0.06     0.234       0.23        
+deltaExchange(location.root.frequencies_2233)     0.425   1201040    68484    0.06     0.2341      0.2         
+deltaExchange(location.root.frequencies_2246)     0.465   1201941    69120    0.06     0.2342      0.26        
+deltaExchange(location.root.frequencies_2298)     0.457   1201493    68259    0.06     0.2341      0.21        
+tipStateSwapOperator                                      2402485    493858   0.21     1.0         1.0         
+tipStateSwapOperator                                      2404340    486982   0.2      1.0         1.0         
+tipStateSwapOperator                                      2402402    489307   0.2      1.0         1.0         
+tipStateSwapOperator                                      2404510    489688   0.2      1.0         1.0         
+tipStateSwapOperator                                      2401758    486659   0.2      1.0         1.0         
+tipStateSwapOperator                                      2403785    487368   0.2      1.0         1.0         
+tipStateSwapOperator                                      2402641    483070   0.2      1.0         1.0         
+tipStateSwapOperator                                      2401344    487594   0.2      1.0         1.0         
+tipStateSwapOperator                                      2401111    488648   0.2      1.0         1.0         
+tipStateSwapOperator                                      2402345    487662   0.2      1.0         1.0         
+tipStateSwapOperator                                      2401505    488504   0.2      1.0         1.0         
+tipStateSwapOperator                                      2402051    490263   0.2      1.0         1.0         
+tipStateSwapOperator                                      2401812    490969   0.2      1.0         1.0         
+tipStateSwapOperator                                      2404985    490828   0.2      1.0         1.0         
+tipStateSwapOperator                                      2404127    490267   0.2      1.0         1.0         
+tipStateSwapOperator                                      2401174    490896   0.2      1.0         1.0         
+tipStateSwapOperator                                      2402264    493833   0.21     1.0         1.0         
+tipStateSwapOperator                                      2400616    489557   0.2      1.0         1.0         
+tipStateSwapOperator                                      2404218    492128   0.2      1.0         1.0         
+tipStateSwapOperator                                      2404126    489256   0.2      1.0         1.0         
+tipStateSwapOperator                                      2406613    492063   0.2      1.0         1.0         
+tipStateSwapOperator                                      2404608    491839   0.2      1.0         1.0         
+tipStateSwapOperator                                      2404768    493272   0.21     1.0         1.0         
+tipStateSwapOperator                                      2404580    490580   0.2      1.0         1.0         
+tipStateSwapOperator                                      2405525    556586   0.23     1.0         1.0         
+tipStateSwapOperator                                      2404039    490096   0.2      1.0         1.0         
+tipStateSwapOperator                                      2400513    490918   0.2      1.0         1.0         
+tipStateSwapOperator                                      2403149    492677   0.21     1.0         1.0         
+tipStateSwapOperator                                      2403167    492373   0.2      1.0         1.0         
+tipStateSwapOperator                                      2402134    520362   0.22     1.0         1.0         
+tipStateSwapOperator                                      2402298    491748   0.2      1.0         1.0         
+tipStateSwapOperator                                      2403297    492008   0.2      1.0         1.0         
+tipStateSwapOperator                                      2405426    491783   0.2      1.0         1.0         
+tipStateSwapOperator                                      2402177    491502   0.2      1.0         1.0         
+tipStateSwapOperator                                      2404435    491904   0.2      1.0         1.0         
+tipStateSwapOperator                                      2404067    491985   0.2      1.0         1.0         
+tipStateSwapOperator                                      2406815    492453   0.2      1.0         1.0         
+tipStateSwapOperator                                      2404460    491992   0.2      1.0         1.0         
+tipStateSwapOperator                                      2401251    491655   0.2      1.0         1.0         
+tipStateSwapOperator                                      2401807    492252   0.2      1.0         1.0         
+tipStateSwapOperator                                      2402632    491872   0.2      1.0         1.0         
+tipStateSwapOperator                                      2402659    493733   0.21     1.0         1.0         
+tipStateSwapOperator                                      2403957    492091   0.2      1.0         1.0         
+tipStateSwapOperator                                      2399199    490704   0.2      1.0         1.0         
+tipStateSwapOperator                                      2400718    491191   0.2      1.0         1.0         
+tipStateSwapOperator                                      2403131    492699   0.21     1.0         1.0         
+tipStateSwapOperator                                      2403383    493305   0.21     1.0         1.0         
+tipStateSwapOperator                                      2403421    491620   0.2      1.0         1.0         
+tipStateSwapOperator                                      2402758    493513   0.21     1.0         1.0         
+tipStateSwapOperator                                      2400764    492674   0.21     1.0         1.0         
+tipStateSwapOperator                                      2401547    493416   0.21     1.0         1.0         
+tipStateSwapOperator                                      2402800    493570   0.21     1.0         1.0         
+tipStateSwapOperator                                      2404938    494345   0.21     1.0         1.0         
+tipStateSwapOperator                                      2402007    492771   0.21     1.0         1.0         
+tipStateSwapOperator                                      2401574    493085   0.21     1.0         1.0         
+tipStateSwapOperator                                      2404136    494902   0.21     1.0         1.0         
+tipStateSwapOperator                                      2402317    493445   0.21     1.0         1.0         
+tipStateSwapOperator                                      2402625    494534   0.21     1.0         1.0         
+tipStateSwapOperator                                      2402499    493383   0.21     1.0         1.0         
+tipStateSwapOperator                                      2406394    494441   0.21     1.0         1.0         
+tipStateSwapOperator                                      2404453    495427   0.21     1.0         1.0         
+tipStateSwapOperator                                      2403536    494845   0.21     1.0         1.0         
+tipStateSwapOperator                                      2405088    495358   0.21     1.0         1.0         
+tipStateSwapOperator                                      2401344    494973   0.21     1.0         1.0         
+tipStateSwapOperator                                      2402677    494182   0.21     1.0         1.0         
+tipStateSwapOperator                                      2404949    495189   0.21     1.0         1.0         
+tipStateSwapOperator                                      2400298    494618   0.21     1.0         1.0         
+tipStateSwapOperator                                      2403191    495072   0.21     1.0         1.0         
+tipStateSwapOperator                                      2403035    495885   0.21     1.0         1.0         
+tipStateSwapOperator                                      2402640    494926   0.21     1.0         1.0         
+tipStateSwapOperator                                      2402667    502655   0.21     1.0         1.0         
+tipStateSwapOperator                                      2405232    496012   0.21     1.0         1.0         
+tipStateSwapOperator                                      2403872    496261   0.21     1.0         1.0         
+tipStateSwapOperator                                      2402595    496835   0.21     1.0         1.0         
+tipStateSwapOperator                                      2399965    495775   0.21     1.0         1.0         
+tipStateSwapOperator                                      2404325    500391   0.21     1.0         1.0         
+tipStateSwapOperator                                      2402891    507581   0.21     1.0         1.0         
+tipStateSwapOperator                                      2406188    498744   0.21     1.0         1.0         
+tipStateSwapOperator                                      2401810    497034   0.21     1.0         1.0         
+tipStateSwapOperator                                      2403283    497813   0.21     1.0         1.0         
+tipStateSwapOperator                                      2402457    500242   0.21     1.0         1.0         
+tipStateSwapOperator                                      2401622    499379   0.21     1.0         1.0         
+tipStateSwapOperator                                      2401459    498181   0.21     1.0         1.0         
+tipStateSwapOperator                                      2401154    505871   0.21     1.0         1.0         
+tipStateSwapOperator                                      2404418    518813   0.22     1.0         1.0         
+tipStateSwapOperator                                      2402741    501718   0.21     1.0         1.0         
+tipStateSwapOperator                                      2401658    543149   0.23     1.0         1.0         
+tipStateSwapOperator                                      2406803    503177   0.21     1.0         1.0         
+tipStateSwapOperator                                      2403819    503203   0.21     1.0         1.0         
+tipStateSwapOperator                                      2401030    508736   0.21     1.0         1.0         
+tipStateSwapOperator                                      2403165    504767   0.21     1.0         1.0         
+tipStateSwapOperator                                      2401601    502084   0.21     1.0         1.0         
+tipStateSwapOperator                                      2406542    503829   0.21     1.0         1.0         
+tipStateSwapOperator                                      2401510    509007   0.21     1.0         1.0         
+tipStateSwapOperator                                      2403611    506705   0.21     1.0         1.0         
+tipStateSwapOperator                                      2402183    507433   0.21     1.0         1.0         
+tipStateSwapOperator                                      2401281    503646   0.21     1.0         1.0         
+tipStateSwapOperator                                      2399901    504944   0.21     1.0         1.0         
+tipStateSwapOperator                                      2399905    506824   0.21     1.0         1.0         
+tipStateSwapOperator                                      2401487    506776   0.21     1.0         1.0         
+tipStateSwapOperator                                      2400484    507621   0.21     1.0         1.0         
+tipStateSwapOperator                                      2403471    507586   0.21     1.0         1.0         
+tipStateSwapOperator                                      2404323    510576   0.21     1.0         1.0         
+tipStateSwapOperator                                      2403846    543867   0.23     1.0         1.0         
+tipStateSwapOperator                                      2406490    518769   0.22     1.0         1.0         
+tipStateSwapOperator                                      2402731    510537   0.21     1.0         1.0         
+tipStateSwapOperator                                      2403144    518543   0.22     1.0         1.0         
+tipStateSwapOperator                                      2401183    512913   0.21     1.0         1.0         
+tipStateSwapOperator                                      2404277    518951   0.22     1.0         1.0         
+tipStateSwapOperator                                      2401762    517885   0.22     1.0         1.0         
+tipStateSwapOperator                                      2400372    516014   0.21     1.0         1.0         
+tipStateSwapOperator                                      2403684    541680   0.23     1.0         1.0         
+tipStateSwapOperator                                      2403175    521875   0.22     1.0         1.0         
+tipStateSwapOperator                                      2404058    518660   0.22     1.0         1.0         
+tipStateSwapOperator                                      2402551    524004   0.22     1.0         1.0         
+tipStateSwapOperator                                      2402915    522531   0.22     1.0         1.0         
+tipStateSwapOperator                                      2402232    523203   0.22     1.0         1.0         
+tipStateSwapOperator                                      2400272    520509   0.22     1.0         1.0         
+tipStateSwapOperator                                      2403275    522401   0.22     1.0         1.0         
+tipStateSwapOperator                                      2401762    530705   0.22     1.0         1.0         
+tipStateSwapOperator                                      2403475    526249   0.22     1.0         1.0         
+tipStateSwapOperator                                      2403075    527028   0.22     1.0         1.0         
+tipStateSwapOperator                                      2402336    526559   0.22     1.0         1.0         
+tipStateSwapOperator                                      2401798    530678   0.22     1.0         1.0         
+tipStateSwapOperator                                      2403883    528026   0.22     1.0         1.0         
+tipStateSwapOperator                                      2401669    530043   0.22     1.0         1.0         
+tipStateSwapOperator                                      2403120    535417   0.22     1.0         1.0         
+tipStateSwapOperator                                      2400214    534967   0.22     1.0         1.0         
+tipStateSwapOperator                                      2402433    531245   0.22     1.0         1.0         
+

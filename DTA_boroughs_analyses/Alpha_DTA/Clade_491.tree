@@ -1,0 +1,19 @@
+#NEXUS
+
+Begin taxa;
+	Dimensions ntax=3;
+	Taxlabels
+		hCoV-19/USA/NY-MSHSPSP-PV30714/2021
+		hCoV-19/USA/NY-MSHSPSP-PV35530/2021
+		hCoV-19/USA/NY-Wadsworth-21036644-01/2021
+		;
+End;
+
+Begin trees;
+	Translate
+		1 hCoV-19/USA/NY-MSHSPSP-PV30714/2021,
+		2 hCoV-19/USA/NY-MSHSPSP-PV35530/2021,
+		3 hCoV-19/USA/NY-Wadsworth-21036644-01/2021
+		;
+tree TREE1 = [&R] ((3[&length=1.0311389900000134E-4,location.rate_95%_HPD={1.9280407131821704,2.453566884761337},location="Queens",location.prob=1.0,location.rate_median=2.1692205562820046,location.set={"Queens"},location.set.prob={1.0},location.rate_range={1.8223827479700998,2.6946589916863912},height=0.003000000000000072,location.rate=2.1739597953036784]:1.0311389900000134E-4,2[&length=0.003103113898999987,location.rate_95%_HPD={1.9280407131821704,2.453566884761337},location="Queens",location.prob=1.0,location.rate_median=2.1692205562820046,location.set={"Queens"},location.set.prob={1.0},location.rate_range={1.8223827479700998,2.6946589916863912},height=0.0,location.rate=2.1739597953036784]:0.003103113899000004)[&length=0.07191202901999949,posterior=1.0,location.rate_95%_HPD={1.9280407131821704,2.453566884761337},location="Queens",location.prob=1.0,location.rate_median=2.1692205562820046,location.set={"Queens"},location.set.prob={1.0},location.rate_range={1.8223827479700998,2.6946589916863912},height=0.003103113898999987,location.rate=2.1739597953036784]:0.07191202902,1[&length=0.04801514292000051,location.rate_95%_HPD={1.9280407131821704,2.453566884761337},location="Queens",location.prob=1.0,location.rate_median=2.1692205562820046,location.set={"Queens"},location.set.prob={1.0},location.rate_range={1.8223827479700998,2.6946589916863912},height=0.02699999999899945,location.rate=2.1739597953036784]:0.04801514292)[&length=0.0,posterior=1.0,location="Queens",location.prob=0.9866666666666667,location.set={"Queens","Nassau","Westchester","Kings"},location.set.prob={0.9866666666666667,0.01,0.0022222222222222222,0.0011111111111111111},height=0.07501514291899981];
+End;

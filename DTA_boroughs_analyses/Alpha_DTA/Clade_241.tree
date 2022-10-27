@@ -1,0 +1,19 @@
+#NEXUS
+
+Begin taxa;
+	Dimensions ntax=3;
+	Taxlabels
+		hCoV-19/USA/NY-MSHSPSP-PV36304/2021
+		hCoV-19/USA/NY-NYULH1316/2021
+		hCoV-19/USA/NY-NYULH849/2021
+		;
+End;
+
+Begin trees;
+	Translate
+		1 hCoV-19/USA/NY-MSHSPSP-PV36304/2021,
+		2 hCoV-19/USA/NY-NYULH1316/2021,
+		3 hCoV-19/USA/NY-NYULH849/2021
+		;
+tree TREE1 = [&R] (3[&length=0.014199097649999826,location.rate_95%_HPD={1.9280407131821704,2.453566884761337},location="NewYork",location.prob=1.0,location.rate_median=2.1692205562820046,location.set={"NewYork"},location.set.prob={1.0},location.rate_range={1.8223827479700998,2.6946589916863912},height=0.07599999999999997,location.rate=2.1739597953036784]:0.014199097650000006,(1[&length=0.013906402949999687,location.rate_95%_HPD={1.9280407131821704,2.453566884761337},location="Queens",location.prob=1.0,location.rate_median=2.1692205562820046,location.set={"Queens"},location.set.prob={1.0},location.rate_range={1.8223827479700998,2.6946589916863912},height=0.018999999999999993,location.rate=2.1739597953036784]:0.01390640295,2[&length=0.032906402950000295,location.rate_95%_HPD={1.9280407131821704,2.453566884761337},location="Queens",location.prob=1.0,location.rate_median=2.1692205562820046,location.set={"Queens"},location.set.prob={1.0},location.rate_range={1.8223827479700998,2.6946589916863912},height=0.0,location.rate=2.1739597953036784]:0.032906402950000004)[&length=0.05729269470000069,posterior=1.0,location.rate_95%_HPD={1.9280407131821704,2.453566884761337},location="Queens",location.prob=0.9944444444444445,location.rate_median=2.1692205562820046,location.set={"Queens","Nassau","NewYork","Kings"},location.set.prob={0.9944444444444445,0.0011111111111111111,0.0022222222222222222,0.0022222222222222222},location.rate_range={1.8223827479700998,2.6946589916863912},height=0.032906402950000295,location.rate=2.1739597953036784]:0.0572926947)[&length=0.0,posterior=1.0,location="Queens",location.prob=0.7744444444444445,location.set={"Queens","Nassau","NewYork","Kings"},location.set.prob={0.7744444444444445,0.03777777777777778,0.18222222222222223,0.005555555555555556},height=0.09019909765000021];
+End;

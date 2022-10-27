@@ -1,0 +1,23 @@
+#NEXUS
+
+Begin taxa;
+	Dimensions ntax=5;
+	Taxlabels
+		hCoV-19/USA/NY-Wadsworth-21052596-01/2021
+		hCoV-19/USA/NY-Wadsworth-21052599-01/2021
+		hCoV-19/USA/NY-Wadsworth-21052607-01/2021
+		hCoV-19/USA/NY-Wadsworth-21052608-01/2021
+		hCoV-19/USA/NY-Wadsworth-21052617-01/2021
+		;
+End;
+
+Begin trees;
+	Translate
+		1 hCoV-19/USA/NY-Wadsworth-21052596-01/2021,
+		2 hCoV-19/USA/NY-Wadsworth-21052599-01/2021,
+		3 hCoV-19/USA/NY-Wadsworth-21052607-01/2021,
+		4 hCoV-19/USA/NY-Wadsworth-21052608-01/2021,
+		5 hCoV-19/USA/NY-Wadsworth-21052617-01/2021
+		;
+tree TREE1 = [&R] (3[&length=0.06424157194000052,location.rate_95%_HPD={2.0481453109940575,2.3669653055150057},location="Richmond",location.prob=1.0,location.rate_median=2.2079014328444946,location.set={"Richmond"},location.set.prob={1.0},location.rate_range={1.9342205575654698,2.4469261747725244},height=0.0,location.rate=2.208589941938232]:0.06424157194,(((2[&length=0.006986564434999847,location.rate_95%_HPD={2.0481453109940575,2.3669653055150057},location="Richmond",location.prob=1.0,location.rate_median=2.2079014328444946,location.set={"Richmond"},location.set.prob={1.0},location.rate_range={1.9342205575654698,2.4469261747725244},height=0.0,location.rate=2.208589941938232]:0.006986564435000002,5[&length=0.006986564434999847,location.rate_95%_HPD={2.0481453109940575,2.3669653055150057},location="Richmond",location.prob=1.0,location.rate_median=2.2079014328444946,location.set={"Richmond"},location.set.prob={1.0},location.rate_range={1.9342205575654698,2.4469261747725244},height=0.0,location.rate=2.208589941938232]:0.006986564435000002)[&length=0.0012159051450000226,posterior=1.0,location.rate_95%_HPD={2.0481453109940575,2.3669653055150057},location="Richmond",location.prob=1.0,location.rate_median=2.2079014328444946,location.set={"Richmond"},location.set.prob={1.0},location.rate_range={1.9342205575654698,2.4469261747725244},height=0.006986564434999847,location.rate=2.208589941938232]:0.0012159051450000014,1[&length=0.008202469579999832,location.rate_95%_HPD={2.0481453109940575,2.3669653055150057},location="Richmond",location.prob=1.0,location.rate_median=2.2079014328444946,location.set={"Richmond"},location.set.prob={1.0},location.rate_range={1.9342205575654698,2.4469261747725244},height=0.0,location.rate=2.208589941938232]:0.008202469580000003)[&length=0.022642545829999583,posterior=1.0,location.rate_95%_HPD={2.0481453109940575,2.3669653055150057},location="Richmond",location.prob=1.0,location.rate_median=2.2079014328444946,location.set={"Richmond"},location.set.prob={1.0},location.rate_range={1.9342205575654698,2.4469261747725244},height=0.008202469579999832,location.rate=2.208589941938232]:0.02264254583,4[&length=0.030845015410000533,location.rate_95%_HPD={2.0481453109940575,2.3669653055150057},location="Richmond",location.prob=1.0,location.rate_median=2.2079014328444946,location.set={"Richmond"},location.set.prob={1.0},location.rate_range={1.9342205575654698,2.4469261747725244},height=0.0,location.rate=2.208589941938232]:0.030845015410000003)[&length=0.03339655653000033,posterior=1.0,location.rate_95%_HPD={2.0481453109940575,2.3669653055150057},location="Richmond",location.prob=1.0,location.rate_median=2.2079014328444946,location.set={"Richmond"},location.set.prob={1.0},location.rate_range={1.9342205575654698,2.4469261747725244},height=0.030845015410000533,location.rate=2.208589941938232]:0.03339655653)[&length=0.0,posterior=1.0,location="Richmond",location.prob=1.0,location.set={"Richmond"},location.set.prob={1.0},height=0.06424157194000052];
+End;

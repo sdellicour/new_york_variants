@@ -1,0 +1,19 @@
+#NEXUS
+
+Begin taxa;
+	Dimensions ntax=3;
+	Taxlabels
+		hCoV-19/USA/NY-Wadsworth-21039260-01/2021
+		hCoV-19/USA/NY-Wadsworth-21039261-01/2021
+		hCoV-19/USA/NY-Wadsworth-21039263-01/2021
+		;
+End;
+
+Begin trees;
+	Translate
+		1 hCoV-19/USA/NY-Wadsworth-21039260-01/2021,
+		2 hCoV-19/USA/NY-Wadsworth-21039261-01/2021,
+		3 hCoV-19/USA/NY-Wadsworth-21039263-01/2021
+		;
+tree TREE1 = [&R] ((1[&length=0.004957058329000005,location.rate_95%_HPD={1.9280407131821704,2.453566884761337},location="Westchester",location.prob=1.0,location.rate_median=2.1692205562820046,location.set={"Westchester"},location.set.prob={1.0},location.rate_range={1.8223827479700998,2.6946589916863912},height=9.999986949615902E-13,location.rate=2.1739597953036784]:0.004957058329000001,2[&length=0.004957058329000005,location.rate_95%_HPD={1.9280407131821704,2.453566884761337},location="Westchester",location.prob=1.0,location.rate_median=2.1692205562820046,location.set={"Westchester"},location.set.prob={1.0},location.rate_range={1.8223827479700998,2.6946589916863912},height=9.999986949615902E-13,location.rate=2.1739597953036784]:0.004957058329000001)[&length=0.0372032178799992,posterior=1.0,location.rate_95%_HPD={1.9280407131821704,2.453566884761337},location="Westchester",location.prob=1.0,location.rate_median=2.1692205562820046,location.set={"Westchester"},location.set.prob={1.0},location.rate_range={1.8223827479700998,2.6946589916863912},height=0.0049570583299999894,location.rate=2.1739597953036784]:0.03720321788,3[&length=0.04216027621000024,location.rate_95%_HPD={1.9280407131821704,2.453566884761337},location="Westchester",location.prob=1.0,location.rate_median=2.1692205562820046,location.set={"Westchester"},location.set.prob={1.0},location.rate_range={1.8223827479700998,2.6946589916863912},height=0.0,location.rate=2.1739597953036784]:0.04216027621)[&length=0.0,posterior=1.0,location="Westchester",location.prob=1.0,location.set={"Westchester"},location.set.prob={1.0},height=0.04216027621000024];
+End;

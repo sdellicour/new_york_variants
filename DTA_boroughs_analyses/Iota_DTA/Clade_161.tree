@@ -1,0 +1,23 @@
+#NEXUS
+
+Begin taxa;
+	Dimensions ntax=5;
+	Taxlabels
+		hCoV-19/USA/NY-Wadsworth-21021153-01/2021
+		hCoV-19/USA/NY-Wadsworth-21023227-01/2021
+		hCoV-19/USA/NY-Wadsworth-21023585-01/2021
+		hCoV-19/USA/NY-Wadsworth-21028855-01/2021
+		hCoV-19/USA/NY-Wadsworth-21072546-01/2021
+		;
+End;
+
+Begin trees;
+	Translate
+		1 hCoV-19/USA/NY-Wadsworth-21021153-01/2021,
+		2 hCoV-19/USA/NY-Wadsworth-21023227-01/2021,
+		3 hCoV-19/USA/NY-Wadsworth-21023585-01/2021,
+		4 hCoV-19/USA/NY-Wadsworth-21028855-01/2021,
+		5 hCoV-19/USA/NY-Wadsworth-21072546-01/2021
+		;
+tree TREE1 = [&R] ((3[&length=0.004766667856999975,location.rate_95%_HPD={2.0481453109940575,2.3669653055150057},location="Suffolk",location.prob=1.0,location.rate_median=2.2079014328444946,location.set={"Suffolk"},location.set.prob={1.0},location.rate_range={1.9342205575654698,2.4469261747725244},height=0.04700000000300046,location.rate=2.208589941938232]:0.004766667857000001,4[&length=0.05176666786000068,location.rate_95%_HPD={2.0481453109940575,2.3669653055150057},location="Suffolk",location.prob=1.0,location.rate_median=2.2079014328444946,location.set={"Suffolk"},location.set.prob={1.0},location.rate_range={1.9342205575654698,2.4469261747725244},height=0.0,location.rate=2.208589941938232]:0.05176666785999999)[&length=0.1073250600999993,posterior=1.0,location.rate_95%_HPD={2.0481453109940575,2.3669653055150057},location="Suffolk",location.prob=0.9977777777777778,location.rate_median=2.2079014328444946,location.set={"Nassau","Suffolk","NewYork"},location.set.prob={0.0011111111111111111,0.9977777777777778,0.0011111111111111111},location.rate_range={1.9342205575654698,2.4469261747725244},height=0.05176666786000068,location.rate=2.208589941938232]:0.1073250601,((5[&length=0.00991733653900005,location.rate_95%_HPD={2.0481453109940575,2.3669653055150057},location="Westchester",location.prob=1.0,location.rate_median=2.2079014328444946,location.set={"Westchester"},location.set.prob={1.0},location.rate_range={1.9342205575654698,2.4469261747725244},height=0.07200000000300086,location.rate=2.208589941938232]:0.009917336538999996,1[&length=0.023917336539999758,location.rate_95%_HPD={2.0481453109940575,2.3669653055150057},location="Nassau",location.prob=1.0,location.rate_median=2.2079014328444946,location.set={"Nassau"},location.set.prob={1.0},location.rate_range={1.9342205575654698,2.4469261747725244},height=0.058000000001998626,location.rate=2.208589941938232]:0.02391733654)[&length=0.0757225694700012,posterior=1.0,location.rate_95%_HPD={2.0481453109940575,2.3669653055150057},location="Bronx",location.prob=0.6811111111111111,location.rate_median=2.2079014328444946,location.set={"Westchester","Nassau","NewYork","Bronx","Kings"},location.set.prob={0.07333333333333333,0.024444444444444446,0.20777777777777778,0.6811111111111111,0.013333333333333334},location.rate_range={1.9342205575654698,2.4469261747725244},height=0.08191733654199981,location.rate=2.208589941938232]:0.07572256947,2[&length=0.11363990600000201,location.rate_95%_HPD={2.0481453109940575,2.3669653055150057},location="Bronx",location.prob=1.0,location.rate_median=2.2079014328444946,location.set={"Bronx"},location.set.prob={1.0},location.rate_range={1.9342205575654698,2.4469261747725244},height=0.04400000001200016,location.rate=2.208589941938232]:0.113639906)[&length=0.0014518219479999815,posterior=1.0,location.rate_95%_HPD={2.0481453109940575,2.3669653055150057},location="Bronx",location.prob=0.7488888888888889,location.rate_median=2.2079014328444946,location.set={"Nassau","Westchester","NewYork","Bronx","Kings"},location.set.prob={0.022222222222222223,0.0033333333333333335,0.22333333333333333,0.7488888888888889,0.0022222222222222222},location.rate_range={1.9342205575654698,2.4469261747725244},height=0.1576399060119984,location.rate=2.208589941938232]:0.0014518219480000039)[&length=0.0,posterior=1.0,location="Bronx",location.prob=0.7444444444444445,location.set={"Nassau","Westchester","Suffolk","NewYork","Bronx","Kings"},location.set.prob={0.022222222222222223,0.0022222222222222222,0.0022222222222222222,0.22666666666666666,0.7444444444444445,0.0022222222222222222},height=0.1590917279600027];
+End;

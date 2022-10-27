@@ -1,0 +1,19 @@
+#NEXUS
+
+Begin taxa;
+	Dimensions ntax=3;
+	Taxlabels
+		hCoV-19/USA/NY-NYULH1107/2021
+		hCoV-19/USA/NY-Wadsworth-21048049-01/2021
+		hCoV-19/USA/NY-Wadsworth-21050440-01/2021
+		;
+End;
+
+Begin trees;
+	Translate
+		1 hCoV-19/USA/NY-NYULH1107/2021,
+		2 hCoV-19/USA/NY-Wadsworth-21048049-01/2021,
+		3 hCoV-19/USA/NY-Wadsworth-21050440-01/2021
+		;
+tree TREE1 = [&R] (1[&length=0.08267184273999932,location.rate_95%_HPD={1.9280407131821704,2.453566884761337},location="Kings",location.prob=1.0,location.rate_median=2.1692205562820046,location.set={"Kings"},location.set.prob={1.0},location.rate_range={1.8223827479700998,2.6946589916863912},height=0.05499999999999975,location.rate=2.1739597953036784]:0.08267184274,(2[&length=0.01444416004000004,location.rate_95%_HPD={1.9280407131821704,2.453566884761337},location="Suffolk",location.prob=1.0,location.rate_median=2.1692205562820046,location.set={"Suffolk"},location.set.prob={1.0},location.rate_range={1.8223827479700998,2.6946589916863912},height=0.0,location.rate=2.1739597953036784]:0.01444416004,3[&length=0.01444416004000004,location.rate_95%_HPD={1.9280407131821704,2.453566884761337},location="Suffolk",location.prob=1.0,location.rate_median=2.1692205562820046,location.set={"Suffolk"},location.set.prob={1.0},location.rate_range={1.8223827479700998,2.6946589916863912},height=0.0,location.rate=2.1739597953036784]:0.01444416004)[&length=0.12322768270000163,posterior=1.0,location.rate_95%_HPD={1.9280407131821704,2.453566884761337},location="Suffolk",location.prob=1.0,location.rate_median=2.1692205562820046,location.set={"Suffolk"},location.set.prob={1.0},location.rate_range={1.8223827479700998,2.6946589916863912},height=0.01444416004000004,location.rate=2.1739597953036784]:0.1232276827)[&length=0.0,posterior=1.0,location="Kings",location.prob=0.7388888888888889,location.set={"Nassau","Queens","Suffolk","NewYork","Kings","Bronx"},location.set.prob={0.12555555555555556,0.013333333333333334,0.03888888888888889,0.0811111111111111,0.7388888888888889,0.0022222222222222222},height=0.13767184274000202];
+End;

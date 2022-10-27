@@ -1,3 +1,18 @@
+# To do list and/or issues to deal with:
+	# - n.b.: current results and figures are based on TreeTime trees (and only 400 posterior
+	#	trees in the case of the BSSVS analysis conducted for Iota) --> to be updated !!!!
+
+# Ideas of invasion/dispersal metrics to compare the different variants:
+	# - comparison of the growth rate advantage (that will be computed by Sam + graphs)
+	# - evolution of the ratio between the number of circulating clusters and lineages (branches)
+	# - evolution of the averaged proportion of circulating lineages belonging to the same cluster
+	# - potential idea: something based on the Shannon entropy used in the two waves study ??
+	# - evolution of the averaged duration since the cluster introduction event (cluster TMRCA)
+	# - averaged ratio between the number of county transition events and the cluster size
+	# - average number of counties infected by a distinct introduction event (distinct cluster)
+	# - averaged proportion of phylogeny branches associated with a transition event between counties
+	# - dispersal statistics: weighted lineage dispersal velocity and weighted diffusion coefficient
+
 # 1. Selection of the background genomic sequences to include
 # 2. Preparing the inputs for the preliminary discrete phylogeographic analyses 
 # 3. Analysing the number of distinct intropduction events (not performed)
@@ -586,7 +601,7 @@ for (h in 1:length(variants))
 		tab = read.csv(paste0("Preliminary_discrete_runs/",variants[h],"_DTA.csv"), head=T)
 		indices = which((tab[,"startLoc"]=="other")&(tab[,"endLoc"]=="NYC_counties"))
 		# NYC_introduction_dates_list[[h]] = (tab[indices,"endYear"]+tab[indices,"startYear"])/2
-		NYC_introduction_dates_list[[h]] = tab[indices,"endYear"]
+		NYC_introduction_dates_list[[h]] = tab[indices,"endYear"] # to get the tMRCA's
 	}
 
 # 6. Preparing the discrete phylogeographic analyses among counties
@@ -1325,8 +1340,6 @@ centroids = coordinates(selected_counties); row.names(centroids) = gsub(" ","",s
 centroids = centroids[NYC_counties,]; matrix_mean_list = list()
 for (h in 1:length(variants))
 	{
-		if (h == 1) nberOfExtractionFiles = 400 # TO BE REMOVED !!
-		if (h != 1) nberOfExtractionFiles = 900 # TO BE REMOVED !!
 		matrices = readRDS(paste0("DTA_boroughs_analyses/",variants[h],"_DTA/Matrices.rds"))
 		matrix_mean = matrix(0, nrow=length(NYC_counties), ncol=length(NYC_counties))
 		for (i in 1:nberOfExtractionFiles) matrix_mean = matrix_mean+matrices[[i]]
@@ -1348,8 +1361,6 @@ if (length(variants) > 1)
 mccs = list(); polygons_list = list()
 for (h in 1:length(variants))
 	{
-		if (h == 1) nberOfExtractionFiles = 400 # TO BE REMOVED !!
-		if (h != 1) nberOfExtractionFiles = 900 # TO BE REMOVED !!
 		mccs[[h]] = read.csv(paste0("RRW_diffusion_analyses/",variants[h],"_RRW/All_clades.csv"), head=T)
 		localTreesDirectory = paste0("RRW_diffusion_analyses/",variants[h],"_RRW/All_clades_ext")
 		percentage = 80; prob = percentage/100; precision = 1/(365/7); startDatum = min(mccs[[h]][,"startYear"])
@@ -1368,40 +1379,41 @@ colourScale = rev(colorRampPalette(brewer.pal(11,"PuOr"))(141)[26:126])
 
 pdf(paste0("Figure_A1_NEW.pdf"), width=11.0, height=11) # dev.new(width=11.0, height=11)
 par(mfrow=c(4,2), oma=c(0,0,0,0), mar=c(0,0,0,0), lwd=0.2, col="gray30"); cexNode = 0.7
-plottingLegend = TRUE; croppingPolygons = TRUE; adjustedBFs = TRUE; onlyInternalNodesOfTipBranches = FALSE
+plottingLegend = TRUE; croppingPolygons = TRUE; adjustedBFs = TRUE
+onlyInternalNodesOfTipBranches = FALSE; reportingIntroductionEvents = FALSE
 for (h in 1:length(variants))
 	{
-		# mat = matrix_mean_list[[h]]; multiplier1 = 500; multiplier2 = 15; multiplier3 = 0.4
-		# if (adjustedBFs == TRUE) BFs = read.csv(paste0("DTA_boroughs_analyses/",variants[h],"_TSW/BF_values.csv"), head=T)
-		# if (adjustedBFs == FALSE) BFs = read.csv(paste0("DTA_boroughs_analyses/",variants[h],"_DTA/BF_values.csv"), head=T)
-		# plot(selected_counties, col="gray90", border="gray50", lwd=0.2)
-		# points(centroids, cex=sqrt((multiplier1*((diag(mat)-minVals1)/(maxVals1-minVals1)))/pi), pch=16, col="#DE432750")
-		# for (i in 1:dim(selected_counties)[1])
-			# {
-				# for (j in 1:dim(selected_counties)[1])
-					# {
-						# if ((i!=j)&(mat[i,j]>=1)&(!is.na(BFs[i,j]))&&(BFs[i,j]>3))
-							# {
-								# LWD = (((mat[i,j]-minVals2)/(maxVals2-minVals2))*multiplier2)+0.1; arrow = (multiplier3*(mat[i,j]/maxVals2))+0.04
-								# curvedarrow(centroids[i,], centroids[j,], arr.length=arrow*1.3, arr.width=arrow, lwd=LWD, lty=1,
-											# lcol="gray30", arr.col="gray30", arr.pos=0.5, curve=0.15, dr=NA, endhead=F, arr.type="triangle")
-							# }
-					# }
-			# }
-		# mtext(variant_names[h], side=3, line=-5, cex=0.8)
-		# if ((h == 1)&(plottingLegend))
-			# {
-				# vS = 5; LWD = (((vS-minVals2)/(maxVals2-minVals2))*multiplier2)+0.1; arrow = (multiplier3*(vS/maxVals2))+0.04
-				# curvedarrow(cbind(-74.20,41.000), cbind(-74.12,41.000), arr.length=arrow*1.3, arr.width=arrow, lwd=LWD, lty=1, 
-							# lcol="gray30", arr.col="gray30", arr.pos=0.52, curve=0, dr=NA, endhead=F, arr.type="triangle")
-				# vS = 20; LWD = (((vS-minVals2)/(maxVals2-minVals2))*multiplier2)+0.1; arrow = (multiplier3*(vS/maxVals2))+0.04
-				# curvedarrow(cbind(-74.20,40.975), cbind(-74.12,40.975), arr.length=arrow*1.3, arr.width=arrow, lwd=LWD, lty=1, 
-							# lcol="gray30", arr.col="gray30", arr.pos=0.52, curve=0, dr=NA, endhead=F, arr.type="triangle")
-				# vS = 50; LWD = (((vS-minVals2)/(maxVals2-minVals2))*multiplier2)+0.1; arrow = (multiplier3*(vS/maxVals2))+0.04
-				# curvedarrow(cbind(-74.20,40.950), cbind(-74.12,40.950), arr.length=arrow*1.3, arr.width=arrow, lwd=LWD, lty=1, 
-							# lcol="gray30", arr.col="gray30", arr.pos=0.52, curve=0, dr=NA, endhead=F, arr.type="triangle")
-				# points(cbind(rep(-74.15,4),rep(41.12,4)), cex=sqrt((multiplier1*((c(100,200,500)-minVals1)/(maxVals1-minVals1)))/pi), pch=1, col="#DE432750", lwd=0.3)
-			# }
+		mat = matrix_mean_list[[h]]; multiplier1 = 500; multiplier2 = 15; multiplier3 = 0.4
+		if (adjustedBFs == TRUE) BFs = read.csv(paste0("DTA_boroughs_analyses/",variants[h],"_TSW/BF_values.csv"), head=T)
+		if (adjustedBFs == FALSE) BFs = read.csv(paste0("DTA_boroughs_analyses/",variants[h],"_DTA/BF_values.csv"), head=T)
+		plot(selected_counties, col="gray90", border="gray50", lwd=0.2)
+		points(centroids, cex=sqrt((multiplier1*((diag(mat)-minVals1)/(maxVals1-minVals1)))/pi), pch=16, col="#DE432750")
+		for (i in 1:dim(selected_counties)[1])
+			{
+				for (j in 1:dim(selected_counties)[1])
+					{
+						if ((i!=j)&(mat[i,j]>=1)&(!is.na(BFs[i,j]))&&(BFs[i,j]>3))
+							{
+								LWD = (((mat[i,j]-minVals2)/(maxVals2-minVals2))*multiplier2)+0.1; arrow = (multiplier3*(mat[i,j]/maxVals2))+0.04
+								curvedarrow(centroids[i,], centroids[j,], arr.length=arrow*1.3, arr.width=arrow, lwd=LWD, lty=1,
+											lcol="gray30", arr.col="gray30", arr.pos=0.5, curve=0.15, dr=NA, endhead=F, arr.type="triangle")
+							}
+					}
+			}
+		mtext(variant_names[h], side=3, line=-5, cex=0.8)
+		if ((h == 1)&(plottingLegend))
+			{
+				vS = 5; LWD = (((vS-minVals2)/(maxVals2-minVals2))*multiplier2)+0.1; arrow = (multiplier3*(vS/maxVals2))+0.04
+				curvedarrow(cbind(-74.20,41.000), cbind(-74.12,41.000), arr.length=arrow*1.3, arr.width=arrow, lwd=LWD, lty=1, 
+							lcol="gray30", arr.col="gray30", arr.pos=0.52, curve=0, dr=NA, endhead=F, arr.type="triangle")
+				vS = 20; LWD = (((vS-minVals2)/(maxVals2-minVals2))*multiplier2)+0.1; arrow = (multiplier3*(vS/maxVals2))+0.04
+				curvedarrow(cbind(-74.20,40.975), cbind(-74.12,40.975), arr.length=arrow*1.3, arr.width=arrow, lwd=LWD, lty=1, 
+							lcol="gray30", arr.col="gray30", arr.pos=0.52, curve=0, dr=NA, endhead=F, arr.type="triangle")
+				vS = 50; LWD = (((vS-minVals2)/(maxVals2-minVals2))*multiplier2)+0.1; arrow = (multiplier3*(vS/maxVals2))+0.04
+				curvedarrow(cbind(-74.20,40.950), cbind(-74.12,40.950), arr.length=arrow*1.3, arr.width=arrow, lwd=LWD, lty=1, 
+							lcol="gray30", arr.col="gray30", arr.pos=0.52, curve=0, dr=NA, endhead=F, arr.type="triangle")
+				points(cbind(rep(-74.15,4),rep(41.12,4)), cex=sqrt((multiplier1*((c(100,200,500)-minVals1)/(maxVals1-minVals1)))/pi), pch=1, col="#DE432750", lwd=0.3)
+			}
 		polygons = polygons_list[[h]]; mcc = mccs[[h]]; selectedBranches = 1:dim(mcc)[1]
 		startYears_indices = (((mcc[,"startYear"]-minYear)/(maxYear-minYear))*100)+1
 		endYears_indices = (((mcc[,"endYear"]-minYear)/(maxYear-minYear))*100)+1
@@ -1452,12 +1464,15 @@ for (h in 1:length(variants))
 							}
 					}			
 			}
-		rast = raster(matrix(nrow=1, ncol=2)); rast[1] = minYear; rast[2] = maxYear
-		selectedDates = NYC_introduction_dates_list[[h]]; selectedLabels = rep("", length(selectedDates))	
-		plot(rast, legend.only=T, add=T, col=colourScale, legend.width=0.5, legend.shrink=0.3, smallplot=c(0.47,0.96,0.12,0.14),
-			 legend.args=list(text="", cex=0.7, line=0.3, col="gray30"), horizontal=T,
-			 axis.args=list(cex.axis=0.9, lwd=0, lwd.tick=0.2, tck=-0.8, col.axis="gray30", line=0, mgp=c(0,0.25,0),
-			 at=selectedDates, labels=selectedLabels))
+		if (reportingIntroductionEvents)
+			{
+				rast = raster(matrix(nrow=1, ncol=2)); rast[1] = minYear; rast[2] = maxYear
+				selectedDates = NYC_introduction_dates_list[[h]]; selectedLabels = rep("", length(selectedDates))	
+				plot(rast, legend.only=T, add=T, col=colourScale, legend.width=0.5, legend.shrink=0.3, smallplot=c(0.47,0.96,0.12,0.14),
+					 legend.args=list(text="", cex=0.7, line=0.3, col="gray30"), horizontal=T,
+					 axis.args=list(cex.axis=0.9, lwd=0, lwd.tick=0.2, tck=-0.8, col.axis="gray30", line=0, mgp=c(0,0.25,0),
+					 at=selectedDates, labels=selectedLabels))
+			 }
 		if (h == length(variants))
 			{
 				selectedDates = decimal_date(ymd(c("2021-01-01","2021-05-01","2021-09-01","2022-01-01")))
@@ -1552,8 +1567,6 @@ timeSlices = nberOfDays; timePoints = seq(minYear,maxYear,(maxYear-minYear)/time
 mat1s = list(); mat2s = list(); mat3s = list(); mat4s = list()
 for (h in 1:length(variants))
 	{
-		if (h == 1) nberOfExtractionFiles = 400 # TO BE REMOVED !!
-		if (h != 1) nberOfExtractionFiles = 900 # TO BE REMOVED !!
 		localTreesDirectory = paste0("DTA_boroughs_analyses/",variants[h],"_DTA/All_clades_ext")
 		mat1a = matrix(nrow=timeSlices, ncol=nberOfExtractionFiles) # p2: evolution of the ratio between the number of circulating clusters and lineages (branches)
 		mat2a = matrix(nrow=timeSlices, ncol=nberOfExtractionFiles) # p1a: evolution of the averaged proportion of circulating lineages belonging to the same cluster
@@ -1647,8 +1660,6 @@ dev.off()
 wd = getwd()
 for (h in 1:length(variants))
 	{
-		if (h == 1) nberOfExtractionFiles = 400 # TO BE REMOVED !!
-		if (h != 1) nberOfExtractionFiles = 900 # TO BE REMOVED !!
 		setwd(paste0(wd,"/DTA_boroughs_analyses/",variants[h],"_DTA/"))
 		treeFiles = list.files(); treeFiles = treeFiles[which(grepl(".trees",treeFiles))]
 		AR_TE_CS = matrix(nrow=nberOfExtractionFiles, ncol=1)
@@ -1664,7 +1675,7 @@ for (h in 1:length(variants))
 			}
 		median = round(median(AR_TE_CS),2); quantiles = round(quantile(AR_TE_CS,c(0.025,0.975)),2)
 		cat(variants[h],": ",median,", 95% HPD = [",quantiles[1],"-",quantiles[2],"]\n",sep="")
-			# Iota:  0.37, 95% HPD = [0.35-0.39]
+			# Iota:  0.36, 95% HPD = [0.35-0.40]
 			# Alpha: 0.34, 95% HPD = [0.33-0.36]
 			# Delta: 0.30, 95% HPD = [0.29-0.30]
 			# O-BA1: 0.44, 95% HPD = [0.42-0.46]
@@ -1676,8 +1687,6 @@ setwd(wd)
 wd = getwd()
 for (h in 1:length(variants))
 	{
-		if (h == 1) nberOfExtractionFiles = 400 # TO BE REMOVED !!
-		if (h != 1) nberOfExtractionFiles = 900 # TO BE REMOVED !!
 		setwd(paste0(wd,"/DTA_boroughs_analyses/",variants[h],"_DTA/"))
 		treeFiles = list.files(); treeFiles = treeFiles[which(grepl(".trees",treeFiles))]
 		AN_DC_DC = matrix(nrow=nberOfExtractionFiles, ncol=1)
@@ -1705,8 +1714,6 @@ setwd(wd)
 wd = getwd()
 for (h in 1:length(variants))
 	{
-		if (h == 1) nberOfExtractionFiles = 400 # TO BE REMOVED !!
-		if (h != 1) nberOfExtractionFiles = 900 # TO BE REMOVED !!
 		setwd(paste0(wd,"/DTA_boroughs_analyses/",variants[h],"_DTA/"))
 		treeFiles = list.files(); treeFiles = treeFiles[which(grepl(".trees",treeFiles))]
 		avgPropTransitionEvents = matrix(nrow=nberOfExtractionFiles, ncol=1)

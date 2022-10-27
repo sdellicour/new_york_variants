@@ -1,0 +1,9 @@
+NewYork,Bronx,Kings,Queens,Richmond,Nassau,Suffolk,Westchester
+NewYork,NA,Inf,Inf,6.7,Inf,16236.6,196.3,Inf
+Bronx,172,NA,9720.2,0.1,0.8,0.2,0.2,0.5
+Kings,36.5,0.4,NA,Inf,10.7,3.9,24382.1,0.4
+Queens,Inf,4388.7,2820.6,NA,1.2,255,1.8,47.3
+Richmond,1.4,1,5.9,1.1,NA,1,0.8,0.7
+Nassau,Inf,606.1,Inf,Inf,Inf,NA,Inf,3203.9
+Suffolk,17,0.2,0.1,8,0.1,6927.5,NA,0.7
+Westchester,3.1,4.6,0.9,299.8,0.5,1.3,0.8,NA

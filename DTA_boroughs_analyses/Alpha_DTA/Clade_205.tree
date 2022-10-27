@@ -1,0 +1,19 @@
+#NEXUS
+
+Begin taxa;
+	Dimensions ntax=3;
+	Taxlabels
+		hCoV-19/USA/NY-MSHSPSP-PV37245/2021
+		hCoV-19/USA/NY-NYULH1801/2021
+		hCoV-19/USA/NY-Wadsworth-21054506-01/2021
+		;
+End;
+
+Begin trees;
+	Translate
+		1 hCoV-19/USA/NY-MSHSPSP-PV37245/2021,
+		2 hCoV-19/USA/NY-NYULH1801/2021,
+		3 hCoV-19/USA/NY-Wadsworth-21054506-01/2021
+		;
+tree TREE1 = [&R] (1[&length=0.04787947962999996,location.rate_95%_HPD={1.9280407131821704,2.453566884761337},location="Queens",location.prob=1.0,location.rate_median=2.1692205562820046,location.set={"Queens"},location.set.prob={1.0},location.rate_range={1.8223827479700998,2.6946589916863912},height=0.0,location.rate=2.1739597953036784]:0.04787947963,(2[&length=0.04088900157000039,location.rate_95%_HPD={1.9280407131821704,2.453566884761337},location="Kings",location.prob=1.0,location.rate_median=2.1692205562820046,location.set={"Kings"},location.set.prob={1.0},location.rate_range={1.8223827479700998,2.6946589916863912},height=0.006000000009500105,location.rate=2.1739597953036784]:0.04088900157,3[&length=0.04388900157000053,location.rate_95%_HPD={1.9280407131821704,2.453566884761337},location="Kings",location.prob=1.0,location.rate_median=2.1692205562820046,location.set={"Kings"},location.set.prob={1.0},location.rate_range={1.8223827479700998,2.6946589916863912},height=0.0030000000095000367,location.rate=2.1739597953036784]:0.04388900157)[&length=9.904780505000095E-4,posterior=1.0,location.rate_95%_HPD={1.9280407131821704,2.453566884761337},location="Kings",location.prob=0.9755555555555555,location.rate_median=2.1692205562820046,location.set={"Queens","Kings"},location.set.prob={0.024444444444444446,0.9755555555555555},location.rate_range={1.8223827479700998,2.6946589916863912},height=0.04688900157950062,location.rate=2.1739597953036784]:9.90478050500003E-4)[&length=0.0,posterior=1.0,location="Kings",location.prob=0.9555555555555556,location.set={"Queens","Nassau","Kings"},location.set.prob={0.043333333333333335,0.0011111111111111111,0.9555555555555556},height=0.04787947962999996];
+End;
