@@ -1,0 +1,21 @@
+#NEXUS
+
+Begin taxa;
+	Dimensions ntax=4;
+	Taxlabels
+		hCoV-19/USA/NY-NYULH3880/2021
+		hCoV-19/USA/NY-NYULH3881/2021
+		hCoV-19/USA/NY-NYULH3883/2021
+		hCoV-19/USA/NY-Wadsworth-21101946-01/2021
+		;
+End;
+
+Begin trees;
+	Translate
+		1 hCoV-19/USA/NY-NYULH3880/2021,
+		2 hCoV-19/USA/NY-NYULH3881/2021,
+		3 hCoV-19/USA/NY-NYULH3883/2021,
+		4 hCoV-19/USA/NY-Wadsworth-21101946-01/2021
+		;
+tree TREE1 = [&R] (4[&length=0.14785999999999808,location.rate_95%_HPD={0.45163666538275876,0.6077381491411706},location="Queens",location.prob=1.0,location.rate_median=0.5193907140039761,location.set={"Queens"},location.set.prob={1.0},location.rate_range={0.41220760195308515,0.6972958479571918},height=0.04699999999599937,location.rate=0.5228771232642532]:0.14786,(3[&length=0.11348073710000146,location.rate_95%_HPD={0.45163666538275876,0.6077381491411706},location="Nassau",location.prob=1.0,location.rate_median=0.5193907140039761,location.set={"Nassau"},location.set.prob={1.0},location.rate_range={0.41220760195308515,0.6972958479571918},height=0.002999999956000037,location.rate=0.5228771232642532]:0.1134807371,(2[&length=0.11169999999999924,location.rate_95%_HPD={0.45163666538275876,0.6077381491411706},location="Nassau",location.prob=1.0,location.rate_median=0.5193907140039761,location.set={"Nassau"},location.set.prob={1.0},location.rate_range={0.41220760195308515,0.6972958479571918},height=0.003000000000000072,location.rate=0.5228771232642532]:0.11170000000000001,1[&length=0.11469999999999922,location.rate_95%_HPD={0.45163666538275876,0.6077381491411706},location="Nassau",location.prob=1.0,location.rate_median=0.5193907140039761,location.set={"Nassau"},location.set.prob={1.0},location.rate_range={0.41220760195308515,0.6972958479571918},height=0.0,location.rate=0.5228771232642532]:0.11470000000000001)[&length=0.0017807370559999717,posterior=1.0,location.rate_95%_HPD={0.45163666538275876,0.6077381491411706},location="Nassau",location.prob=1.0,location.rate_median=0.5193907140039761,location.set={"Nassau"},location.set.prob={1.0},location.rate_range={0.41220760195308515,0.6972958479571918},height=0.11469999999999922,location.rate=0.5228771232642532]:0.0017807370560000008)[&length=0.07837926293999911,posterior=1.0,location.rate_95%_HPD={0.45163666538275876,0.6077381491411706},location="Nassau",location.prob=1.0,location.rate_median=0.5193907140039761,location.set={"Nassau"},location.set.prob={1.0},location.rate_range={0.41220760195308515,0.6972958479571918},height=0.11648073705599828,location.rate=0.5228771232642532]:0.07837926294)[&length=0.0,posterior=1.0,location="Nassau",location.prob=0.7222222222222222,location.set={"Nassau","Queens","NewYork"},location.set.prob={0.7222222222222222,0.22777777777777777,0.05},height=0.19485999999599862];
+End;

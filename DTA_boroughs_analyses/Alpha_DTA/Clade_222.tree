@@ -1,0 +1,19 @@
+#NEXUS
+
+Begin taxa;
+	Dimensions ntax=3;
+	Taxlabels
+		hCoV-19/USA/NY-NYCPHL-002970/2021
+		hCoV-19/USA/NY-NYULH276/2021
+		hCoV-19/USA/NY-Wadsworth-21018087-01/2021
+		;
+End;
+
+Begin trees;
+	Translate
+		1 hCoV-19/USA/NY-NYCPHL-002970/2021,
+		2 hCoV-19/USA/NY-NYULH276/2021,
+		3 hCoV-19/USA/NY-Wadsworth-21018087-01/2021
+		;
+tree TREE1 = [&R] (3[&length=0.0015977932810000114,location.rate_95%_HPD={2.610949523526424,3.3174182749708327},location="Bronx",location.prob=1.0,location.rate_median=2.9653942733474583,location.set={"Bronx"},location.set.prob={1.0},location.rate_range={2.394645734339174,3.5517888563772106},height=0.04399999999899998,location.rate=2.9642043850935904]:0.0015977932810000012,(1[&length=2.0000000000000332E-4,location.rate_95%_HPD={2.610949523526424,3.3174182749708327},location="NewYork",location.prob=1.0,location.rate_median=2.9653942733474583,location.set={"NewYork"},location.set.prob={1.0},location.rate_range={2.394645734339174,3.5517888563772106},height=0.03500000000000013,location.rate=2.9642043850935904]:1.999999999999988E-4,2[&length=0.035199999999999725,location.rate_95%_HPD={2.610949523526424,3.3174182749708327},location="Bronx",location.prob=1.0,location.rate_median=2.9653942733474583,location.set={"Bronx"},location.set.prob={1.0},location.rate_range={2.394645734339174,3.5517888563772106},height=0.0,location.rate=2.9642043850935904]:0.0352)[&length=0.010397793279999956,posterior=1.0,location.rate_95%_HPD={2.610949523526424,3.3174182749708327},location="NewYork",location.prob=0.6533333333333333,location.rate_median=2.9653942733474583,location.set={"NewYork","Bronx"},location.set.prob={0.6533333333333333,0.3466666666666667},location.rate_range={2.394645734339174,3.5517888563772106},height=0.035199999999999725,location.rate=2.9642043850935904]:0.010397793279999998)[&length=0.0,posterior=1.0,location="Bronx",location.prob=0.8611111111111112,location.set={"Queens","NewYork","Bronx"},location.set.prob={0.0022222222222222222,0.13666666666666666,0.8611111111111112},height=0.04559779328000022];
+End;

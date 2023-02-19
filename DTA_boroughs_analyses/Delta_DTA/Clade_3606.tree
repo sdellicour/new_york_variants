@@ -1,0 +1,19 @@
+#NEXUS
+
+Begin taxa;
+	Dimensions ntax=3;
+	Taxlabels
+		hCoV-19/USA/NY-WMC2021-346/2021
+		hCoV-19/USA/NY-Wadsworth-21093658-01/2021
+		hCoV-19/USA/NY-Wadsworth-21095853-01/2021
+		;
+End;
+
+Begin trees;
+	Translate
+		1 hCoV-19/USA/NY-WMC2021-346/2021,
+		2 hCoV-19/USA/NY-Wadsworth-21093658-01/2021,
+		3 hCoV-19/USA/NY-Wadsworth-21095853-01/2021
+		;
+tree TREE1 = [&R] (1[&length=0.11114999999999865,location.rate_95%_HPD={0.45163666538275876,0.6077381491411706},location="Westchester",location.prob=1.0,location.rate_median=0.5193907140039761,location.set={"Westchester"},location.set.prob={1.0},location.rate_range={0.41220760195308515,0.6972958479571918},height=0.0959999999999997,location.rate=0.5228771232642532]:0.11115,(3[&length=0.14413999999999655,location.rate_95%_HPD={0.45163666538275876,0.6077381491411706},location="Bronx",location.prob=1.0,location.rate_median=0.5193907140039761,location.set={"Bronx"},location.set.prob={1.0},location.rate_range={0.41220760195308515,0.6972958479571918},height=0.0,location.rate=0.5228771232642532]:0.14414,2[&length=0.11114000000000168,location.rate_95%_HPD={0.45163666538275876,0.6077381491411706},location="Bronx",location.prob=1.0,location.rate_median=0.5193907140039761,location.set={"Bronx"},location.set.prob={1.0},location.rate_range={0.41220760195308515,0.6972958479571918},height=0.03300000000000047,location.rate=0.5228771232642532]:0.11113999999999999)[&length=0.06300999999999896,posterior=1.0,location.rate_95%_HPD={0.45163666538275876,0.6077381491411706},location="Bronx",location.prob=0.9788888888888889,location.rate_median=0.5193907140039761,location.set={"Westchester","Nassau","NewYork","Bronx"},location.set.prob={0.012222222222222223,0.0011111111111111111,0.0077777777777777776,0.9788888888888889},location.rate_range={0.41220760195308515,0.6972958479571918},height=0.14413999999999655,location.rate=0.5228771232642532]:0.06301000000000001)[&length=0.0,posterior=1.0,location="Westchester",location.prob=0.7766666666666666,location.set={"Westchester","Nassau","Queens","NewYork","Bronx"},location.set.prob={0.7766666666666666,0.027777777777777776,0.0011111111111111111,0.15333333333333332,0.04111111111111111},height=0.20715000000000322];
+End;

@@ -1,0 +1,19 @@
+#NEXUS
+
+Begin taxa;
+	Dimensions ntax=3;
+	Taxlabels
+		hCoV-19/USA/NY-MSHSPSP-PV36270/2021
+		hCoV-19/USA/NY-MSHSPSP-PV36382/2021
+		hCoV-19/USA/NY-MSHSPSP-PV37599/2021
+		;
+End;
+
+Begin trees;
+	Translate
+		1 hCoV-19/USA/NY-MSHSPSP-PV36270/2021,
+		2 hCoV-19/USA/NY-MSHSPSP-PV36382/2021,
+		3 hCoV-19/USA/NY-MSHSPSP-PV37599/2021
+		;
+tree TREE1 = [&R] (1[&length=0.02327999999999981,location.rate_95%_HPD={2.8290217036032335,3.2472179931395897},location="Westchester",location.prob=1.0,location.rate_median=3.051684001638887,location.set={"Westchester"},location.set.prob={1.0},location.rate_range={2.7498632644005507,3.469237332023872},height=0.01600000000000001,location.rate=3.0544629255504216]:0.02328,(3[&length=0.008079999999999874,location.rate_95%_HPD={2.8290217036032335,3.2472179931395897},location="Queens",location.prob=1.0,location.rate_median=3.051684001638887,location.set={"Queens"},location.set.prob={1.0},location.rate_range={2.7498632644005507,3.469237332023872},height=0.0,location.rate=3.0544629255504216]:0.008079999999999997,2[&length=8.000000014000191E-5,location.rate_95%_HPD={2.8290217036032335,3.2472179931395897},location="Queens",location.prob=1.0,location.rate_median=3.051684001638887,location.set={"Queens"},location.set.prob={1.0},location.rate_range={2.7498632644005507,3.469237332023872},height=0.007999999999859874,location.rate=3.0544629255504216]:8.00000001400028E-5)[&length=0.03119999999999934,posterior=1.0,location.rate_95%_HPD={2.8290217036032335,3.2472179931395897},location="Queens",location.prob=1.0,location.rate_median=3.051684001638887,location.set={"Queens"},location.set.prob={1.0},location.rate_range={2.7498632644005507,3.469237332023872},height=0.008079999999999874,location.rate=3.0544629255504216]:0.0312)[&length=0.0,posterior=1.0,location="Westchester",location.prob=0.9311111111111111,location.set={"Westchester","Queens","NewYork","Bronx","Kings"},location.set.prob={0.9311111111111111,0.011111111111111112,0.014444444444444444,0.03333333333333333,0.01},height=0.03928000000000043];
+End;

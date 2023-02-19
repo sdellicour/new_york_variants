@@ -1,0 +1,25 @@
+#NEXUS
+
+Begin taxa;
+	Dimensions ntax=6;
+	Taxlabels
+		hCoV-19/USA/NY-NYULH1249/2021
+		hCoV-19/USA/NY-Wadsworth-21030157-01/2021
+		hCoV-19/USA/NY-Wadsworth-21032535-01/2021
+		hCoV-19/USA/NY-Wadsworth-21032538-01/2021
+		hCoV-19/USA/NY-Wadsworth-21032769-01/2021
+		hCoV-19/USA/NY-Wadsworth-21041723-01/2021
+		;
+End;
+
+Begin trees;
+	Translate
+		1 hCoV-19/USA/NY-NYULH1249/2021,
+		2 hCoV-19/USA/NY-Wadsworth-21030157-01/2021,
+		3 hCoV-19/USA/NY-Wadsworth-21032535-01/2021,
+		4 hCoV-19/USA/NY-Wadsworth-21032538-01/2021,
+		5 hCoV-19/USA/NY-Wadsworth-21032769-01/2021,
+		6 hCoV-19/USA/NY-Wadsworth-21041723-01/2021
+		;
+tree TREE1 = [&R] (5[&length=0.03240999999999951,location.rate_95%_HPD={2.8290217036032335,3.2472179931395897},location="Queens",location.prob=1.0,location.rate_median=3.051684001638887,location.set={"Queens"},location.set.prob={1.0},location.rate_range={2.7498632644005507,3.469237332023872},height=0.09899999999999992,location.rate=3.0544629255504216]:0.032409999999999994,(6[&length=0.07399000000000043,location.rate_95%_HPD={2.8290217036032335,3.2472179931395897},location="Westchester",location.prob=1.0,location.rate_median=3.051684001638887,location.set={"Westchester"},location.set.prob={1.0},location.rate_range={2.7498632644005507,3.469237332023872},height=0.006000000000000144,location.rate=3.0544629255504216]:0.07399,(1[&length=0.0770199999999993,location.rate_95%_HPD={2.8290217036032335,3.2472179931395897},location="NewYork",location.prob=1.0,location.rate_median=3.051684001638887,location.set={"NewYork"},location.set.prob={1.0},location.rate_range={2.7498632644005507,3.469237332023872},height=0.0,location.rate=3.0544629255504216]:0.07702,(2[&length=3.2999999999999696E-4,location.rate_95%_HPD={2.8290217036032335,3.2472179931395897},location="Westchester",location.prob=1.0,location.rate_median=3.051684001638887,location.set={"Westchester"},location.set.prob={1.0},location.rate_range={2.7498632644005507,3.469237332023872},height=0.07399999999999936,location.rate=3.0544629255504216]:3.2999999999999696E-4,(3[&length=0.002990000000000038,location.rate_95%_HPD={2.8290217036032335,3.2472179931395897},location="Westchester",location.prob=1.0,location.rate_median=3.051684001638887,location.set={"Westchester"},location.set.prob={1.0},location.rate_range={2.7498632644005507,3.469237332023872},height=0.06300000000000079,location.rate=3.0544629255504216]:0.0029900000000000065,4[&length=0.002990000000000038,location.rate_95%_HPD={2.8290217036032335,3.2472179931395897},location="Westchester",location.prob=1.0,location.rate_median=3.051684001638887,location.set={"Westchester"},location.set.prob={1.0},location.rate_range={2.7498632644005507,3.469237332023872},height=0.06300000000000079,location.rate=3.0544629255504216]:0.0029900000000000065)[&length=0.00834000000000022,posterior=1.0,location.rate_95%_HPD={2.8290217036032335,3.2472179931395897},location="Westchester",location.prob=1.0,location.rate_median=3.051684001638887,location.set={"Westchester"},location.set.prob={1.0},location.rate_range={2.7498632644005507,3.469237332023872},height=0.06598999999999945,location.rate=3.0544629255504216]:0.008340000000000014)[&length=0.0026899999999999997,posterior=1.0,location.rate_95%_HPD={2.8290217036032335,3.2472179931395897},location="Westchester",location.prob=1.0,location.rate_median=3.051684001638887,location.set={"Westchester"},location.set.prob={1.0},location.rate_range={2.7498632644005507,3.469237332023872},height=0.07433000000000164,location.rate=3.0544629255504216]:0.002689999999999998)[&length=0.002969999999999956,posterior=1.0,location.rate_95%_HPD={2.8290217036032335,3.2472179931395897},location="Westchester",location.prob=0.99,location.rate_median=3.051684001638887,location.set={"Westchester","NewYork","Bronx"},location.set.prob={0.99,0.0044444444444444444,0.005555555555555556},location.rate_range={2.7498632644005507,3.469237332023872},height=0.0770199999999993,location.rate=3.0544629255504216]:0.0029700000000000004)[&length=0.05142000000000021,posterior=1.0,location.rate_95%_HPD={2.8290217036032335,3.2472179931395897},location="Westchester",location.prob=0.99,location.rate_median=3.051684001638887,location.set={"Westchester","NewYork","Bronx"},location.set.prob={0.99,0.0044444444444444444,0.005555555555555556},location.rate_range={2.7498632644005507,3.469237332023872},height=0.07999000000000024,location.rate=3.0544629255504216]:0.051419999999999993)[&length=0.0,posterior=1.0,location="Westchester",location.prob=0.7922222222222223,location.set={"Westchester","Queens","NewYork","Bronx","Kings"},location.set.prob={0.7922222222222223,0.07222222222222222,0.04111111111111111,0.07111111111111111,0.023333333333333334},height=0.1314100000000017];
+End;

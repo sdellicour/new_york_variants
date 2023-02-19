@@ -1,0 +1,2103 @@
+j=1
+dir.create(file.path(gsub(".trees","_ext",treeFiles[i])), showWarnings=F)#
+				trees = readAnnotatedNexus(treeFiles[i]); trees = trees[102:1001]
+tree = trees[[j]]
+index = as.numeric(unlist(strsplit(gsub(".trees","",treeFiles[i]),"_"))[2])#
+								mostRecentSamplingDatum = max(as.numeric(clusters2[[index]][which(!is.na(clusters2[[index]][,"location"])),"collection_date"]))#
+								tab = DTA_tree_extractions(tree, mostRecentSamplingDatum)
+tab
+DTA_tree_extractions = function(dta_tre, mostRecentSamplingDatum)#
+	{#
+		dta_tab = data.frame(matrix(nrow=dim(dta_tre$edge)[1], ncol=5))#
+		colnames(dta_tab) = c("node1","node2","length","startLoc","endLoc")#
+		dta_tab[,c("node1","node2")] = as.numeric(dta_tre$edge)#
+		dta_tab[,c("length")] = as.numeric(dta_tre$edge.length)#
+		for (i in 1:length(dta_tre$annotations))#
+			{#
+				annotations = dta_tre$annotations[[i]]#
+				dta_tab[i,"endLoc"] = annotations$location#
+			}#
+		for (i in 1:length(dta_tre$annotations))#
+			{#
+				index = which(dta_tab[,"node2"] == dta_tab[i,"node1"])#
+				if (length(index) > 0)#
+					{#
+						dta_tab[i,"startLoc"] = dta_tab[index,"endLoc"]#
+					}	else	{#
+						annotations = dta_tre$root.annotation#
+						dta_tab[i,"startLoc"] = annotations$location#
+					}#
+			}	#
+		l = length(dta_tab[,1]); ll = matrix(1:l,nrow=l,ncol=l); ll[] = 0#
+		for (j in 1:l)#
+			{#
+				subMat = dta_tab[j,2]#
+				subMat = subset(dta_tab,dta_tab[,2]==subMat)#
+				ll[j,1] = subMat[,3]#
+				subMat = subMat[1,1]#
+				subMat1 = subset(dta_tab,dta_tab[,2]==subMat)#
+				for (k in 1:l)#
+					{#
+						if (nrow(subMat1) > 0)#
+							{#
+								ll[j,k+1] = subMat1[,3]#
+	 							subMat2 = subMat1[1,1]#
+	 							subMat1 = subset(dta_tab,dta_tab[,2]==subMat2)#
+	 						}#
+	 				}#
+			}#
+		endNodeL = rowSums(ll)#
+		dta_tab = cbind(dta_tab, endNodeL)#
+		startNodeL = matrix(1:l,nrow=l,ncol=1)#
+		startNodeL[] = 0#
+		for (j in 1:l)#
+			{#
+				r = dta_tab[j,1]#
+				s = subset(dta_tab,dta_tab[,2]==r)#
+				for (k in 1:l)#
+					{#
+						if (nrow(s) > 0)#
+							{#
+								startNodeL[j,1] = s[,dim(s)[2]]#
+	 						}#
+	 				}	#
+			}#
+		colnames(startNodeL) = "startNodeL"#
+		dta_tab = cbind(dta_tab,startNodeL)#
+		maxEndLIndice = which.max(dta_tab[,"endNodeL"])#
+		maxEndL = dta_tab[maxEndLIndice,"endNodeL"]#
+	 	endYear = matrix(dta_tab[,"endNodeL"]-maxEndL)#
+	 	endYear = matrix(mostRecentSamplingDatum+(endYear[,1]))#
+		startYear = matrix(dta_tab[,"startNodeL"]-maxEndL)#
+	 	startYear = matrix(mostRecentSamplingDatum+(startYear[,1]))#
+	 	colnames(startYear) = "startYear"; colnames(endYear) = "endYear"#
+	 	dta_tab = cbind(dta_tab,startYear,endYear)#
+		dta_tab = dta_tab[order(dta_tab[,"startYear"],decreasing=F),]#
+		dta_tab1 = dta_tab[1,]; dta_tab2 = dta_tab[2:dim(dta_tab)[1],]#
+		dta_tab2 = dta_tab2[order(dta_tab2[,"endYear"],decreasing=F),]#
+		dta_tab = rbind(dta_tab1, dta_tab2); dta_tab = dta_tab[,c(1,2,4,5,3,6:9)]#
+		return(dta_tab)#
+	}
+index = as.numeric(unlist(strsplit(gsub(".trees","",treeFiles[i]),"_"))[2])#
+								mostRecentSamplingDatum = max(as.numeric(clusters2[[index]][which(!is.na(clusters2[[index]][,"location"])),"collection_date"]))#
+								tab = DTA_tree_extractions(tree, mostRecentSamplingDatum)#
+								tab$cladeID = rep(index, dim(tab)[1])
+tab
+source("DTA_tree_extractions.r")#
+source("MCC_tree_extractions.r")#
+wd = getwd(); previousVersion = F#
+for (h in 1:length(variants))#
+	{#
+		clusters2 = clusters2_list[[h]]#
+		setwd(paste0(wd,"/DTA_boroughs_analyses/",variants[h],"_DTA/"))#
+		treeFiles = list.files(); treeFiles = treeFiles[which(grepl(".trees",treeFiles))]#
+		for (i in 1:length(treeFiles))#
+			{#
+				dir.create(file.path(gsub(".trees","_ext",treeFiles[i])), showWarnings=F)#
+				trees = readAnnotatedNexus(treeFiles[i]); trees = trees[102:1001]#
+				for (j in 1:length(trees))#
+					{#
+						tree = trees[[j]]#
+						if (previousVersion)#
+							{#
+								tab = matrix(nrow=dim(tree$edge)[1], ncol=4)#
+								colnames(tab) = c("node1","node2","startLoc","endLoc")#
+								tab[,"node1"] = tree$edge[,1]; tab[,"node2"] = tree$edge[,2]#
+								for (k in 1:dim(tree$edge)[1])#
+									{#
+										tab[k,"endLoc"] = tree$annotations[[k]]$location#
+										index = which(tree$edge[,2]==tree$edge[k,1])#
+										if (length(index) == 1)#
+											{#
+												tab[k,"startLoc"] = tree$annotations[[index]]$location#
+											}	else		{#
+												if (!tree$edge[k,1]%in%tree$edge[,2])#
+													{#
+														tab[k,"startLoc"] = tree$root.annotation$location#
+													}#
+											}#
+									}#
+							}	else	{#
+								index = as.numeric(unlist(strsplit(gsub(".trees","",treeFiles[i]),"_"))[2])#
+								mostRecentSamplingDatum = max(as.numeric(clusters2[[index]][which(!is.na(clusters2[[index]][,"location"])),"collection_date"]))#
+								tab = DTA_tree_extractions(tree, mostRecentSamplingDatum)#
+								tab$cladeID = rep(index, dim(tab)[1])#
+							}#
+						write.csv(tab, paste0(gsub(".trees","_ext",treeFiles[i]),"/TreeExtractions_",j,".csv"), row.names=F, quote=F)#
+					}#
+			}#
+		dir.create(file.path("All_clades_ext"), showWarnings=F); tab = NULL#
+		for (i in 1:nberOfExtractionFiles)#
+			{#
+				for (j in 1:length(treeFiles))#
+					{#
+						if (j == 1)#
+							{#
+								tab = read.csv(paste0(gsub(".trees","_ext",treeFiles[j]),"/TreeExtractions_",i,".csv"))#
+							}	else	{#
+								tab = rbind(tab, read.csv(paste0(gsub(".trees","_ext",treeFiles[j]),"/TreeExtractions_",i,".csv")))#
+							}#
+					}#
+				write.csv(tab, paste0("All_clades_ext/TreeExtractions_",i,".csv"), row.names=F, quote=F)#
+			}#
+		matrices = list()#
+		for (i in 1:nberOfExtractionFiles)#
+			{#
+				mat = matrix(0, nrow=length(NYC_counties), ncol=length(NYC_counties))#
+				row.names(mat) = NYC_counties; colnames(mat) = NYC_counties#
+				tab = read.csv(paste0("All_clades_ext/TreeExtractions_",i,".csv"), head=T)#
+				for (j in 1:dim(tab)[1])#
+					{#
+						index1 = which(NYC_counties==tab[j,"startLoc"])#
+						index2 = which(NYC_counties==tab[j,"endLoc"])#
+						mat[index1,index2] = mat[index1,index2]+1#
+					}#
+				matrices[[i]] = mat#
+			}#
+		saveRDS(matrices, "Matrices.rds")#
+		log1 = scan(paste0("All_clades1.log"), what="", sep="\n", quiet=T, blank.lines.skip=F)#
+		write(log1[which(!grepl("# ",log1))], paste0("All_clades3.log"))#
+		log1 = read.table(paste0("All_clades3.log"), header=T, sep="\t"); log1 = log1[102:1001,]#
+		setwd(paste0(wd,"/DTA_boroughs_analyses/",variants[h],"_TSW/"))#
+		log2 = scan(paste0("All_clades1.log"), what="", sep="\n", quiet=T, blank.lines.skip=F)#
+		write(log2[which(!grepl("# ",log2))], paste0("All_clades3.log"))#
+		log2 = read.table(paste0("All_clades3.log"), header=T, sep="\t"); log2 = log2[102:1001,]#
+		BFs1 = matrix(nrow=length(NYC_counties), ncol=length(NYC_counties))#
+		BFs2 = matrix(nrow=length(NYC_counties), ncol=length(NYC_counties))#
+		row.names(BFs1) = NYC_counties; colnames(BFs1) = NYC_counties#
+		row.names(BFs2) = NYC_counties; colnames(BFs2) = NYC_counties#
+		for (i in 1:length(NYC_counties))#
+			{#
+				for (j in 1:length(NYC_counties))#
+					{#
+						if (i != j)#
+							{#
+								colName = paste0("location.indicators.",gsub(" ",".",NYC_counties[i]),".",gsub(" ",".",NYC_counties[j]))#
+								index1 = which(colnames(log1)==colName); index2 = which(colnames(log2)==colName)#
+								p = sum(log1[,index1]==1)/dim(log1)[1]#
+								K = 56 # length(locations)*(length(locations)-1) # K shoulf be divided by 2 if "symetric" case#
+								q = (log(2)+K-1)/(K*(K-1))#
+								BFs1[i,j] = (p/(1-p))/(q/(1-q))#
+								p1 = sum(log1[,index1]==1)/dim(log1)[1]#
+								p2 = sum(log2[,index2]==1)/dim(log2)[1]#
+								BFs2[i,j] = (p1/(1-p1))/(p2/(1-p2))#
+							}#
+					}#
+			}#
+		setwd(paste0(wd,"/DTA_boroughs_analyses/",variants[h],"_DTA/"))#
+		write.table(round(BFs1,1), paste0("BF_values.csv"), sep=",", quote=F)#
+		setwd(paste0(wd,"/DTA_boroughs_analyses/",variants[h],"_TSW/"))#
+		write.table(round(BFs2,1), paste0("BF_values.csv"), sep=",", quote=F)#
+	}
+minYear = decimal_date(ymd("2020-12-01")); maxYear = decimal_date(ymd("2022-03-31"))#
+timeSlices = 100; timePoints = seq(minYear,maxYear,(maxYear-minYear)/timeSlices)
+setwd(wd)
+getwd()
+localTreesDirectory = paste0("DTA_boroughs_analyses/Alpha_DTA/All_clades_ext")
+mat = matrix(nrow=length(timeIntervals), ncol=nberOfExtractionFiles)
+i=1
+tab = read.csv(paste0("DTA_boroughs_analyses/Alpha_DTA/All_clades_ext/TreeExtractions_",i,".csv"), head=T)
+indices = which(tab[,"endYear"]<timePoints[1])
+indices
+tab = read.csv(paste0("DTA_boroughs_analyses/Alpha_DTA/All_clades_ext/TreeExtractions_",i,".csv"), head=T)#
+				for (j in 2:length(timePoints))#
+					{#
+						circulatingClades = tab[which((tab[,"startYear"]>timePoints[j-1])&(tab[,"endYear"]<timePoints[j])),"cladeID"]#
+						mat[j-1,i] = length(unique(circulatingClades))#
+					}
+tab
+mat
+mat[,1]
+mat = matrix(nrow=length(timeSlices), ncol=nberOfExtractionFiles)
+tab = read.csv(paste0("DTA_boroughs_analyses/Alpha_DTA/All_clades_ext/TreeExtractions_",i,".csv"), head=T)#
+				for (j in 2:length(timePoints))#
+					{#
+						circulatingClades = tab[which((tab[,"startYear"]>timePoints[j-1])&(tab[,"endYear"]<timePoints[j])),"cladeID"]#
+						mat[j-1,i] = length(unique(circulatingClades))#
+					}
+length(timePoints)
+length(timeSlices)
+localTreesDirectory = paste0("DTA_boroughs_analyses/Alpha_DTA/All_clades_ext")#
+		mat = matrix(nrow=timeSlices ncol=nberOfExtractionFiles)
+mat = matrix(nrow=timeSlices, ncol=nberOfExtractionFiles)
+tab = read.csv(paste0("DTA_boroughs_analyses/Alpha_DTA/All_clades_ext/TreeExtractions_",i,".csv"), head=T)
+for (j in 2:length(timePoints))#
+					{#
+						circulatingClades = tab[which((tab[,"startYear"]>timePoints[j-1])&(tab[,"endYear"]<timePoints[j])),"cladeID"]#
+						mat[j-1,i] = length(unique(circulatingClades))#
+					}
+mat[,1:2]
+circulatingClades
+i=14
+j=14
+circulatingClades
+circulatingClades = tab[which((tab[,"startYear"]>timePoints[j-1])&(tab[,"endYear"]<timePoints[j])),"cladeID"]
+circulatingClades
+table(circulatingClades)
+table = table(circulatingClades)
+str(table)
+mean(table)
+sum(table)
+circulatingClades = tab[which((tab[,"startYear"]>timePoints[j-1])&(tab[,"endYear"]<timePoints[j])),"cladeID"]#
+						mat1[j-1,i] = length(unique(circulatingClades))#
+						mat2[j-1,i] = mean(table(circulatingClades))#
+						tMRCAs = rep(NA, length(circulatingClades))
+localTreesDirectory = paste0("DTA_boroughs_analyses/Alpha_DTA/All_clades_ext")#
+		mat1 = matrix(nrow=timeSlices, ncol=nberOfExtractionFiles) # evolution of the number of clusters#
+		mat2 = matrix(nrow=timeSlices, ncol=nberOfExtractionFiles) # evolution of the averaged cluster size#
+		mat3 = matrix(nrow=timeSlices, ncol=nberOfExtractionFiles) # evolution of the averaged duration since cluster TMRCA
+circulatingClades = tab[which((tab[,"startYear"]>timePoints[j-1])&(tab[,"endYear"]<timePoints[j])),"cladeID"]#
+						mat1[j-1,i] = length(unique(circulatingClades))#
+						mat2[j-1,i] = mean(table(circulatingClades))#
+						tMRCAs = rep(NA, length(circulatingClades))
+k=3
+tab[,which(tab[,"cladeID"]==circulatingClades[k])]
+tab = read.csv(paste0("DTA_boroughs_analyses/Alpha_DTA/All_clades_ext/TreeExtractions_",i,".csv"), head=T)
+which(tab[,"cladeID"]
+==circulatingClades[k])
+tMRCAs
+circulatingClades = tab[which((tab[,"startYear"]>timePoints[j-1])&(tab[,"endYear"]<timePoints[j])),"cladeID"]#
+						mat1[j-1,i] = length(unique(circulatingClades))#
+						mat2[j-1,i] = mean(table(circulatingClades))#
+						tMRCAs = rep(NA, length(circulatingClades))#
+						for (k in 1:length(tMRCAs))#
+							{#
+								tMRCAs[k] = min(tab[which(tab[,"cladeID"]==circulatingClades[k]),"startYear"])#
+							}#
+						mat3[j-1,i] = mean(tMRCAs)
+mat3[,1:2]
+j
+i
+mat3[,14:15]
+tab = read.csv(paste0("DTA_boroughs_analyses/Alpha_DTA/All_clades_ext/TreeExtractions_",i,".csv"), head=T)#
+				for (j in 2:length(timePoints))#
+					{#
+						circulatingClades = tab[which((tab[,"startYear"]>timePoints[j-1])&(tab[,"endYear"]<timePoints[j])),"cladeID"]#
+						mat1[j-1,i] = length(unique(circulatingClades))#
+						mat2[j-1,i] = mean(table(circulatingClades))#
+						tMRCAs = rep(NA, length(circulatingClades))#
+						for (k in 1:length(tMRCAs))#
+							{#
+								tMRCAs[k] = min(tab[which(tab[,"cladeID"]==circulatingClades[k]),"startYear"])#
+							}#
+						mat3[j-1,i] = mean(tMRCAs)#
+					}
+i=1
+tab = read.csv(paste0("DTA_boroughs_analyses/Alpha_DTA/All_clades_ext/TreeExtractions_",i,".csv"), head=T)#
+				for (j in 2:length(timePoints))#
+					{#
+						circulatingClades = tab[which((tab[,"startYear"]>timePoints[j-1])&(tab[,"endYear"]<timePoints[j])),"cladeID"]#
+						mat1[j-1,i] = length(unique(circulatingClades))#
+						mat2[j-1,i] = mean(table(circulatingClades))#
+						tMRCAs = rep(NA, length(circulatingClades))#
+						for (k in 1:length(tMRCAs))#
+							{#
+								tMRCAs[k] = min(tab[which(tab[,"cladeID"]==circulatingClades[k]),"startYear"])#
+							}#
+						mat3[j-1,i] = mean(tMRCAs)#
+					}
+warnings()
+circulatingClades[k]
+circulatingClades
+tab = read.csv(paste0("DTA_boroughs_analyses/Alpha_DTA/All_clades_ext/TreeExtractions_",i,".csv"), head=T)#
+				for (j in 2:length(timePoints))#
+					{#
+						circulatingClades = tab[which((tab[,"startYear"]>timePoints[j-1])&(tab[,"endYear"]<timePoints[j])),"cladeID"]#
+						if (length(circulatingClades) > 0)#
+							{#
+								mat1[j-1,i] = length(unique(circulatingClades))#
+								mat2[j-1,i] = mean(table(circulatingClades))#
+								tMRCAs = rep(NA, length(circulatingClades))#
+								for (k in 1:length(tMRCAs))#
+									{#
+										tMRCAs[k] = min(tab[which(tab[,"cladeID"]==circulatingClades[k]),"startYear"])#
+									}#
+								mat3[j-1,i] = mean(tMRCAs)#
+							}#
+					}
+i
+mat1[,1:2]
+mat2[,1:2]
+mat3[,1:2]
+tab = read.csv(paste0("DTA_boroughs_analyses/Alpha_DTA/All_clades_ext/TreeExtractions_",i,".csv"), head=T)#
+				for (j in 2:length(timePoints))#
+					{#
+						sub = tab[which((tab[,"startYear"]>timePoints[j-1])&(tab[,"endYear"]<timePoints[j])),]#
+						circulatingClades = sub[,"cladeID"]#
+						if (length(circulatingClades) != 0)#
+							{#
+								mat1[j-1,i] = length(unique(circulatingClades))#
+								mat2[j-1,i] = mean(table(circulatingClades))#
+								tMRCAs = rep(NA, length(circulatingClades))#
+								for (k in 1:length(tMRCAs))#
+									{#
+										tMRCAs[k] = min(tab[which(tab[,"cladeID"]==circulatingClades[k]),"startYear"])#
+									}#
+								mat3[j-1,i] = mean(c(timePoints[j-1],timePoints[j]))-mean(tMRCAs)#
+							}#
+					}
+mat3[,1:2]
+j=3
+j=4
+sub = tab[which((tab[,"startYear"]>timePoints[j-1])&(tab[,"endYear"]<timePoints[j])),]
+sub
+mat3
+tab = read.csv(paste0("DTA_boroughs_analyses/Alpha_DTA/All_clades_ext/TreeExtractions_",i,".csv"), head=T)#
+				for (j in 2:length(timePoints))#
+					{#
+						sub = tab[which((tab[,"startYear"]>timePoints[j-1])&(tab[,"endYear"]<timePoints[j])),]#
+						circulatingClades = sub[,"cladeID"]; mat1[j-1,i] = length(unique(circulatingClades))#
+						if (length(circulatingClades) != 0)#
+							{#
+								mat2[j-1,i] = mean(table(circulatingClades)); tMRCAs = rep(NA, length(circulatingClades))#
+								for (k in 1:length(tMRCAs))#
+									{#
+										tMRCAs[k] = min(tab[which(tab[,"cladeID"]==circulatingClades[k]),"startYear"])#
+									}#
+								mat3[j-1,i] = mean(c(timePoints[j-1],timePoints[j]))-mean(tMRCAs)#
+							}	else	{#
+								mat2[j-1,i] = 0; mat3[j-1,i] = NA#
+							}#
+					}
+localTreesDirectory = paste0("DTA_boroughs_analyses/Alpha_DTA/All_clades_ext")#
+		mat1 = matrix(nrow=timeSlices, ncol=nberOfExtractionFiles) # evolution of the number of clusters#
+		mat2 = matrix(nrow=timeSlices, ncol=nberOfExtractionFiles) # evolution of the averaged cluster size#
+		mat3 = matrix(nrow=timeSlices, ncol=nberOfExtractionFiles) # evolution of the averaged duration since cluster TMRCA#
+		for (i in 1:nberOfExtractionFiles)#
+			{#
+				tab = read.csv(paste0("DTA_boroughs_analyses/Alpha_DTA/All_clades_ext/TreeExtractions_",i,".csv"), head=T)#
+				for (j in 2:length(timePoints))#
+					{#
+						sub = tab[which((tab[,"startYear"]>timePoints[j-1])&(tab[,"endYear"]<timePoints[j])),]#
+						circulatingClades = sub[,"cladeID"]; mat1[j-1,i] = length(unique(circulatingClades))#
+						if (length(circulatingClades) != 0)#
+							{#
+								mat2[j-1,i] = mean(table(circulatingClades)); tMRCAs = rep(NA, length(circulatingClades))#
+								for (k in 1:length(tMRCAs))#
+									{#
+										tMRCAs[k] = min(tab[which(tab[,"cladeID"]==circulatingClades[k]),"startYear"])#
+									}#
+								mat3[j-1,i] = mean(c(timePoints[j-1],timePoints[j]))-mean(tMRCAs)#
+							}	else	{#
+								mat2[j-1,i] = 0; mat3[j-1,i] = NA#
+							}#
+					}#
+			}
+mat1a=mat1
+mat2a=mat2
+mat3a=mat3
+mat1b = matrix(nrow=timeSlices, ncol=4) # evolution of the number of clusters#
+		mat2b = matrix(nrow=timeSlices, ncol=4) # evolution of the averaged cluster size#
+		mat3b = matrix(nrow=timeSlices, ncol=4) # evolution of the averaged duration since cluster TMRCA#
+		colnames(mat1b) = c("time","median","lower95hpd","higher95hpd")#
+		colnames(mat2b) = c("time","median","lower95hpd","higher95hpd")#
+		colnames(mat3b) = c("time","median","lower95hpd","higher95hpd")
+i=10
+quantile(mat1a[i,],c(0,025,0.975))
+quantile(mat1a[i,],c(0.025,0.975))
+mat1a[i,]
+head(mat1a)
+i
+mat1b = matrix(nrow=timeSlices, ncol=4) # evolution of the number of clusters#
+		mat2b = matrix(nrow=timeSlices, ncol=4) # evolution of the averaged cluster size#
+		mat3b = matrix(nrow=timeSlices, ncol=4) # evolution of the averaged duration since cluster TMRCA#
+		colnames(mat1b) = c("time","median","lower95hpd","higher95hpd")#
+		colnames(mat2b) = c("time","median","lower95hpd","higher95hpd")#
+		colnames(mat3b) = c("time","median","lower95hpd","higher95hpd")#
+		for (i in 1:dim(mat1b)[1])#
+			{#
+				mat1b[,"time"] = mean(c(timePoints[i],timePoints[i+1])); mat1b[,"median"] = median(mat1a[i,])#
+				mat1b[,c("lower95hpd","higher95hpd")] = quantile(mat1a[i,],c(0.025,0.975))#
+				mat2b[,"time"] = mean(c(timePoints[i],timePoints[i+1])); mat2b[,"median"] = median(mat2a[i,])#
+				mat2b[,c("lower95hpd","higher95hpd")] = quantile(mat2a[i,],c(0.025,0.975))#
+				mat3b[,"time"] = mean(c(timePoints[i],timePoints[i+1])); mat3b[,"median"] = median(mat3a[i,])#
+				mat3b[,c("lower95hpd","higher95hpd")] = quantile(mat3a[i,],c(0.025,0.975))#
+			}
+mat1b = matrix(nrow=timeSlices, ncol=4) # evolution of the number of clusters#
+		mat2b = matrix(nrow=timeSlices, ncol=4) # evolution of the averaged cluster size#
+		mat3b = matrix(nrow=timeSlices, ncol=4) # evolution of the averaged duration since cluster TMRCA#
+		colnames(mat1b) = c("time","median","lower95hpd","higher95hpd")#
+		colnames(mat2b) = c("time","median","lower95hpd","higher95hpd")#
+		colnames(mat3b) = c("time","median","lower95hpd","higher95hpd")#
+		for (i in 1:dim(mat1b)[1])#
+			{#
+				mat1b[,"time"] = mean(c(timePoints[i],timePoints[i+1])); mat1b[,"median"] = median(mat1a[i,],na.rm=T)#
+				mat1b[,c("lower95hpd","higher95hpd")] = quantile(mat1a[i,],c(0.025,0.975),na.rm=T)#
+				mat2b[,"time"] = mean(c(timePoints[i],timePoints[i+1])); mat2b[,"median"] = median(mat2a[i,],na.rm=T)#
+				mat2b[,c("lower95hpd","higher95hpd")] = quantile(mat2a[i,],c(0.025,0.975),na.rm=T)#
+				mat3b[,"time"] = mean(c(timePoints[i],timePoints[i+1])); mat3b[,"median"] = median(mat3a[i,],na.rm=T)#
+				mat3b[,c("lower95hpd","higher95hpd")] = quantile(mat3a[i,],c(0.025,0.975),na.rm=T)#
+			}
+mat3b
+mat2b
+mat3b
+mat1b = matrix(nrow=timeSlices, ncol=4) # evolution of the number of clusters#
+		mat2b = matrix(nrow=timeSlices, ncol=4) # evolution of the averaged cluster size#
+		mat3b = matrix(nrow=timeSlices, ncol=4) # evolution of the averaged duration since cluster TMRCA#
+		colnames(mat1b) = c("time","median","lower95hpd","higher95hpd")#
+		colnames(mat2b) = c("time","median","lower95hpd","higher95hpd")#
+		colnames(mat3b) = c("time","median","lower95hpd","higher95hpd")#
+		for (i in 1:dim(mat1b)[1])#
+			{#
+				mat1b[i,"time"] = mean(c(timePoints[i],timePoints[i+1])); mat1b[,"median"] = median(mat1a[i,],na.rm=T)#
+				mat1b[i,c("lower95hpd","higher95hpd")] = quantile(mat1a[i,],c(0.025,0.975),na.rm=T)#
+				mat2b[i,"time"] = mean(c(timePoints[i],timePoints[i+1])); mat2b[,"median"] = median(mat2a[i,],na.rm=T)#
+				mat2b[i,c("lower95hpd","higher95hpd")] = quantile(mat2a[i,],c(0.025,0.975),na.rm=T)#
+				mat3b[i,"time"] = mean(c(timePoints[i],timePoints[i+1])); mat3b[,"median"] = median(mat3a[i,],na.rm=T)#
+				mat3b[i,c("lower95hpd","higher95hpd")] = quantile(mat3a[i,],c(0.025,0.975),na.rm=T)#
+			}
+mat3b
+mat2b
+mat1b
+mat1b = matrix(nrow=timeSlices, ncol=4) # evolution of the number of clusters#
+		mat2b = matrix(nrow=timeSlices, ncol=4) # evolution of the averaged cluster size#
+		mat3b = matrix(nrow=timeSlices, ncol=4) # evolution of the averaged duration since cluster TMRCA#
+		colnames(mat1b) = c("time","median","lower95hpd","higher95hpd")#
+		colnames(mat2b) = c("time","median","lower95hpd","higher95hpd")#
+		colnames(mat3b) = c("time","median","lower95hpd","higher95hpd")#
+		for (i in 1:dim(mat1b)[1])#
+			{#
+				mat1b[i,"time"] = mean(c(timePoints[i],timePoints[i+1])); mat1b[i,"median"] = median(mat1a[i,],na.rm=T)#
+				mat1b[i,c("lower95hpd","higher95hpd")] = quantile(mat1a[i,],c(0.025,0.975),na.rm=T)#
+				mat2b[i,"time"] = mean(c(timePoints[i],timePoints[i+1])); mat2b[i,"median"] = median(mat2a[i,],na.rm=T)#
+				mat2b[i,c("lower95hpd","higher95hpd")] = quantile(mat2a[i,],c(0.025,0.975),na.rm=T)#
+				mat3b[i,"time"] = mean(c(timePoints[i],timePoints[i+1])); mat3b[i,"median"] = median(mat3a[i,],na.rm=T)#
+				mat3b[i,c("lower95hpd","higher95hpd")] = quantile(mat3a[i,],c(0.025,0.975),na.rm=T)#
+			}
+mat1b
+mat2b
+mat3b
+plot(mat1b[,1:2])
+plot(mat2b[,1:2])
+plot(mat3b[,1:2])
+days = ymd("2022-03-31")-ymd("2020-12-01")
+days
+str(days)
+days = as.numeric(ymd("2022-03-31")-ymd("2020-12-01"))
+days
+dim(mat1b)
+indices = seq(i-3,i+3)
+indices
+mat1b = mat1b[-which(is.na(mat1b[,"time"])),]
+mat1b
+mat1b = matrix(nrow=timeSlices, ncol=4) # evolution of the number of clusters#
+		mat2b = matrix(nrow=timeSlices, ncol=4) # evolution of the averaged cluster size#
+		mat3b = matrix(nrow=timeSlices, ncol=4) # evolution of the averaged duration since cluster TMRCA#
+		colnames(mat1b) = c("time","median","lower95hpd","higher95hpd")#
+		colnames(mat2b) = c("time","median","lower95hpd","higher95hpd")#
+		colnames(mat3b) = c("time","median","lower95hpd","higher95hpd")#
+		for (i in 4:(dim(mat1b)[1]-3))#
+			{#
+				mat1b[i,"time"] = mean(c(timePoints[i],timePoints[i+1])); mat1b[i,"median"] = median(mat1a[i,],na.rm=T)#
+				mat1b[i,c("lower95hpd","higher95hpd")] = quantile(mat1a[i,],c(0.025,0.975),na.rm=T)#
+				mat2b[i,"time"] = mean(c(timePoints[i],timePoints[i+1])); mat2b[i,"median"] = median(mat2a[i,],na.rm=T)#
+				mat2b[i,c("lower95hpd","higher95hpd")] = quantile(mat2a[i,],c(0.025,0.975),na.rm=T)#
+				mat3b[i,"time"] = mean(c(timePoints[i],timePoints[i+1])); mat3b[i,"median"] = median(mat3a[i,],na.rm=T)#
+				mat3b[i,c("lower95hpd","higher95hpd")] = quantile(mat3a[i,],c(0.025,0.975),na.rm=T)#
+			}
+dim(mat1b)
+days = as.numeric(ymd("2022-03-31")-ymd("2020-12-01"))#
+minYear = decimal_date(ymd("2020-12-01")); maxYear = decimal_date(ymd("2022-03-31"))#
+timeSlices = days; timePoints = seq(minYear,maxYear,(maxYear-minYear)/timeSlices)
+localTreesDirectory = paste0("DTA_boroughs_analyses/Alpha_DTA/All_clades_ext")#
+		mat1a = matrix(nrow=timeSlices, ncol=nberOfExtractionFiles) # evolution of the number of clusters#
+		mat2a = matrix(nrow=timeSlices, ncol=nberOfExtractionFiles) # evolution of the averaged cluster size#
+		mat3a = matrix(nrow=timeSlices, ncol=nberOfExtractionFiles) # evolution of the averaged duration since cluster TMRCA#
+		for (i in 1:nberOfExtractionFiles)#
+			{#
+				tab = read.csv(paste0("DTA_boroughs_analyses/Alpha_DTA/All_clades_ext/TreeExtractions_",i,".csv"), head=T)#
+				for (j in 2:length(timePoints))#
+					{#
+						sub = tab[which((tab[,"startYear"]>timePoints[j-1])&(tab[,"endYear"]<timePoints[j])),]#
+						circulatingClades = sub[,"cladeID"]; mat1a[j-1,i] = length(unique(circulatingClades))#
+						if (length(circulatingClades) != 0)#
+							{#
+								mat2a[j-1,i] = mean(table(circulatingClades)); tMRCAs = rep(NA, length(circulatingClades))#
+								for (k in 1:length(tMRCAs))#
+									{#
+										tMRCAs[k] = min(tab[which(tab[,"cladeID"]==circulatingClades[k]),"startYear"])#
+									}#
+								mat3a[j-1,i] = mean(c(timePoints[j-1],timePoints[j]))-mean(tMRCAs)#
+							}	else	{#
+								mat2a[j-1,i] = 0; mat3a[j-1,i] = NA#
+							}#
+					}#
+			}#
+		mat1b = matrix(nrow=timeSlices, ncol=4) # evolution of the number of clusters#
+		mat2b = matrix(nrow=timeSlices, ncol=4) # evolution of the averaged cluster size#
+		mat3b = matrix(nrow=timeSlices, ncol=4) # evolution of the averaged duration since cluster TMRCA#
+		colnames(mat1b) = c("time","median","lower95hpd","higher95hpd")#
+		colnames(mat2b) = c("time","median","lower95hpd","higher95hpd")#
+		colnames(mat3b) = c("time","median","lower95hpd","higher95hpd")
+for (i in 4:(dim(mat1b)[1]-3))#
+			{#
+				mat1b[i,"time"] = mean(c(timePoints[i],timePoints[i+1])); mat1b[i,"median"] = median(mat1a[i,],na.rm=T)#
+				mat1b[i,c("lower95hpd","higher95hpd")] = quantile(mat1a[i,],c(0.025,0.975),na.rm=T)#
+				mat2b[i,"time"] = mean(c(timePoints[i],timePoints[i+1])); mat2b[i,"median"] = median(mat2a[i,],na.rm=T)#
+				mat2b[i,c("lower95hpd","higher95hpd")] = quantile(mat2a[i,],c(0.025,0.975),na.rm=T)#
+				mat3b[i,"time"] = mean(c(timePoints[i],timePoints[i+1])); mat3b[i,"median"] = median(mat3a[i,],na.rm=T)#
+				mat3b[i,c("lower95hpd","higher95hpd")] = quantile(mat3a[i,],c(0.025,0.975),na.rm=T)#
+			}
+dilm(mat1b)
+dim(mat1b)
+dim(mat1b[-which(is.na(mat1b[,"time"])),])
+mat1b = matrix(nrow=timeSlices, ncol=4) # evolution of the number of clusters#
+		mat2b = matrix(nrow=timeSlices, ncol=4) # evolution of the averaged cluster size#
+		mat3b = matrix(nrow=timeSlices, ncol=4) # evolution of the averaged duration since cluster TMRCA#
+		colnames(mat1b) = c("time","median","lower95hpd","higher95hpd")#
+		colnames(mat2b) = c("time","median","lower95hpd","higher95hpd")#
+		colnames(mat3b) = c("time","median","lower95hpd","higher95hpd")#
+		for (i in 1:dim(mat1b)[1])#
+			{#
+				mat1b[i,"time"] = mean(c(timePoints[i],timePoints[i+1])); mat1b[i,"median"] = median(mat1a[i,],na.rm=T)#
+				mat1b[i,c("lower95hpd","higher95hpd")] = quantile(mat1a[i,],c(0.025,0.975),na.rm=T)#
+				mat2b[i,"time"] = mean(c(timePoints[i],timePoints[i+1])); mat2b[i,"median"] = median(mat2a[i,],na.rm=T)#
+				mat2b[i,c("lower95hpd","higher95hpd")] = quantile(mat2a[i,],c(0.025,0.975),na.rm=T)#
+				mat3b[i,"time"] = mean(c(timePoints[i],timePoints[i+1])); mat3b[i,"median"] = median(mat3a[i,],na.rm=T)#
+				mat3b[i,c("lower95hpd","higher95hpd")] = quantile(mat3a[i,],c(0.025,0.975),na.rm=T)#
+			}
+mat1b = matrix(nrow=timeSlices, ncol=4); colnames(mat1b) = c("time","median","lower95hpd","higher95hpd")#
+		mat2b = matrix(nrow=timeSlices, ncol=4); colnames(mat2b) = c("time","median","lower95hpd","higher95hpd")#
+		mat3b = matrix(nrow=timeSlices, ncol=4); colnames(mat3b) = c("time","median","lower95hpd","higher95hpd")#
+		for (i in 1:dim(mat1b)[1])#
+			{#
+				mat1b[i,"time"] = mean(c(timePoints[i],timePoints[i+1])); mat1b[i,"median"] = median(mat1a[i,],na.rm=T)#
+				mat1b[i,c("lower95hpd","higher95hpd")] = quantile(mat1a[i,],c(0.025,0.975),na.rm=T)#
+				mat2b[i,"time"] = mean(c(timePoints[i],timePoints[i+1])); mat2b[i,"median"] = median(mat2a[i,],na.rm=T)#
+				mat2b[i,c("lower95hpd","higher95hpd")] = quantile(mat2a[i,],c(0.025,0.975),na.rm=T)#
+				mat3b[i,"time"] = mean(c(timePoints[i],timePoints[i+1])); mat3b[i,"median"] = median(mat3a[i,],na.rm=T)#
+				mat3b[i,c("lower95hpd","higher95hpd")] = quantile(mat3a[i,],c(0.025,0.975),na.rm=T)#
+			}#
+		# N.B.: logical to do not observe variations among trees as the BSSVS was performed on a fixed tree topology#
+		mat1c = matrix(nrow=timeSlices, ncol=2); mat2c = matrix(nrow=timeSlices, ncol=2); mat3c = matrix(nrow=timeSlices, ncol=2)#
+		for (i in 4:(dim(mat1b)[1]-3))#
+			{#
+				indices = seq(i-3,i+3)#
+				mat1c[i,"time"] = mat1b[i,"time"]; mat1c[i,"median"] = mean(mat1b[indices,2],na.rm=T)#
+				mat2c[i,"time"] = mat2b[i,"time"]; mat2c[i,"median"] = mean(mat2b[indices,2],na.rm=T)#
+				mat3c[i,"time"] = mat3b[i,"time"]; mat3c[i,"median"] = mean(mat3b[indices,2],na.rm=T)#
+			}#
+		mat1c = mat1c[-which(is.na(mat1c[,"time"])),]; mat2c = mat2c[-which(is.na(mat2c[,"time"])),]; mat3c = mat3c[-which(is.na(mat3c[,"time"])),]
+mat1b = matrix(nrow=timeSlices, ncol=4); colnames(mat1b) = c("time","median","lower95hpd","higher95hpd")#
+		mat2b = matrix(nrow=timeSlices, ncol=4); colnames(mat2b) = c("time","median","lower95hpd","higher95hpd")#
+		mat3b = matrix(nrow=timeSlices, ncol=4); colnames(mat3b) = c("time","median","lower95hpd","higher95hpd")#
+		for (i in 1:dim(mat1b)[1])#
+			{#
+				mat1b[i,"time"] = mean(c(timePoints[i],timePoints[i+1])); mat1b[i,"median"] = median(mat1a[i,],na.rm=T)#
+				mat1b[i,c("lower95hpd","higher95hpd")] = quantile(mat1a[i,],c(0.025,0.975),na.rm=T)#
+				mat2b[i,"time"] = mean(c(timePoints[i],timePoints[i+1])); mat2b[i,"median"] = median(mat2a[i,],na.rm=T)#
+				mat2b[i,c("lower95hpd","higher95hpd")] = quantile(mat2a[i,],c(0.025,0.975),na.rm=T)#
+				mat3b[i,"time"] = mean(c(timePoints[i],timePoints[i+1])); mat3b[i,"median"] = median(mat3a[i,],na.rm=T)#
+				mat3b[i,c("lower95hpd","higher95hpd")] = quantile(mat3a[i,],c(0.025,0.975),na.rm=T)#
+			}#
+		# N.B.: logical to do not observe variations among trees as the BSSVS was performed on a fixed tree topology#
+		mat1c = matrix(nrow=timeSlices, ncol=2); mat2c = matrix(nrow=timeSlices, ncol=2); mat3c = matrix(nrow=timeSlices, ncol=2)
+mat1c = matrix(nrow=timeSlices, ncol=2); mat2c = matrix(nrow=timeSlices, ncol=2); mat3c = matrix(nrow=timeSlices, ncol=2)#
+		for (i in 4:(dim(mat1C)[1]-3))#
+			{#
+				indices = seq(i-3,i+3)#
+				mat1c[i,"time"] = mat1b[i,"time"]; mat1c[i,"median"] = mean(mat1b[indices,2],na.rm=T)#
+				mat2c[i,"time"] = mat2b[i,"time"]; mat2c[i,"median"] = mean(mat2b[indices,2],na.rm=T)#
+				mat3c[i,"time"] = mat3b[i,"time"]; mat3c[i,"median"] = mean(mat3b[indices,2],na.rm=T)#
+			}
+mat1c = matrix(nrow=timeSlices, ncol=2); mat2c = matrix(nrow=timeSlices, ncol=2); mat3c = matrix(nrow=timeSlices, ncol=2)#
+		for (i in 4:(dim(mat1C)[1]-3))#
+			{#
+				indices = seq(i-3,i+3)#
+				mat1c[i,"time"] = mat1b[i,"time"]; mat1c[i,"median"] = mean(mat1b[indices,2],na.rm=T)#
+				mat2c[i,"time"] = mat2b[i,"time"]; mat2c[i,"median"] = mean(mat2b[indices,2],na.rm=T)#
+				mat3c[i,"time"] = mat3b[i,"time"]; mat3c[i,"median"] = mean(mat3b[indices,2],na.rm=T)#
+			}#
+		mat1c = mat1c[-which(is.na(mat1c[,"time"])),]; mat2c = mat2c[-which(is.na(mat2c[,"time"])),]; mat3c = mat3c[-which(is.na(mat3c[,"time"])),]
+mat1c = matrix(nrow=timeSlices, ncol=2); mat2c = matrix(nrow=timeSlices, ncol=2); mat3c = matrix(nrow=timeSlices, ncol=2)#
+		for (i in 4:(dim(mat1c)[1]-3))#
+			{#
+				indices = seq(i-3,i+3)#
+				mat1c[i,"time"] = mat1b[i,"time"]; mat1c[i,"median"] = mean(mat1b[indices,2],na.rm=T)#
+				mat2c[i,"time"] = mat2b[i,"time"]; mat2c[i,"median"] = mean(mat2b[indices,2],na.rm=T)#
+				mat3c[i,"time"] = mat3b[i,"time"]; mat3c[i,"median"] = mean(mat3b[indices,2],na.rm=T)#
+			}#
+		mat1c = mat1c[-which(is.na(mat1c[,"time"])),]; mat2c = mat2c[-which(is.na(mat2c[,"time"])),]; mat3c = mat3c[-which(is.na(mat3c[,"time"])),]
+mat1b = matrix(nrow=timeSlices, ncol=4); colnames(mat1b) = c("time","median","lower95hpd","higher95hpd")#
+		mat2b = matrix(nrow=timeSlices, ncol=4); colnames(mat2b) = c("time","median","lower95hpd","higher95hpd")#
+		mat3b = matrix(nrow=timeSlices, ncol=4); colnames(mat3b) = c("time","median","lower95hpd","higher95hpd")#
+		for (i in 1:dim(mat1b)[1])#
+			{#
+				mat1b[i,"time"] = mean(c(timePoints[i],timePoints[i+1])); mat1b[i,"median"] = median(mat1a[i,],na.rm=T)#
+				mat1b[i,c("lower95hpd","higher95hpd")] = quantile(mat1a[i,],c(0.025,0.975),na.rm=T)#
+				mat2b[i,"time"] = mean(c(timePoints[i],timePoints[i+1])); mat2b[i,"median"] = median(mat2a[i,],na.rm=T)#
+				mat2b[i,c("lower95hpd","higher95hpd")] = quantile(mat2a[i,],c(0.025,0.975),na.rm=T)#
+				mat3b[i,"time"] = mean(c(timePoints[i],timePoints[i+1])); mat3b[i,"median"] = median(mat3a[i,],na.rm=T)#
+				mat3b[i,c("lower95hpd","higher95hpd")] = quantile(mat3a[i,],c(0.025,0.975),na.rm=T)#
+			}#
+		# N.B.: logical to do not observe variations among trees as the BSSVS was performed on a fixed tree topology#
+		mat1c = matrix(nrow=timeSlices, ncol=2); mat2c = matrix(nrow=timeSlices, ncol=2); mat3c = matrix(nrow=timeSlices, ncol=2)#
+		colnames(mat1c) = c("time","sliddingW7d"); colnames(mat2c) = c("time","sliddingW7d"); colnames(mat3c) = c("time","sliddingW7d")#
+		for (i in 4:(dim(mat1c)[1]-3))#
+			{#
+				indices = seq(i-3,i+3)#
+				mat1c[i,"time"] = mat1b[i,"time"]; mat1c[i,"sliddingW7d"] = mean(mat1b[indices,"median"],na.rm=T)#
+				mat2c[i,"time"] = mat2b[i,"time"]; mat2c[i,"sliddingW7d"] = mean(mat2b[indices,"median"],na.rm=T)#
+				mat3c[i,"time"] = mat3b[i,"time"]; mat3c[i,"sliddingW7d"] = mean(mat3b[indices,"median"],na.rm=T)#
+			}#
+		mat1c = mat1c[-which(is.na(mat1c[,"time"])),]; mat2c = mat2c[-which(is.na(mat2c[,"time"])),]; mat3c = mat3c[-which(is.na(mat3c[,"time"])),]
+mat1c
+plot(mat1c)
+plot(mat2c)
+plot(mat3c)
+seq(7,dim(mat1c)[1],7)
+dim(mat1c)[1]
+NYC_counties = c("NewYork","Bronx","Kings","Queens","Richmond","Nassau","Suffolk","Westchester")#
+variants = c("Alpha","Beta","Delta","Epsilon","Eta","Gamma","Kappa","Lambda","Mu","Omicron-BA1","Omicron-BA2","Omicron-BA3","Theta","Zeta")#
+variants = c("Alpha"); h = 1; variantColours1 = c(); variantColours2 = c()#
+variantColours1[1] = rgb(250,165,26,255,maxColorValue=255); variantColours2[1] = rgb(250,165,26,100,maxColorValue=255) # orange (Alpha)#
+variantColours1[2] = rgb(150,150,150,255,maxColorValue=255); variantColours2[2] = rgb(150,150,150,100,maxColorValue=255) # light grey (Iota)#
+variantColours1[3] = rgb(222,67,39,255,maxColorValue=255); variantColours2[3] = rgb(222,67,39,100,maxColorValue=255) # red (Delta)#
+variantColours1[4] = rgb(70,118,187,255,maxColorValue=255); variantColours1[4] = rgb(70,118,187,100,maxColorValue=255) # blue (Omicron-BA.1)#
+variantColours1[5] = rgb(129,81,161,255,maxColorValue=255); variantColours2[5] = rgb(129,81,161,100,maxColorValue=255) # purple (Omicron-BA.1)#
+variantColours1[6] = rgb(139,101,8,255,maxColorValue=255); variantColours2[6] = rgb(139,101,8,100,maxColorValue=255) # brown (not used)#
+variantColours1[7] = rgb(76,76,76,255,maxColorValue=255); variantColours2[7] = rgb(60,60,60,100,maxColorValue=255) # dark grey (not used)
+plot(mat1s[[1]], col=NA, col=NA, axes=F, ann=F)
+mat1s[[1]]
+mat1s[[h]] = mat1c; mat2s[[h]] = mat2c; mat3s[[h]] = mat3c
+mat1s = list(); mat2s = list(); mat3s = list()
+mat1s[[h]] = mat1c; mat2s[[h]] = mat2c; mat3s[[h]] = mat3c
+plot(mat1s[[1]], col=NA, col=NA, axes=F, ann=F)
+plot(mat1s[[1]], col=NA, axes=F, ann=F)
+dev.new(width=11, height=2.5)#
+par(mfrow=c(1,2), oma=c(0,0,0,0), mar=c(1.5,3,0,1), mgp=c(1,0.2,0), lwd=0.2, col="gray30")#
+plot(mat1s[[1]], col=NA, axes=F, ann=F)#
+for (h in 1:length(variants))#
+	{#
+		xx_l = c(mat1s[[h]][,1],rev(mat1s[[h]][,1])); yy_l = c(rep(0,dim(mat1s[[h]])[1]),rev(mat1s[[h]][,2]))#
+		getOption("scipen"); opt = options("scipen"=20); polygon(xx_l, yy_l, col=variantColours2[h], border=0)#
+	}#
+axis(side=1, lwd.tick=0.2, cex.axis=0.70, lwd=0.2, tck=-0.017, col="gray30", col.axis="gray30", mgp=c(0,0.20,0), at=seq(0,800,100))#
+axis(side=2, lwd.tick=0.2, cex.axis=0.70, lwd=0.2, tck=-0.020, col="gray30", col.axis="gray30", mgp=c(1,0.40,0), at=seq(-5,35,5))
+mat1s[[h]][,1]
+mat1s[[h]][,2]
+max(mat1s[[h]][,2])
+dev.new(width=11, height=2.5)#
+par(mfrow=c(1,2), oma=c(0,0,0,0), mar=c(1.5,3,0,1), mgp=c(1,0.2,0), lwd=0.2, col="gray30")#
+plot(mat1s[[1]], col=NA, axes=F, ann=F)#
+for (h in 1:length(variants))#
+	{#
+		xx_l = c(mat1s[[h]][,1],rev(mat1s[[h]][,1])); yy_l = c(rep(0,dim(mat1s[[h]])[1]),rev(mat1s[[h]][,2]))#
+		getOption("scipen"); opt = options("scipen"=20); polygon(xx_l, yy_l, col=variantColours2[h], border=0)#
+		lines(mat1s[[h]], lwd=1, col=variantColours1[h])#
+	}#
+dates = c("2021-01-01","2021-04-01","2022-08-01","2022-01-01"); ats = decimal_date(ymd(dates))#
+axis(side=1, lwd.tick=0.2, cex.axis=0.70, lwd=0.2, tck=-0.017, col="gray30", col.axis="gray30", mgp=c(0,0.20,0), at=ats, label=dates)#
+axis(side=2, lwd.tick=0.2, cex.axis=0.70, lwd=0.2, tck=-0.020, col="gray30", col.axis="gray30", mgp=c(1,0.40,0), at=seq(0,5,1))
+par(mfrow=c(1,2), oma=c(0,0,0,0), mar=c(1.5,3,0,1), mgp=c(1,0.2,0), lwd=0.2, col="gray30")#
+plot(mat1s[[1]], col=NA, axes=F, ann=F)#
+for (h in 1:length(variants))#
+	{#
+		xx_l = c(mat1s[[h]][,1],rev(mat1s[[h]][,1])); yy_l = c(rep(0,dim(mat1s[[h]])[1]),rev(mat1s[[h]][,2]))#
+		getOption("scipen"); opt = options("scipen"=20); polygon(xx_l, yy_l, col=variantColours2[h], border=0)#
+		lines(mat1s[[h]], lwd=1, col=variantColours1[h])#
+	}#
+dates = c("2020-07-01","2021-01-01","2021-04-01","2022-08-01","2022-01-01"); ats = decimal_date(ymd(dates))#
+axis(side=1, lwd.tick=0.2, cex.axis=0.70, lwd=0.2, tck=-0.030, col="gray30", col.axis="gray30", mgp=c(0,0.15,0), at=ats, label=dates)#
+axis(side=2, lwd.tick=0.2, cex.axis=0.70, lwd=0.2, tck=-0.025, col="gray30", col.axis="gray30", mgp=c(1,0.30,0), at=seq(0,4,1))
+lines(mat2s[[h]], lwd=1, col=variantColours1[h], lty=2)
+lines(mat3s[[h]], lwd=1, col=variantColours1[h], lty=2)
+par(mfrow=c(1,2), oma=c(0,0,0,0), mar=c(1.5,3,0,1), mgp=c(1,0.2,0), lwd=0.2, col="gray30")#
+plot(mat1s[[1]], col=NA, axes=F, ann=F)#
+for (h in 1:length(variants))#
+	{#
+		xx_l = c(mat1s[[h]][,1],rev(mat1s[[h]][,1])); yy_l = c(rep(0,dim(mat1s[[h]])[1]),rev(mat1s[[h]][,2]))#
+		getOption("scipen"); opt = options("scipen"=20); polygon(xx_l, yy_l, col=variantColours2[h], border=0)#
+		lines(mat1s[[h]], lwd=1, col=variantColours1[h]); # lines(mat3s[[h]], lwd=1, col=variantColours1[h], lty=2)#
+	}#
+dates = c("2020-07-01","2021-01-01","2021-04-01","2022-08-01","2022-01-01"); ats = decimal_date(ymd(dates))#
+axis(side=1, lwd.tick=0.2, cex.axis=0.70, lwd=0.2, tck=-0.025, col="gray30", col.axis="gray30", mgp=c(0,0.15,0), at=ats, label=dates)#
+axis(side=2, lwd.tick=0.2, cex.axis=0.70, lwd=0.2, tck=-0.022, col="gray30", col.axis="gray30", mgp=c(1,0.30,0), at=seq(0,4,1))
+title(ylab="number of clusters & averaged size", cex.lab=0.9, mgp=c(1.7,0,0), col.lab="gray30")
+title(ylab="number of clusters & averaged size", cex.lab=0.7, mgp=c(1.7,0,0), col.lab="gray30")
+par(mfrow=c(1,2), oma=c(0,0,0,0), mar=c(1.5,2,0,1), mgp=c(1,0.2,0), lwd=0.2, col="gray30")#
+plot(mat1s[[1]], col=NA, axes=F, ann=F)#
+for (h in 1:length(variants))#
+	{#
+		xx_l = c(mat1s[[h]][,1],rev(mat1s[[h]][,1])); yy_l = c(rep(0,dim(mat1s[[h]])[1]),rev(mat1s[[h]][,2]))#
+		getOption("scipen"); opt = options("scipen"=20); polygon(xx_l, yy_l, col=variantColours2[h], border=0)#
+		lines(mat1s[[h]], lwd=1, col=variantColours1[h]); # lines(mat3s[[h]], lwd=1, col=variantColours1[h], lty=2)#
+	}#
+dates = c("2020-07-01","2021-01-01","2021-04-01","2022-08-01","2022-01-01"); ats = decimal_date(ymd(dates))#
+axis(side=1, lwd.tick=0.2, cex.axis=0.6, lwd=0.2, tck=-0.025, col="gray30", col.axis="gray30", mgp=c(0,0.15,0), at=ats, label=dates)#
+axis(side=2, lwd.tick=0.2, cex.axis=0.6, lwd=0.2, tck=-0.022, col="gray30", col.axis="gray30", mgp=c(1,0.30,0), at=seq(0,4,1))#
+title(ylab="number of clusters & averaged size", cex.lab=0.7, mgp=c(1.4,0,0), col.lab="gray30")
+par(mfrow=c(1,2), oma=c(0,0,0,0), mar=c(1.5,2,0,1), mgp=c(1,0.2,0), lwd=0.2, col="gray30")#
+plot(mat1s[[1]], col=NA, axes=F, ann=F)#
+for (h in 1:length(variants))#
+	{#
+		xx_l = c(mat1s[[h]][,1],rev(mat1s[[h]][,1])); yy_l = c(rep(0,dim(mat1s[[h]])[1]),rev(mat1s[[h]][,2]))#
+		getOption("scipen"); opt = options("scipen"=20); polygon(xx_l, yy_l, col=variantColours2[h], border=0)#
+		lines(mat1s[[h]], lwd=1, col=variantColours1[h]); # lines(mat3s[[h]], lwd=1, col=variantColours1[h], lty=2)#
+	}#
+dates = c("2020-07-01","2021-01-01","2021-04-01","2022-08-01","2022-01-01"); ats = decimal_date(ymd(dates))#
+axis(side=1, lwd.tick=0.2, cex.axis=0.65, lwd=0.2, tck=-0.025, col="gray30", col.axis="gray30", mgp=c(0,0.12,0), at=ats, label=dates)#
+axis(side=2, lwd.tick=0.2, cex.axis=0.65, lwd=0.2, tck=-0.022, col="gray30", col.axis="gray30", mgp=c(1,0.30,0), at=seq(0,4,1))#
+title(ylab="number of clusters & averaged size", cex.lab=0.75, mgp=c(1.0,0,0), col.lab="gray30")
+par(mfrow=c(1,2), oma=c(0,0,0,0), mar=c(1.5,2,0,1), mgp=c(1.2,0.2,0), lwd=0.2, col="gray30")#
+plot(mat1s[[1]], col=NA, axes=F, ann=F)#
+for (h in 1:length(variants))#
+	{#
+		xx_l = c(mat1s[[h]][,1],rev(mat1s[[h]][,1])); yy_l = c(rep(0,dim(mat1s[[h]])[1]),rev(mat1s[[h]][,2]))#
+		getOption("scipen"); opt = options("scipen"=20); polygon(xx_l, yy_l, col=variantColours2[h], border=0)#
+		lines(mat1s[[h]], lwd=1, col=variantColours1[h]); # lines(mat3s[[h]], lwd=1, col=variantColours1[h], lty=2)#
+	}#
+dates = c("2020-07-01","2021-01-01","2021-04-01","2022-08-01","2022-01-01"); ats = decimal_date(ymd(dates))#
+axis(side=1, lwd.tick=0.2, cex.axis=0.65, lwd=0.2, tck=-0.025, col="gray30", col.axis="gray30", mgp=c(0,0.12,0), at=ats, label=dates)#
+axis(side=2, lwd.tick=0.2, cex.axis=0.65, lwd=0.2, tck=-0.022, col="gray30", col.axis="gray30", mgp=c(1,0.30,0), at=seq(0,4,1))#
+title(ylab="number of clusters & averaged size", cex.lab=0.75, mgp=c(1.2,0,0), col.lab="gray30")
+par(mfrow=c(1,2), oma=c(0,0,0,0), mar=c(1.5,2.5,0,1), mgp=c(1.2,0.2,0), lwd=0.2, col="gray30")#
+plot(mat1s[[1]], col=NA, axes=F, ann=F)#
+for (h in 1:length(variants))#
+	{#
+		xx_l = c(mat1s[[h]][,1],rev(mat1s[[h]][,1])); yy_l = c(rep(0,dim(mat1s[[h]])[1]),rev(mat1s[[h]][,2]))#
+		getOption("scipen"); opt = options("scipen"=20); polygon(xx_l, yy_l, col=variantColours2[h], border=0)#
+		lines(mat1s[[h]], lwd=1, col=variantColours1[h]); # lines(mat3s[[h]], lwd=1, col=variantColours1[h], lty=2)#
+	}#
+dates = c("2020-07-01","2021-01-01","2021-04-01","2022-08-01","2022-01-01"); ats = decimal_date(ymd(dates))#
+axis(side=1, lwd.tick=0.2, cex.axis=0.65, lwd=0.2, tck=-0.025, col="gray30", col.axis="gray30", mgp=c(0,0.12,0), at=ats, label=dates)#
+axis(side=2, lwd.tick=0.2, cex.axis=0.65, lwd=0.2, tck=-0.022, col="gray30", col.axis="gray30", mgp=c(1,0.30,0), at=seq(0,4,1))#
+title(ylab="number of clusters & averaged size", cex.lab=0.75, mgp=c(1.3,0,0), col.lab="gray30")
+par(mfrow=c(1,2), oma=c(0,0,0,0), mar=c(1.5,2.5,0,1), mgp=c(1.2,0.2,0), lwd=0.2, col="gray30")#
+plot(mat1s[[1]], col=NA, axes=F, ann=F)#
+for (h in 1:length(variants))#
+	{#
+		xx_l = c(mat1s[[h]][,1],rev(mat1s[[h]][,1])); yy_l = c(rep(0,dim(mat1s[[h]])[1]),rev(mat1s[[h]][,2]))#
+		getOption("scipen"); opt = options("scipen"=20); polygon(xx_l, yy_l, col=variantColours2[h], border=0)#
+		lines(mat1s[[h]], lwd=1, col=variantColours1[h]); # lines(mat3s[[h]], lwd=1, col=variantColours1[h], lty=2)#
+	}#
+dates = c("2020-07-01","2021-01-01","2021-04-01","2022-08-01","2022-01-01"); ats = decimal_date(ymd(dates))#
+axis(side=1, lwd.tick=0.2, cex.axis=0.65, lwd=0.2, tck=-0.025, col="gray30", col.axis="gray30", mgp=c(0,0.11,0), at=ats, label=dates)#
+axis(side=2, lwd.tick=0.2, cex.axis=0.65, lwd=0.2, tck=-0.022, col="gray30", col.axis="gray30", mgp=c(1,0.30,0), at=seq(0,4,1))#
+title(ylab="number of clusters & averaged size", cex.lab=0.75, mgp=c(1.3,0,0), col.lab="gray30")
+axis(side=1, lwd.tick=0.2, cex.axis=0.65, lwd=0.2, tck=-0.022, col="gray30", col.axis="gray30", mgp=c(0,0.11,0), at=ats, label=dates)
+lines(mat1s[[h]], lwd=1, col=variantColours1[h]); lines(mat2s[[h]], lwd=1, col=variantColours1[h], lty=2)
+dev.new(width=11, height=2.5)#
+par(mfrow=c(1,2), oma=c(0,0,0,0), mar=c(1.5,2.5,0,1), mgp=c(1.2,0.2,0), lwd=0.2, col="gray30")#
+plot(mat1s[[1]], col=NA, axes=F, ann=F)#
+for (h in 1:length(variants))#
+	{#
+		xx_l = c(mat1s[[h]][,1],rev(mat1s[[h]][,1])); yy_l = c(rep(0,dim(mat1s[[h]])[1]),rev(mat1s[[h]][,2]))#
+		getOption("scipen"); opt = options("scipen"=20); polygon(xx_l, yy_l, col=variantColours2[h], border=0)#
+		lines(mat1s[[h]], lwd=1, col=variantColours1[h]); lines(mat2s[[h]], lwd=1, col=variantColours1[h], lty=2)#
+	}#
+dates = c("2020-07-01","2021-01-01","2021-04-01","2021-08-01","2022-01-01"); ats = decimal_date(ymd(dates))#
+axis(side=1, lwd.tick=0.2, cex.axis=0.65, lwd=0.2, tck=-0.022, col="gray30", col.axis="gray30", mgp=c(0,0.11,0), at=ats, label=dates)#
+axis(side=2, lwd.tick=0.2, cex.axis=0.65, lwd=0.2, tck=-0.022, col="gray30", col.axis="gray30", mgp=c(1,0.30,0), at=seq(0,4,1))#
+title(ylab="number of clusters & averaged size", cex.lab=0.75, mgp=c(1.3,0,0), col.lab="gray30")
+dev.new(width=11, height=2.2)#
+par(mfrow=c(1,2), oma=c(0,0,0,0), mar=c(1.5,2.5,0,1), mgp=c(1.2,0.2,0), lwd=0.2, col="gray30")#
+plot(mat1s[[1]], col=NA, axes=F, ann=F)#
+for (h in 1:length(variants))#
+	{#
+		xx_l = c(mat1s[[h]][,1],rev(mat1s[[h]][,1])); yy_l = c(rep(0,dim(mat1s[[h]])[1]),rev(mat1s[[h]][,2]))#
+		getOption("scipen"); opt = options("scipen"=20); polygon(xx_l, yy_l, col=variantColours2[h], border=0)#
+		lines(mat1s[[h]], lwd=1, col=variantColours1[h]); lines(mat2s[[h]], lwd=1, col=variantColours1[h], lty=2)#
+	}#
+dates = c("2020-07-01","2021-01-01","2021-04-01","2021-08-01","2022-01-01","2022-04-01"); ats = decimal_date(ymd(dates))#
+axis(side=1, lwd.tick=0.2, cex.axis=0.65, lwd=0.2, tck=-0.022, col="gray30", col.axis="gray30", mgp=c(0,0.11,0), at=ats, label=dates)#
+axis(side=2, lwd.tick=0.2, cex.axis=0.65, lwd=0.2, tck=-0.022, col="gray30", col.axis="gray30", mgp=c(1,0.30,0), at=seq(0,4,1))#
+title(ylab="number of clusters & averaged size", cex.lab=0.75, mgp=c(1.3,0,0), col.lab="gray30")
+title(ylab="number of clusters & averaged size", cex.lab=0.70, mgp=c(1.3,0,0), col.lab="gray30")
+par(mfrow=c(1,2), oma=c(0,0,0,0), mar=c(1.5,2.5,0,1), mgp=c(1.2,0.2,0), lwd=0.2, col="gray30")#
+plot(mat1s[[1]], col=NA, axes=F, ann=F)#
+for (h in 1:length(variants))#
+	{#
+		xx_l = c(mat1s[[h]][,1],rev(mat1s[[h]][,1])); yy_l = c(rep(0,dim(mat1s[[h]])[1]),rev(mat1s[[h]][,2]))#
+		getOption("scipen"); opt = options("scipen"=20); polygon(xx_l, yy_l, col=variantColours2[h], border=0)#
+		lines(mat1s[[h]], lwd=1, col=variantColours1[h]); lines(mat2s[[h]], lwd=1, col=variantColours1[h], lty=2)#
+	}#
+dates = c("2020-07-01","2021-01-01","2021-04-01","2021-08-01","2022-01-01","2022-04-01"); ats = decimal_date(ymd(dates))#
+axis(side=1, lwd.tick=0.2, cex.axis=0.65, lwd=0.2, tck=-0.026, col="gray30", col.axis="gray30", mgp=c(0,0.11,0), at=ats, label=dates)#
+axis(side=2, lwd.tick=0.2, cex.axis=0.65, lwd=0.2, tck=-0.026, col="gray30", col.axis="gray30", mgp=c(1,0.30,0), at=seq(0,4,1))#
+title(ylab="number of clusters & averaged size", cex.lab=0.70, mgp=c(1.3,0,0), col.lab="gray30")
+par(mfrow=c(1,2), oma=c(0,0,0,0), mar=c(1.5,2.5,0,1), mgp=c(1.2,0.2,0), lwd=0.2, col="gray30")#
+plot(mat1s[[1]], col=NA, axes=F, ann=F)#
+for (h in 1:length(variants))#
+	{#
+		xx_l = c(mat1s[[h]][,1],rev(mat1s[[h]][,1])); yy_l = c(rep(0,dim(mat1s[[h]])[1]),rev(mat1s[[h]][,2]))#
+		getOption("scipen"); opt = options("scipen"=20); polygon(xx_l, yy_l, col=variantColours2[h], border=0)#
+		lines(mat1s[[h]], lwd=1, col=variantColours1[h]); lines(mat2s[[h]], lwd=1, col=variantColours1[h], lty=2)#
+	}#
+dates = c("2020-07-01","2021-01-01","2021-04-01","2021-09-01","2022-01-01","2022-04-01"); ats = decimal_date(ymd(dates))#
+axis(side=1, lwd.tick=0.2, cex.axis=0.65, lwd=0.2, tck=-0.03, col="gray30", col.axis="gray30", mgp=c(0,0.11,0), at=ats, label=dates)#
+axis(side=2, lwd.tick=0.2, cex.axis=0.65, lwd=0.2, tck=-0.03, col="gray30", col.axis="gray30", mgp=c(1,0.30,0), at=seq(0,4,1))#
+title(ylab="number of clusters & averaged size", cex.lab=0.70, mgp=c(1.3,0,0), col.lab="gray30")
+table(circulatingClades)
+nberOfDays = as.numeric(ymd("2022-03-31")-ymd("2020-12-01"))#
+minYear = decimal_date(ymd("2020-12-01")); maxYear = decimal_date(ymd("2022-03-31"))#
+timeSlices = nberOfDays; timePoints = seq(minYear,maxYear,(maxYear-minYear)/timeSlices)#
+mat1s = list(); mat2s = list(); mat3s = list()
+h
+localTreesDirectory = paste0("DTA_boroughs_analyses/Alpha_DTA/All_clades_ext")#
+		mat1a = matrix(nrow=timeSlices, ncol=nberOfExtractionFiles) # evolution of the ratio between (i) and (ii):#
+				# (i) number of distinct circulating clusters; (ii) number of circulating lineages (branches)#
+		mat2a = matrix(nrow=timeSlices, ncol=nberOfExtractionFiles) # evolution of the averaged size of circulating clusters#
+		mat3a = matrix(nrow=timeSlices, ncol=nberOfExtractionFiles) # evolution of the averaged duration since cluster TMRCA#
+		for (i in 1:nberOfExtractionFiles)#
+			{#
+				tab = read.csv(paste0("DTA_boroughs_analyses/Alpha_DTA/All_clades_ext/TreeExtractions_",i,".csv"), head=T)#
+				for (j in 2:length(timePoints))#
+					{#
+						sub = tab[which((tab[,"startYear"]>timePoints[j-1])&(tab[,"endYear"]<timePoints[j])),]#
+						circulatingClades = sub[,"cladeID"]; mat1a[j-1,i] = length(unique(circulatingClades))/dim(sub)[1]#
+						if (length(circulatingClades) != 0)#
+							{#
+								mat2a[j-1,i] = mean(table(circulatingClades)); tMRCAs = rep(NA, length(circulatingClades))#
+								for (k in 1:length(tMRCAs))#
+									{#
+										tMRCAs[k] = min(tab[which(tab[,"cladeID"]==circulatingClades[k]),"startYear"])#
+									}#
+								mat3a[j-1,i] = mean(c(timePoints[j-1],timePoints[j]))-mean(tMRCAs)#
+							}	else	{#
+								mat2a[j-1,i] = 0; mat3a[j-1,i] = NA#
+							}#
+					}#
+			}#
+		mat1b = matrix(nrow=timeSlices, ncol=4); colnames(mat1b) = c("time","median","lower95hpd","higher95hpd")#
+		mat2b = matrix(nrow=timeSlices, ncol=4); colnames(mat2b) = c("time","median","lower95hpd","higher95hpd")#
+		mat3b = matrix(nrow=timeSlices, ncol=4); colnames(mat3b) = c("time","median","lower95hpd","higher95hpd")#
+		for (i in 1:dim(mat1b)[1])#
+			{#
+				mat1b[i,"time"] = mean(c(timePoints[i],timePoints[i+1])); mat1b[i,"median"] = median(mat1a[i,],na.rm=T)#
+				mat1b[i,c("lower95hpd","higher95hpd")] = quantile(mat1a[i,],c(0.025,0.975),na.rm=T)#
+				mat2b[i,"time"] = mean(c(timePoints[i],timePoints[i+1])); mat2b[i,"median"] = median(mat2a[i,],na.rm=T)#
+				mat2b[i,c("lower95hpd","higher95hpd")] = quantile(mat2a[i,],c(0.025,0.975),na.rm=T)#
+				mat3b[i,"time"] = mean(c(timePoints[i],timePoints[i+1])); mat3b[i,"median"] = median(mat3a[i,],na.rm=T)#
+				mat3b[i,c("lower95hpd","higher95hpd")] = quantile(mat3a[i,],c(0.025,0.975),na.rm=T)#
+			}#
+		# N.B.: logical to do not observe variations among trees as the BSSVS was performed on a fixed tree topology#
+		mat1c = matrix(nrow=timeSlices, ncol=2); mat2c = matrix(nrow=timeSlices, ncol=2); mat3c = matrix(nrow=timeSlices, ncol=2)#
+		colnames(mat1c) = c("time","sliddingW7d"); colnames(mat2c) = c("time","sliddingW7d"); colnames(mat3c) = c("time","sliddingW7d")#
+		for (i in 4:(dim(mat1c)[1]-3))#
+			{#
+				indices = seq(i-3,i+3)#
+				mat1c[i,"time"] = mat1b[i,"time"]; mat1c[i,"sliddingW7d"] = mean(mat1b[indices,"median"],na.rm=T)#
+				mat2c[i,"time"] = mat2b[i,"time"]; mat2c[i,"sliddingW7d"] = mean(mat2b[indices,"median"],na.rm=T)#
+				mat3c[i,"time"] = mat3b[i,"time"]; mat3c[i,"sliddingW7d"] = mean(mat3b[indices,"median"],na.rm=T)#
+			}#
+		mat1c = mat1c[-which(is.na(mat1c[,"time"])),]; mat2c = mat2c[-which(is.na(mat2c[,"time"])),]; mat3c = mat3c[-which(is.na(mat3c[,"time"])),]#
+		indices = seq(7,dim(mat1c)[1],7); mat1c = mat1c[indices,]; mat2c = mat2c[indices,]; mat3c = mat3c[indices,]#
+		mat1s[[h]] = mat1c; mat2s[[h]] = mat2c; mat3s[[h]] = mat3c
+dev.new(width=11, height=2.2)#
+par(mfrow=c(1,2), oma=c(0,0,0,0), mar=c(1.5,2.5,0,1), mgp=c(1.2,0.2,0), lwd=0.2, col="gray30")#
+plot(mat1s[[1]], col=NA, axes=F, ann=F)#
+for (h in 1:length(variants))#
+	{#
+		xx_l = c(mat1s[[h]][,1],rev(mat1s[[h]][,1])); yy_l = c(rep(0,dim(mat1s[[h]])[1]),rev(mat1s[[h]][,2]))#
+		getOption("scipen"); opt = options("scipen"=20); polygon(xx_l, yy_l, col=variantColours2[h], border=0)#
+		lines(mat1s[[h]], lwd=1, col=variantColours1[h]); lines(mat3s[[h]], lwd=1, col=variantColours1[h], lty=2)#
+	}#
+dates = c("2020-07-01","2021-01-01","2021-04-01","2021-09-01","2022-01-01","2022-04-01"); ats = decimal_date(ymd(dates))#
+axis(side=1, lwd.tick=0.2, cex.axis=0.65, lwd=0.2, tck=-0.03, col="gray30", col.axis="gray30", mgp=c(0,0.11,0), at=ats, label=dates)#
+axis(side=2, lwd.tick=0.2, cex.axis=0.65, lwd=0.2, tck=-0.03, col="gray30", col.axis="gray30", mgp=c(1,0.30,0), at=seq(0,1,0.2))#
+title(ylab="number of clusters & averaged size", cex.lab=0.70, mgp=c(1.3,0,0), col.lab="gray30")
+mat1c
+nberOfDays = as.numeric(ymd("2022-03-31")-ymd("2020-12-01"))#
+minYear = decimal_date(ymd("2020-12-01")); maxYear = decimal_date(ymd("2022-03-31"))#
+timeSlices = nberOfDays; timePoints = seq(minYear,maxYear,(maxYear-minYear)/timeSlices)#
+mat1s = list(); mat2s = list(); mat3s = list()#
+for (h in 1:length(variants))#
+	{#
+		localTreesDirectory = paste0("DTA_boroughs_analyses/Alpha_DTA/All_clades_ext")#
+		mat1a = matrix(nrow=timeSlices, ncol=nberOfExtractionFiles) # evolution of the ratio between the number of circulating clusters and lineages (branches)#
+		mat2a = matrix(nrow=timeSlices, ncol=nberOfExtractionFiles) # evolution of the averaged proportion of circulating lineages belonging to the same cluster#
+		mat3a = matrix(nrow=timeSlices, ncol=nberOfExtractionFiles) # evolution of the averaged duration since cluster TMRCA#
+		for (i in 1:nberOfExtractionFiles)#
+			{#
+				tab = read.csv(paste0("DTA_boroughs_analyses/Alpha_DTA/All_clades_ext/TreeExtractions_",i,".csv"), head=T)#
+				for (j in 2:length(timePoints))#
+					{#
+						sub = tab[which((tab[,"startYear"]>timePoints[j-1])&(tab[,"endYear"]<timePoints[j])),]#
+						circulatingClades = sub[,"cladeID"]; mat1a[j-1,i] = length(unique(circulatingClades))/dim(sub)[1]#
+						if (length(circulatingClades) != 0)#
+							{#
+								mat2a[j-1,i] = mean(table(circulatingClades))/dim(sub)[1]#
+								tMRCAs = rep(NA, length(circulatingClades))#
+								for (k in 1:length(tMRCAs))#
+									{#
+										tMRCAs[k] = min(tab[which(tab[,"cladeID"]==circulatingClades[k]),"startYear"])#
+									}#
+								mat3a[j-1,i] = mean(c(timePoints[j-1],timePoints[j]))-mean(tMRCAs)#
+							}	else	{#
+								mat2a[j-1,i] = 0; mat3a[j-1,i] = NA#
+							}#
+					}#
+			}#
+		mat1b = matrix(nrow=timeSlices, ncol=4); colnames(mat1b) = c("time","median","lower95hpd","higher95hpd")#
+		mat2b = matrix(nrow=timeSlices, ncol=4); colnames(mat2b) = c("time","median","lower95hpd","higher95hpd")#
+		mat3b = matrix(nrow=timeSlices, ncol=4); colnames(mat3b) = c("time","median","lower95hpd","higher95hpd")#
+		for (i in 1:dim(mat1b)[1])#
+			{#
+				mat1b[i,"time"] = mean(c(timePoints[i],timePoints[i+1])); mat1b[i,"median"] = median(mat1a[i,],na.rm=T)#
+				mat1b[i,c("lower95hpd","higher95hpd")] = quantile(mat1a[i,],c(0.025,0.975),na.rm=T)#
+				mat2b[i,"time"] = mean(c(timePoints[i],timePoints[i+1])); mat2b[i,"median"] = median(mat2a[i,],na.rm=T)#
+				mat2b[i,c("lower95hpd","higher95hpd")] = quantile(mat2a[i,],c(0.025,0.975),na.rm=T)#
+				mat3b[i,"time"] = mean(c(timePoints[i],timePoints[i+1])); mat3b[i,"median"] = median(mat3a[i,],na.rm=T)#
+				mat3b[i,c("lower95hpd","higher95hpd")] = quantile(mat3a[i,],c(0.025,0.975),na.rm=T)#
+			}#
+		# N.B.: logical to do not observe variations among trees as the BSSVS was performed on a fixed tree topology#
+		mat1c = matrix(nrow=timeSlices, ncol=2); mat2c = matrix(nrow=timeSlices, ncol=2); mat3c = matrix(nrow=timeSlices, ncol=2)#
+		colnames(mat1c) = c("time","sliddingW7d"); colnames(mat2c) = c("time","sliddingW7d"); colnames(mat3c) = c("time","sliddingW7d")#
+		for (i in 4:(dim(mat1c)[1]-3))#
+			{#
+				indices = seq(i-3,i+3)#
+				mat1c[i,"time"] = mat1b[i,"time"]; mat1c[i,"sliddingW7d"] = mean(mat1b[indices,"median"],na.rm=T)#
+				mat2c[i,"time"] = mat2b[i,"time"]; mat2c[i,"sliddingW7d"] = mean(mat2b[indices,"median"],na.rm=T)#
+				mat3c[i,"time"] = mat3b[i,"time"]; mat3c[i,"sliddingW7d"] = mean(mat3b[indices,"median"],na.rm=T)#
+			}#
+		mat1c = mat1c[-which(is.na(mat1c[,"time"])),]; mat2c = mat2c[-which(is.na(mat2c[,"time"])),]; mat3c = mat3c[-which(is.na(mat3c[,"time"])),]#
+		indices = seq(7,dim(mat1c)[1],7); mat1c = mat1c[indices,]; mat2c = mat2c[indices,]; mat3c = mat3c[indices,]#
+		mat1s[[h]] = mat1c; mat2s[[h]] = mat2c; mat3s[[h]] = mat3c#
+	}
+dev.new(width=11, height=2.2)#
+par(mfrow=c(1,2), oma=c(0,0,0,0), mar=c(1.5,2.5,0,1), mgp=c(1.2,0.2,0), lwd=0.2, col="gray30")#
+plot(mat1s[[1]], col=NA, axes=F, ann=F)#
+for (h in 1:length(variants))#
+	{#
+		xx_l = c(mat1s[[h]][,1],rev(mat1s[[h]][,1])); yy_l = c(rep(0,dim(mat1s[[h]])[1]),rev(mat1s[[h]][,2]))#
+		getOption("scipen"); opt = options("scipen"=20); polygon(xx_l, yy_l, col=variantColours2[h], border=0)#
+		lines(mat1s[[h]], lwd=1, col=variantColours1[h]); lines(mat3s[[h]], lwd=1, col=variantColours1[h], lty=2)#
+	}#
+dates = c("2020-07-01","2021-01-01","2021-04-01","2021-09-01","2022-01-01","2022-04-01"); ats = decimal_date(ymd(dates))#
+axis(side=1, lwd.tick=0.2, cex.axis=0.65, lwd=0.2, tck=-0.03, col="gray30", col.axis="gray30", mgp=c(0,0.11,0), at=ats, label=dates)#
+axis(side=2, lwd.tick=0.2, cex.axis=0.65, lwd=0.2, tck=-0.03, col="gray30", col.axis="gray30", mgp=c(1,0.30,0), at=seq(0,1,0.2))#
+title(ylab="number of clusters & averaged size", cex.lab=0.70, mgp=c(1.3,0,0), col.lab="gray30")
+par(mfrow=c(1,2), oma=c(0,0,0,0), mar=c(1.5,2.5,0,1), mgp=c(1.2,0.2,0), lwd=0.2, col="gray30")#
+plot(mat1s[[1]], col=NA, axes=F, ann=F)#
+for (h in 1:length(variants))#
+	{#
+		xx_l = c(mat1s[[h]][,1],rev(mat1s[[h]][,1])); yy_l = c(rep(0,dim(mat1s[[h]])[1]),rev(mat1s[[h]][,2]))#
+		getOption("scipen"); opt = options("scipen"=20); polygon(xx_l, yy_l, col=variantColours2[h], border=0)#
+		lines(mat2s[[h]], lwd=1, col=variantColours1[h]); lines(mat3s[[h]], lwd=1, col=variantColours1[h], lty=2)#
+	}#
+dates = c("2020-07-01","2021-01-01","2021-04-01","2021-09-01","2022-01-01","2022-04-01"); ats = decimal_date(ymd(dates))#
+axis(side=1, lwd.tick=0.2, cex.axis=0.65, lwd=0.2, tck=-0.03, col="gray30", col.axis="gray30", mgp=c(0,0.11,0), at=ats, label=dates)#
+axis(side=2, lwd.tick=0.2, cex.axis=0.65, lwd=0.2, tck=-0.03, col="gray30", col.axis="gray30", mgp=c(1,0.30,0), at=seq(0,1,0.2))#
+title(ylab="number of clusters & averaged size", cex.lab=0.70, mgp=c(1.3,0,0), col.lab="gray30")
+par(mfrow=c(1,2), oma=c(0,0,0,0), mar=c(1.5,2.5,0,1), mgp=c(1.2,0.2,0), lwd=0.2, col="gray30")#
+plot(mat2s[[1]], col=NA, axes=F, ann=F)#
+for (h in 1:length(variants))#
+	{#
+		# xx_l = c(mat1s[[h]][,1],rev(mat1s[[h]][,1])); yy_l = c(rep(0,dim(mat1s[[h]])[1]),rev(mat1s[[h]][,2]))#
+		# getOption("scipen"); opt = options("scipen"=20); polygon(xx_l, yy_l, col=variantColours2[h], border=0)#
+		lines(mat2s[[h]], lwd=1, col=variantColours1[h]); lines(mat3s[[h]], lwd=1, col=variantColours1[h], lty=2)#
+	}#
+dates = c("2020-07-01","2021-01-01","2021-04-01","2021-09-01","2022-01-01","2022-04-01"); ats = decimal_date(ymd(dates))#
+axis(side=1, lwd.tick=0.2, cex.axis=0.65, lwd=0.2, tck=-0.03, col="gray30", col.axis="gray30", mgp=c(0,0.11,0), at=ats, label=dates)#
+axis(side=2, lwd.tick=0.2, cex.axis=0.65, lwd=0.2, tck=-0.03, col="gray30", col.axis="gray30", mgp=c(1,0.30,0), at=seq(0,1,0.2))#
+title(ylab="number of clusters & averaged size", cex.lab=0.70, mgp=c(1.3,0,0), col.lab="gray30")
+mat1c = matrix(nrow=timeSlices, ncol=2); mat2c = matrix(nrow=timeSlices, ncol=2); mat3c = matrix(nrow=timeSlices, ncol=2)#
+		colnames(mat1c) = c("time","sliddingW7d"); colnames(mat2c) = c("time","sliddingW7d"); colnames(mat3c) = c("time","sliddingW7d")#
+		for (i in 8:(dim(mat1c)[1]-7))#
+			{#
+				indices = seq(i-7,i+3)#
+				mat1c[i,"time"] = mat1b[i,"time"]; mat1c[i,"sliddingW7d"] = mean(mat1b[indices,"median"],na.rm=T)#
+				mat2c[i,"time"] = mat2b[i,"time"]; mat2c[i,"sliddingW7d"] = mean(mat2b[indices,"median"],na.rm=T)#
+				mat3c[i,"time"] = mat3b[i,"time"]; mat3c[i,"sliddingW7d"] = mean(mat3b[indices,"median"],na.rm=T)#
+			}#
+		mat1c = mat1c[-which(is.na(mat1c[,"time"])),]; mat2c = mat2c[-which(is.na(mat2c[,"time"])),]; mat3c = mat3c[-which(is.na(mat3c[,"time"])),]#
+		indices = seq(7,dim(mat1c)[1],7); mat1c = mat1c[indices,]; mat2c = mat2c[indices,]; mat3c = mat3c[indices,]#
+		mat1s[[h]] = mat1c; mat2s[[h]] = mat2c; mat3s[[h]] = mat3c
+par(mfrow=c(1,2), oma=c(0,0,0,0), mar=c(1.5,2.5,0,1), mgp=c(1.2,0.2,0), lwd=0.2, col="gray30")#
+plot(mat2s[[1]], col=NA, axes=F, ann=F)#
+for (h in 1:length(variants))#
+	{#
+		xx_l = c(mat2s[[h]][,1],rev(mat1s[[h]][,1])); yy_l = c(rep(0,dim(mat2s[[h]])[1]),rev(mat2s[[h]][,2]))#
+		getOption("scipen"); opt = options("scipen"=20); polygon(xx_l, yy_l, col=variantColours2[h], border=0)#
+		lines(mat2s[[h]], lwd=1, col=variantColours1[h]); lines(mat1s[[h]], lwd=1, col=variantColours1[h], lty=2)#
+	}#
+dates = c("2020-07-01","2021-01-01","2021-04-01","2021-09-01","2022-01-01","2022-04-01"); ats = decimal_date(ymd(dates))#
+axis(side=1, lwd.tick=0.2, cex.axis=0.65, lwd=0.2, tck=-0.03, col="gray30", col.axis="gray30", mgp=c(0,0.11,0), at=ats, label=dates)#
+axis(side=2, lwd.tick=0.2, cex.axis=0.65, lwd=0.2, tck=-0.03, col="gray30", col.axis="gray30", mgp=c(1,0.30,0), at=seq(0,1,0.2))#
+title(ylab="number of clusters & averaged size", cex.lab=0.70, mgp=c(1.3,0,0), col.lab="gray30")
+mat1c = matrix(nrow=timeSlices, ncol=2); mat2c = matrix(nrow=timeSlices, ncol=2); mat3c = matrix(nrow=timeSlices, ncol=2)#
+		colnames(mat1c) = c("time","sliddingW7d"); colnames(mat2c) = c("time","sliddingW7d"); colnames(mat3c) = c("time","sliddingW7d")#
+		for (i in 8:(dim(mat1c)[1]-7))#
+			{#
+				indices = seq(i-7,i+7)#
+				mat1c[i,"time"] = mat1b[i,"time"]; mat1c[i,"sliddingW7d"] = mean(mat1b[indices,"median"],na.rm=T)#
+				mat2c[i,"time"] = mat2b[i,"time"]; mat2c[i,"sliddingW7d"] = mean(mat2b[indices,"median"],na.rm=T)#
+				mat3c[i,"time"] = mat3b[i,"time"]; mat3c[i,"sliddingW7d"] = mean(mat3b[indices,"median"],na.rm=T)#
+			}#
+		mat1c = mat1c[-which(is.na(mat1c[,"time"])),]; mat2c = mat2c[-which(is.na(mat2c[,"time"])),]; mat3c = mat3c[-which(is.na(mat3c[,"time"])),]#
+		indices = seq(7,dim(mat1c)[1],7); mat1c = mat1c[indices,]; mat2c = mat2c[indices,]; mat3c = mat3c[indices,]#
+		mat1s[[h]] = mat1c; mat2s[[h]] = mat2c; mat3s[[h]] = mat3c
+mat1c = matrix(nrow=timeSlices, ncol=2); mat2c = matrix(nrow=timeSlices, ncol=2); mat3c = matrix(nrow=timeSlices, ncol=2)#
+		colnames(mat1c) = c("time","sliddingW7d"); colnames(mat2c) = c("time","sliddingW7d"); colnames(mat3c) = c("time","sliddingW7d")#
+		for (i in 8:(dim(mat1c)[1]-7))#
+			{#
+				indices = seq(i-7,i+7)#
+				mat1c[i,"time"] = mat1b[i,"time"]; mat1c[i,"sliddingW7d"] = mean(mat1b[indices,"median"],na.rm=T)#
+				mat2c[i,"time"] = mat2b[i,"time"]; mat2c[i,"sliddingW7d"] = mean(mat2b[indices,"median"],na.rm=T)#
+				mat3c[i,"time"] = mat3b[i,"time"]; mat3c[i,"sliddingW7d"] = mean(mat3b[indices,"median"],na.rm=T)#
+			}#
+		mat1c = mat1c[-which(is.na(mat1c[,"time"])),]; mat2c = mat2c[-which(is.na(mat2c[,"time"])),]; mat3c = mat3c[-which(is.na(mat3c[,"time"])),]#
+		# indices = seq(7,dim(mat1c)[1],7); mat1c = mat1c[indices,]; mat2c = mat2c[indices,]; mat3c = mat3c[indices,]#
+		mat1s[[h]] = mat1c; mat2s[[h]] = mat2c; mat3s[[h]] = mat3c
+par(mfrow=c(1,2), oma=c(0,0,0,0), mar=c(1.5,2.5,0,1), mgp=c(1.2,0.2,0), lwd=0.2, col="gray30")#
+plot(mat2s[[1]], col=NA, axes=F, ann=F)#
+for (h in 1:length(variants))#
+	{#
+		xx_l = c(mat2s[[h]][,1],rev(mat1s[[h]][,1])); yy_l = c(rep(0,dim(mat2s[[h]])[1]),rev(mat2s[[h]][,2]))#
+		getOption("scipen"); opt = options("scipen"=20); polygon(xx_l, yy_l, col=variantColours2[h], border=0)#
+		lines(mat2s[[h]], lwd=1, col=variantColours1[h]); lines(mat1s[[h]], lwd=1, col=variantColours1[h], lty=2)#
+	}#
+dates = c("2020-07-01","2021-01-01","2021-04-01","2021-09-01","2022-01-01","2022-04-01"); ats = decimal_date(ymd(dates))#
+axis(side=1, lwd.tick=0.2, cex.axis=0.65, lwd=0.2, tck=-0.03, col="gray30", col.axis="gray30", mgp=c(0,0.11,0), at=ats, label=dates)#
+axis(side=2, lwd.tick=0.2, cex.axis=0.65, lwd=0.2, tck=-0.03, col="gray30", col.axis="gray30", mgp=c(1,0.30,0), at=seq(0,1,0.2))#
+title(ylab="number of clusters & averaged size", cex.lab=0.70, mgp=c(1.3,0,0), col.lab="gray30")
+seq(i-7,i+7)
+par(mfrow=c(1,2), oma=c(0,0,0,0), mar=c(1.5,2.5,0,1), mgp=c(1.2,0.2,0), lwd=0.2, col="gray30")#
+plot(mat2s[[1]], col=NA, axes=F, ann=F, ylim=c(0,1))#
+for (h in 1:length(variants))#
+	{#
+		xx_l = c(mat2s[[h]][,1],rev(mat1s[[h]][,1])); yy_l = c(rep(0,dim(mat2s[[h]])[1]),rev(mat2s[[h]][,2]))#
+		getOption("scipen"); opt = options("scipen"=20); polygon(xx_l, yy_l, col=variantColours2[h], border=0)#
+		lines(mat2s[[h]], lwd=1, col=variantColours1[h]); lines(mat1s[[h]], lwd=1, col=variantColours1[h], lty=2)#
+	}#
+dates = c("2020-07-01","2021-01-01","2021-04-01","2021-09-01","2022-01-01","2022-04-01"); ats = decimal_date(ymd(dates))#
+axis(side=1, lwd.tick=0.2, cex.axis=0.65, lwd=0.2, tck=-0.03, col="gray30", col.axis="gray30", mgp=c(0,0.11,0), at=ats, label=dates)#
+axis(side=2, lwd.tick=0.2, cex.axis=0.65, lwd=0.2, tck=-0.03, col="gray30", col.axis="gray30", mgp=c(1,0.30,0), at=seq(0,1,0.2))#
+title(ylab="number of clusters & averaged size", cex.lab=0.70, mgp=c(1.3,0,0), col.lab="gray30")
+tab = read.csv("All_NYU_alignment_data_26032022/Delta_metadata.csv", head=T)
+getwd()
+head(tab)
+tab = read.csv("All_NYU_alignment_data/All_NYU_alignment_data_26032022/Delta_metadata.csv", head=T)
+head(tab)
+tab = read.csv("All_NYU_alignment_data/All_NYU_alignment_data_26032022/Delta_metadata.csv", head=T, sep=";")
+head(tab)
+indices = which((tab[,"division"]=="New York")&((tab[,"location"]=="New York City")|(tab[,"location"]=="")|(is.na(tab[,"location"]))))
+length(indices)
+sequencesToDiscard = tab[indices,"strain"]; tab = tab[-indices,]
+seq = scan("All_NYU_alignment_data/All_NYU_alignment_data_26032022/Delta_sequences.fasta", what="", sep="\n", quiet=T)
+sequencesToDiscard = paste0(">",sequencesToDiscard)
+head(sequencesToDiscard)
+indices = which(seq%in%sequencesToDiscard)
+indices
+length(sequencesToDiscard)
+seqs1 = scan("All_NYU_alignment_data/All_NYU_alignment_data_26032022/Delta_sequences.fasta", what="", sep="\n", quiet=T)#
+seqs2 = c(); printingLines = TRUE; n = 0#
+for (i in 1:length(seqs1))#
+	{#
+		if (grepl(">",seqs1[i]) == TRUE)#
+			{#
+				if (seqs1[i]%in%sequencesToDiscard) printingLines = FALSE#
+				if (!seqs1[i]%in%sequencesToDiscard) printingLines = TRUE#
+				n = n+1; print(n)#
+			}#
+		if (printingLines == TRUE) seqs2 = c(seqs2, seqs1[i])#
+	}
+seqs2 = c(); indices = which(grepl(">",seqs1))
+for (i in 1:length(indices))#
+	{#
+		if (!seqs1[indices[i]]%in%sequencesToDiscard)#
+			{#
+				seqs2 = c(seqs2, seqs1[(indices[i]):(indices[i+1]-1)])#
+			}#
+	}
+i
+length(indices)
+cat(seqs1[(indices[i]):(indices[i+1]-1)])
+sink("All_NYU_alignment_data/All_NYU_alignment_data_26032022/Delta_sequences_light.fasta")#
+for (i in 1:length(indices))#
+	{#
+		if (!seqs1[indices[i]]%in%sequencesToDiscard)#
+			{#
+				cat(seqs1[indices[i]],"\n",sep"")#
+				cat(seqs1[(indices[i]+1):(indices[i+1]-1)],"\n",sep="")#
+			}#
+	}#
+sink(NULL)
+sink("All_NYU_alignment_data/All_NYU_alignment_data_26032022/Delta_sequences_light.fasta")#
+for (i in 1:length(indices))#
+	{#
+		if (!seqs1[indices[i]]%in%sequencesToDiscard)#
+			{#
+				cat(seqs1[indices[i]],"\n",sep="")#
+				cat(seqs1[(indices[i]+1):(indices[i+1]-1)],"\n",sep="")#
+			}#
+	}#
+sink(NULL)
+i
+length(indices)
+seqs = scan("All_NYU_alignment_data/All_NYU_alignment_data_26032022/Delta_sequences.fasta", what="", sep="\n", quiet=T)#
+indices = which(grepl(">",seqs)); sink("All_NYU_alignment_data/All_NYU_alignment_data_26032022/Delta_sequences_light.fasta")#
+for (i in 1:length(indices))#
+	{#
+		if (!seqs[indices[i]]%in%sequencesToDiscard)#
+			{#
+				cat(seqs[indices[i]],"\n",sep="")#
+				if (i < length(indices)) cat(seqs[(indices[i]+1):(indices[i+1]-1)],"\n",sep="")#
+				if (i == length(indices)) cat(seqs[(indices[i]+1):length(seqs)],"\n",sep="")#
+			}#
+	}#
+sink(NULL)
+102869-44000
+tab = read.csv("All_NYU_alignment_data/All_NYU_alignment_data_26032022/Delta_metadata.csv", head=T, sep=";")#
+indices = which((tab[,"division"]=="New York")&((tab[,"location"]=="New York City")|(tab[,"location"]=="")|(is.na(tab[,"location"]))))#
+sequencesToDiscard = tab[indices,"strain"]; sequencesToDiscard = paste0(">",sequencesToDiscard); tab = tab[-indices,]#
+write.csv(tab, "All_NYU_alignment_data/All_NYU_alignment_data_26032022/Delta_metadata_light.csv")
+density(WDC)
+disparsalStatistics = read.table(paste0("RRW_dispersal_statistics/",variants[h],"_estimated_dispersal_statistics.txt"), head=T)#
+		WDC = disparsalStatistics[,"weighted_diffusion_coefficient"]
+density(WDC)
+pdf(paste0("Figure_B_NEW.pdf"), width=11, height=2.2) # dev.new(width=11, height=2.2)#
+par(mfrow=c(1,2), oma=c(0,0,0,0), mar=c(1.5,2.5,0,1), mgp=c(1.2,0.2,0), lwd=0.2, col="gray30")#
+plot(mat2s[[1]], col=NA, axes=F, ann=F, ylim=c(0,1))#
+for (h in 1:length(variants))#
+	{#
+		xx_l = c(mat2s[[h]][,1],rev(mat1s[[h]][,1])); yy_l = c(rep(0,dim(mat2s[[h]])[1]),rev(mat2s[[h]][,2]))#
+		getOption("scipen"); opt = options("scipen"=20); polygon(xx_l, yy_l, col=variantColours2[h], border=0)#
+		lines(mat2s[[h]], lwd=1, col=variantColours1[h]); lines(mat1s[[h]], lwd=1, col=variantColours1[h], lty=2)#
+	}#
+dates = c("2020-07-01","2021-01-01","2021-04-01","2021-09-01","2022-01-01","2022-04-01"); ats = decimal_date(ymd(dates))#
+axis(side=1, lwd.tick=0.2, cex.axis=0.65, lwd=0.2, tck=-0.03, col="gray30", col.axis="gray30", mgp=c(0,0.11,0), at=ats, label=dates)#
+axis(side=2, lwd.tick=0.2, cex.axis=0.65, lwd=0.2, tck=-0.03, col="gray30", col.axis="gray30", mgp=c(1,0.30,0), at=seq(0,1,0.2))#
+title(ylab="proportions p1 and p2", cex.lab=0.70, mgp=c(1.3,0,0), col.lab="gray30")#
+for (h in 1:length(variants))#
+	{#
+		disparsalStatistics = read.table(paste0("RRW_dispersal_statistics/",variants[h],"_estimated_dispersal_statistics.txt"), head=T)#
+		WDC = disparsalStatistics[,"weighted_diffusion_coefficient"]#
+		if (h == 1) plot(density(WDC), col=NA, axes=F, ann=F)#
+		polygon(density(WDC), col=variantColours2[h], border=NA); lines(density(WDC), lwd=1, col=variantColours1[h])#
+	}#
+axis(side=1, lwd.tick=0.2, cex.axis=0.65, lwd=0.2, tck=-0.03, col="gray30", col.axis="gray30", mgp=c(0,0.11,0), at=ats, label=dates)#
+axis(side=2, lwd.tick=0.2, cex.axis=0.65, lwd=0.2, tck=-0.03, col="gray30", col.axis="gray30", mgp=c(1,0.30,0), at=seq(0,1,0.2))#
+title(ylab="weighted diffusion coefficient", cex.lab=0.70, mgp=c(1.3,0,0), col.lab="gray30")#
+dev.off()
+pdf(paste0("Figure_B_NEW.pdf"), width=11, height=2.2) # dev.new(width=11, height=2.2)#
+par(mfrow=c(1,2), oma=c(0,0,0,0), mar=c(1.5,2.5,0,1), mgp=c(1.2,0.2,0), lwd=0.2, col="gray30")#
+plot(mat2s[[1]], col=NA, axes=F, ann=F, ylim=c(0,1))#
+for (h in 1:length(variants))#
+	{#
+		xx_l = c(mat2s[[h]][,1],rev(mat1s[[h]][,1])); yy_l = c(rep(0,dim(mat2s[[h]])[1]),rev(mat2s[[h]][,2]))#
+		getOption("scipen"); opt = options("scipen"=20); polygon(xx_l, yy_l, col=variantColours2[h], border=0)#
+		lines(mat2s[[h]], lwd=1, col=variantColours1[h]); lines(mat1s[[h]], lwd=1, col=variantColours1[h], lty=2)#
+	}#
+dates = c("2020-07-01","2021-01-01","2021-04-01","2021-09-01","2022-01-01","2022-04-01"); ats = decimal_date(ymd(dates))#
+axis(side=1, lwd.tick=0.2, cex.axis=0.65, lwd=0.2, tck=-0.03, col="gray30", col.axis="gray30", mgp=c(0,0.11,0), at=ats, label=dates)#
+axis(side=2, lwd.tick=0.2, cex.axis=0.65, lwd=0.2, tck=-0.03, col="gray30", col.axis="gray30", mgp=c(1,0.30,0), at=seq(0,1,0.2))#
+title(ylab="proportions p1 and p2", cex.lab=0.70, mgp=c(1.3,0,0), col.lab="gray30")#
+for (h in 1:length(variants))#
+	{#
+		disparsalStatistics = read.table(paste0("RRW_dispersal_statistics/",variants[h],"_estimated_dispersal_statistics.txt"), head=T)#
+		WDC = disparsalStatistics[,"weighted_diffusion_coefficient"]#
+		if (h == 1) plot(density(WDC), col=NA, axes=F, ann=F)#
+		polygon(density(WDC), col=variantColours2[h], border=NA); lines(density(WDC), lwd=1, col=variantColours1[h])#
+	}#
+axis(side=1, lwd.tick=0.2, cex.axis=0.65, lwd=0.2, tck=-0.03, col="gray30", col.axis="gray30", mgp=c(0,0.11,0))#
+axis(side=2, lwd.tick=0.2, cex.axis=0.65, lwd=0.2, tck=-0.03, col="gray30", col.axis="gray30", mgp=c(1,0.30,0))#
+title(ylab="weighted diffusion coefficient", cex.lab=0.70, mgp=c(1.3,0,0), col.lab="gray30")#
+dev.off()
+pdf(paste0("Figure_B_NEW.pdf"), width=11, height=2.2) # dev.new(width=11, height=2.2)#
+par(mfrow=c(1,2), oma=c(0,0,0,0), mar=c(1.5,2.5,0,1), mgp=c(1.2,0.2,0), lwd=0.2, col="gray30")#
+plot(mat2s[[1]], col=NA, axes=F, ann=F, ylim=c(0,1))#
+for (h in 1:length(variants))#
+	{#
+		xx_l = c(mat2s[[h]][,1],rev(mat1s[[h]][,1])); yy_l = c(rep(0,dim(mat2s[[h]])[1]),rev(mat2s[[h]][,2]))#
+		getOption("scipen"); opt = options("scipen"=20); polygon(xx_l, yy_l, col=variantColours2[h], border=0)#
+		lines(mat2s[[h]], lwd=1, col=variantColours1[h]); lines(mat1s[[h]], lwd=1, col=variantColours1[h], lty=2)#
+	}#
+dates = c("2020-09-01","2021-01-01","2021-05-01","2021-09-01","2022-01-01","2022-05-01"); ats = decimal_date(ymd(dates))#
+axis(side=1, lwd.tick=0.2, cex.axis=0.65, lwd=0.2, tck=-0.03, col="gray30", col.axis="gray30", mgp=c(0,0.11,0), at=ats, label=dates)#
+axis(side=2, lwd.tick=0.2, cex.axis=0.65, lwd=0.2, tck=-0.03, col="gray30", col.axis="gray30", mgp=c(1,0.30,0), at=seq(0,1,0.2))#
+title(ylab="proportions p1 and p2", cex.lab=0.70, mgp=c(1.3,0,0), col.lab="gray30")#
+for (h in 1:length(variants))#
+	{#
+		disparsalStatistics = read.table(paste0("RRW_dispersal_statistics/",variants[h],"_estimated_dispersal_statistics.txt"), head=T)#
+		WDC = disparsalStatistics[,"weighted_diffusion_coefficient"]/365 # to get km2/day#
+		if (h == 1) plot(density(WDC), col=NA, axes=F, ann=F)#
+		polygon(density(WDC), col=variantColours2[h], border=NA); lines(density(WDC), lwd=1, col=variantColours1[h])#
+	}#
+axis(side=1, lwd.tick=0.2, cex.axis=0.65, lwd=0.2, tck=-0.03, col="gray30", col.axis="gray30", mgp=c(0,0.11,0))#
+axis(side=2, lwd.tick=0.2, cex.axis=0.65, lwd=0.2, tck=-0.03, col="gray30", col.axis="gray30", mgp=c(1,0.30,0))#
+title(ylab="weighted diffusion coefficient", cex.lab=0.70, mgp=c(1.3,0,0), col.lab="gray30")#
+dev.off()
+pdf(paste0("Figure_B_NEW.pdf"), width=11, height=2.2) # dev.new(width=11, height=2.2)#
+par(mfrow=c(1,2), oma=c(0,0,0,0), mar=c(1.5,3.0,0,1), mgp=c(1.2,0.2,0), lwd=0.2, col="gray30")#
+plot(mat2s[[1]], col=NA, axes=F, ann=F, ylim=c(0,1))#
+for (h in 1:length(variants))#
+	{#
+		xx_l = c(mat2s[[h]][,1],rev(mat1s[[h]][,1])); yy_l = c(rep(0,dim(mat2s[[h]])[1]),rev(mat2s[[h]][,2]))#
+		getOption("scipen"); opt = options("scipen"=20); polygon(xx_l, yy_l, col=variantColours2[h], border=0)#
+		lines(mat2s[[h]], lwd=1, col=variantColours1[h]); lines(mat1s[[h]], lwd=1, col=variantColours1[h], lty=2)#
+	}#
+dates = c("2020-09-01","2021-01-01","2021-05-01","2021-09-01","2022-01-01","2022-05-01"); ats = decimal_date(ymd(dates))#
+axis(side=1, lwd.tick=0.2, cex.axis=0.65, lwd=0.2, tck=-0.03, col="gray30", col.axis="gray30", mgp=c(0,0.11,0), at=ats, label=dates)#
+axis(side=2, lwd.tick=0.2, cex.axis=0.65, lwd=0.2, tck=-0.03, col="gray30", col.axis="gray30", mgp=c(1.2,0.30,0), at=seq(0,1,0.2))#
+title(ylab="proportions p1 and p2", cex.lab=0.75, mgp=c(1.3,0,0), col.lab="gray30")#
+for (h in 1:length(variants))#
+	{#
+		disparsalStatistics = read.table(paste0("RRW_dispersal_statistics/",variants[h],"_estimated_dispersal_statistics.txt"), head=T)#
+		WDC = disparsalStatistics[,"weighted_diffusion_coefficient"]/365 # to get km2/day#
+		if (h == 1) plot(density(WDC), col=NA, axes=F, ann=F)#
+		polygon(density(WDC), col=variantColours2[h], border=NA); lines(density(WDC), lwd=1, col=variantColours1[h])#
+	}#
+axis(side=1, lwd.tick=0.2, cex.axis=0.65, lwd=0.2, tck=-0.03, col="gray30", col.axis="gray30", mgp=c(0,0.11,0))#
+axis(side=2, lwd.tick=0.2, cex.axis=0.65, lwd=0.2, tck=-0.03, col="gray30", col.axis="gray30", mgp=c(1.2,0.30,0))#
+title(ylab="weighted diffusion coefficient", cex.lab=0.75, mgp=c(1.3,0,0), col.lab="gray30")#
+dev.off()
+pdf(paste0("Figure_B_NEW.pdf"), width=11, height=2.2) # dev.new(width=11, height=2.2)#
+par(mfrow=c(1,2), oma=c(0,0,0,0), mar=c(1.5,3.0,0,1), mgp=c(1.2,0.2,0), lwd=0.2, col="gray30")#
+plot(mat2s[[1]], col=NA, axes=F, ann=F, ylim=c(0,1))#
+for (h in 1:length(variants))#
+	{#
+		xx_l = c(mat2s[[h]][,1],rev(mat1s[[h]][,1])); yy_l = c(rep(0,dim(mat2s[[h]])[1]),rev(mat2s[[h]][,2]))#
+		getOption("scipen"); opt = options("scipen"=20); polygon(xx_l, yy_l, col=variantColours2[h], border=0)#
+		lines(mat2s[[h]], lwd=1, col=variantColours1[h]); lines(mat1s[[h]], lwd=1, col=variantColours1[h], lty=2)#
+	}#
+dates = c("2020-09-01","2021-01-01","2021-05-01","2021-09-01","2022-01-01","2022-05-01"); ats = decimal_date(ymd(dates))#
+axis(side=1, lwd.tick=0.2, cex.axis=0.65, lwd=0.2, tck=-0.03, col="gray30", col.axis="gray30", mgp=c(0,0.11,0), at=ats, label=dates)#
+axis(side=2, lwd.tick=0.2, cex.axis=0.65, lwd=0.2, tck=-0.03, col="gray30", col.axis="gray30", mgp=c(1.5,0.30,0), at=seq(0,1,0.2))#
+title(ylab="proportions p1 and p2", cex.lab=0.80, mgp=c(1.3,0,0), col.lab="gray30")#
+for (h in 1:length(variants))#
+	{#
+		disparsalStatistics = read.table(paste0("RRW_dispersal_statistics/",variants[h],"_estimated_dispersal_statistics.txt"), head=T)#
+		WDC = disparsalStatistics[,"weighted_diffusion_coefficient"]/365 # to get km2/day#
+		if (h == 1) plot(density(WDC), col=NA, axes=F, ann=F)#
+		polygon(density(WDC), col=variantColours2[h], border=NA); lines(density(WDC), lwd=1, col=variantColours1[h])#
+	}#
+axis(side=1, lwd.tick=0.2, cex.axis=0.65, lwd=0.2, tck=-0.03, col="gray30", col.axis="gray30", mgp=c(0,0.11,0))#
+axis(side=2, lwd.tick=0.2, cex.axis=0.65, lwd=0.2, tck=-0.03, col="gray30", col.axis="gray30", mgp=c(1.5,0.30,0))#
+title(ylab="density", cex.lab=0.80, mgp=c(1.3,0,0), col.lab="gray30")#
+dev.off()
+dev.new(width=11, height=2.2)#
+par(mfrow=c(1,2), oma=c(0,0,0,0), mar=c(1.5,2.0,0,1), mgp=c(1.2,0.2,0), lwd=0.2, col="gray30")#
+plot(mat2s[[1]], col=NA, axes=F, ann=F, ylim=c(0,1))#
+for (h in 1:length(variants))#
+	{#
+		xx_l = c(mat2s[[h]][,1],rev(mat1s[[h]][,1])); yy_l = c(rep(0,dim(mat2s[[h]])[1]),rev(mat2s[[h]][,2]))#
+		getOption("scipen"); opt = options("scipen"=20); polygon(xx_l, yy_l, col=variantColours2[h], border=0)#
+		lines(mat2s[[h]], lwd=1, col=variantColours1[h]); lines(mat1s[[h]], lwd=1, col=variantColours1[h], lty=2)#
+	}#
+dates = c("2020-09-01","2021-01-01","2021-05-01","2021-09-01","2022-01-01","2022-05-01"); ats = decimal_date(ymd(dates))#
+axis(side=1, lwd.tick=0.2, cex.axis=0.65, lwd=0.2, tck=-0.03, col="gray30", col.axis="gray30", mgp=c(0,0.11,0), at=ats, label=dates)#
+axis(side=2, lwd.tick=0.2, cex.axis=0.65, lwd=0.2, tck=-0.03, col="gray30", col.axis="gray30", mgp=c(1.5,0.30,0), at=seq(0,1,0.2))#
+title(ylab="proportions p1 and p2", cex.lab=0.80, mgp=c(1.3,0,0), col.lab="gray30")#
+for (h in 1:length(variants))#
+	{#
+		disparsalStatistics = read.table(paste0("RRW_dispersal_statistics/",variants[h],"_estimated_dispersal_statistics.txt"), head=T)#
+		WDC = disparsalStatistics[,"weighted_diffusion_coefficient"]/365 # to get km2/day#
+		if (h == 1) plot(density(WDC), col=NA, axes=F, ann=F)#
+		polygon(density(WDC), col=variantColours2[h], border=NA); lines(density(WDC), lwd=1, col=variantColours1[h])#
+	}#
+axis(side=1, lwd.tick=0.2, cex.axis=0.65, lwd=0.2, tck=-0.03, col="gray30", col.axis="gray30", mgp=c(0,0.11,0))#
+axis(side=2, lwd.tick=0.2, cex.axis=0.65, lwd=0.2, tck=-0.03, col="gray30", col.axis="gray30", mgp=c(1.5,0.30,0))#
+title(ylab="density", cex.lab=0.80, mgp=c(1.3,0,0), col.lab="gray30")
+axis(side=2, lwd.tick=0.2, cex.axis=0.65, lwd=0.2, tck=-0.03, col="gray30", col.axis="gray30", mgp=c(3,0.30,0))
+par(mfrow=c(1,2), oma=c(0,0,0,0), mar=c(1.5,3.0,0,1), mgp=c(1.2,0.2,0), lwd=0.2, col="gray30")#
+plot(mat2s[[1]], col=NA, axes=F, ann=F, ylim=c(0,1))#
+for (h in 1:length(variants))#
+	{#
+		xx_l = c(mat2s[[h]][,1],rev(mat1s[[h]][,1])); yy_l = c(rep(0,dim(mat2s[[h]])[1]),rev(mat2s[[h]][,2]))#
+		getOption("scipen"); opt = options("scipen"=20); polygon(xx_l, yy_l, col=variantColours2[h], border=0)#
+		lines(mat2s[[h]], lwd=1, col=variantColours1[h]); lines(mat1s[[h]], lwd=1, col=variantColours1[h], lty=2)#
+	}#
+dates = c("2020-09-01","2021-01-01","2021-05-01","2021-09-01","2022-01-01","2022-05-01"); ats = decimal_date(ymd(dates))#
+axis(side=1, lwd.tick=0.2, cex.axis=0.65, lwd=0.2, tck=-0.03, col="gray30", col.axis="gray30", mgp=c(0,0.11,0), at=ats, label=dates)#
+axis(side=2, lwd.tick=0.2, cex.axis=0.65, lwd=0.2, tck=-0.03, col="gray30", col.axis="gray30", mgp=c(1,0.30,0), at=seq(0,1,0.2))#
+title(ylab="proportions p1 and p2", cex.lab=0.80, mgp=c(1.5,0,0), col.lab="gray30")#
+for (h in 1:length(variants))#
+	{#
+		disparsalStatistics = read.table(paste0("RRW_dispersal_statistics/",variants[h],"_estimated_dispersal_statistics.txt"), head=T)#
+		WDC = disparsalStatistics[,"weighted_diffusion_coefficient"]/365 # to get km2/day#
+		if (h == 1) plot(density(WDC), col=NA, axes=F, ann=F)#
+		polygon(density(WDC), col=variantColours2[h], border=NA); lines(density(WDC), lwd=1, col=variantColours1[h])#
+	}#
+axis(side=1, lwd.tick=0.2, cex.axis=0.65, lwd=0.2, tck=-0.03, col="gray30", col.axis="gray30", mgp=c(0,0.11,0))#
+axis(side=2, lwd.tick=0.2, cex.axis=0.65, lwd=0.2, tck=-0.03, col="gray30", col.axis="gray30", mgp=c(1,0.30,0))#
+title(ylab="weighted diffusion coefficient", cex.lab=0.80, mgp=c(1.5,0,0), col.lab="gray30")
+pdf(paste0("Figure_B_NEW.pdf"), width=11, height=2.2) # dev.new(width=11, height=2.2)#
+par(mfrow=c(1,2), oma=c(0,0,0,0), mar=c(1.5,3.0,0,1), mgp=c(1.2,0.2,0), lwd=0.2, col="gray30")#
+plot(mat2s[[1]], col=NA, axes=F, ann=F, ylim=c(0,1))#
+for (h in 1:length(variants))#
+	{#
+		xx_l = c(mat2s[[h]][,1],rev(mat1s[[h]][,1])); yy_l = c(rep(0,dim(mat2s[[h]])[1]),rev(mat2s[[h]][,2]))#
+		getOption("scipen"); opt = options("scipen"=20); polygon(xx_l, yy_l, col=variantColours2[h], border=0)#
+		lines(mat2s[[h]], lwd=1, col=variantColours1[h]); lines(mat1s[[h]], lwd=1, col=variantColours1[h], lty=2)#
+	}#
+dates = c("2020-09-01","2021-01-01","2021-05-01","2021-09-01","2022-01-01","2022-05-01"); ats = decimal_date(ymd(dates))#
+axis(side=1, lwd.tick=0.2, cex.axis=0.65, lwd=0.2, tck=-0.03, col="gray30", col.axis="gray30", mgp=c(0,0.11,0), at=ats, label=dates)#
+axis(side=2, lwd.tick=0.2, cex.axis=0.65, lwd=0.2, tck=-0.03, col="gray30", col.axis="gray30", mgp=c(1,0.30,0), at=seq(0,1,0.2))#
+title(ylab="proportions p1 and p2", cex.lab=0.80, mgp=c(1.5,0,0), col.lab="gray30")#
+for (h in 1:length(variants))#
+	{#
+		disparsalStatistics = read.table(paste0("RRW_dispersal_statistics/",variants[h],"_estimated_dispersal_statistics.txt"), head=T)#
+		WDC = disparsalStatistics[,"weighted_diffusion_coefficient"]/365 # to get km2/day#
+		if (h == 1) plot(density(WDC), col=NA, axes=F, ann=F)#
+		polygon(density(WDC), col=variantColours2[h], border=NA); lines(density(WDC), lwd=1, col=variantColours1[h])#
+	}#
+axis(side=1, lwd.tick=0.2, cex.axis=0.65, lwd=0.2, tck=-0.03, col="gray30", col.axis="gray30", mgp=c(0,0.11,0))#
+axis(side=2, lwd.tick=0.2, cex.axis=0.65, lwd=0.2, tck=-0.03, col="gray30", col.axis="gray30", mgp=c(1,0.30,0))#
+title(ylab="weighted diffusion coefficient", cex.lab=0.80, mgp=c(1.5,0,0), col.lab="gray30")#
+dev.off()
+# To do list and/or issues to deal with:#
+	# - IQ-TREE+TreeTime analysis for BA.1 still running (current output with HKY+F+R2 model)#
+	# - IQ-TREE+TreeTime analysis for Delta still running (current output with HKY+F+R2 model)#
+	# - IQ-TREE+TreeTime analysis for Iota still running (current output could be temporary)#
+	# - performing some analyses with Thorney BEAST for Alpha, Iota, Delta, Omicron (Verity)#
+	# - performing some growth rate advantage analyses for Alpha, Iota, Delta, Omicron (Sam)#
+	# - 4/5 main variants to consider: Alpha, Delta, Omicron-BA.1, Omicron-BA.2 and/or Iota?#
+	# - figure 1: grow rate advantage, figure 2: phylogeographic reconstructions (DTA & RRW)#
+	# - figure 3: proportion metrics through time (A), and weighted diffusion coefficient (B)#
+#
+# Ideas of invasion/dispersal metrics to compare the different variants:#
+	# - comparison of the growth rate advantage (that will be computed by Sam + graphs)#
+	# - evolution of the ratio between the number of circulating clusters and lineages (branches)#
+	# - evolution of the averaged proportion of circulating lineages belonging to the same cluster#
+	# - potential idea: something based on the Shannon entropy used in the two waves study ??#
+	# - evolution of the averaged duration since the cluster introduction event (cluster TMRCA)#
+	# - averaged ratio between the number of county transition events and the cluster size#
+	# - dispersal statistics: weighted lineage dispersal velocity and weighted diffusion coefficient#
+#
+library(diagram)#
+library(lubridate)#
+library(seraphim)#
+library(treeio)#
+#
+writingFiles = TRUE; showingPlots = TRUE#
+writingFiles = FALSE; showingPlots = FALSE#
+#
+nberOfExtractionFiles = 900#
+#
+NYC_counties = c("NewYork","Bronx","Kings","Queens","Richmond","Nassau","Suffolk","Westchester")#
+variants = c("Alpha","Beta","Delta","Epsilon","Eta","Gamma","Kappa","Lambda","Mu","O-BA1","O-BA2","O-BA3","Theta","Zeta")#
+variants = c("Alpha","Delta","Iota","O-BA1","O-BA2"); h = 1; variantColours1 = c(); variantColours2 = c()#
+variantColours1[1] = rgb(250,165,26,255,maxColorValue=255); variantColours2[1] = rgb(250,165,26,100,maxColorValue=255) # orange (Alpha)#
+variantColours1[2] = rgb(150,150,150,255,maxColorValue=255); variantColours2[2] = rgb(150,150,150,100,maxColorValue=255) # light grey (Iota)#
+variantColours1[3] = rgb(222,67,39,255,maxColorValue=255); variantColours2[3] = rgb(222,67,39,100,maxColorValue=255) # red (Delta)#
+variantColours1[4] = rgb(70,118,187,255,maxColorValue=255); variantColours1[4] = rgb(70,118,187,100,maxColorValue=255) # blue (Omicron-BA.1)#
+variantColours1[5] = rgb(129,81,161,255,maxColorValue=255); variantColours2[5] = rgb(129,81,161,100,maxColorValue=255) # purple (Omicron-BA.2)#
+variantColours1[6] = rgb(139,101,8,255,maxColorValue=255); variantColours2[6] = rgb(139,101,8,100,maxColorValue=255) # brown (not used)#
+variantColours1[7] = rgb(76,76,76,255,maxColorValue=255); variantColours2[7] = rgb(60,60,60,100,maxColorValue=255) # dark grey (not used)
+clusters1_list = list(); clusters2_list = list(); NYC_introductions_list = list()#
+zipCodes = shapefile("NY_state_all_shapefiles/ZipCodes_US.shp")
+variants
+h=4
+if (file.exists(paste0("Preliminary_discrete_runs/",variants[h],"_DTA.tree")))#
+			{#
+				tree = readAnnotatedNexus(paste0("Preliminary_discrete_runs/",variants[h],"_DTA.tree")); indices = c()#
+			}	else	{#
+				tree = readAnnotatedNexus(paste0("Preliminary_discrete_runs/",variants[h],"_last.tree")); indices = c()#
+			}
+metadata1 = read.csv(paste0("All_NYU_alignment_data/All_NYU_alignment_data_26032022/",variants[h],"_metadata.csv"), head=T, sep=";")#
+		metadata2 = read.csv(paste0("IQ-TREE_TreeTime_runs/",variants[h],"_TreeTime.csv"), head=T, sep=",")#
+		if (file.exists(paste0("IQ-TREE_TreeTime_runs/",variants[h],"_lineages.csv")))#
+			{#
+				metadata3 = read.csv(paste0("IQ-TREE_TreeTime_runs/",variants[h],"_lineages.csv"), head=T, sep=",")#
+			}	else	{#
+				metadata3 = metadata2 # for those variants the "lineage" column is included in the main metadat file#
+				colnames(metadata3)[1] = "taxon"#
+			}#
+		NYC_branches = c(); NYC_introductions = c(); NYC_TipBranches = c(); sampledSequences = c()#
+		for (i in 1:dim(tree$edge)[1])#
+			{#
+				if (is.null(tree$annotations[[i]]))#
+					{#
+						print(c(h,i))#
+					}	else		{#
+						if (tree$annotations[[i]]$location == "NYC_counties")#
+							{#
+								NYC_branches = c(NYC_branches,i)#
+								index = which(tree$edge[,2]==tree$edge[i,1])#
+								if (tree$annotations[[index]]$location != "NYC_counties")#
+									{#
+										NYC_introductions = c(NYC_introductions, i)#
+									}#
+								if (!tree$edge[i,2]%in%tree$edge[,1])#
+									{#
+										NYC_TipBranches = c(NYC_TipBranches, i)#
+										sampledSequences = c(sampledSequences, tree$tip.label[tree$edge[i,2]])#
+									}#
+							}#
+					}#
+			}#
+		for (i in 1:length(NYC_introductions))#
+			{#
+				if (i == 1) clusters1 = list()#
+				if (tree$edge[NYC_introductions[i],2]%in%tree$edge[,1])#
+					{#
+						subtree = tree_subset(tree, tree$edge[NYC_introductions[i],2], levels_back=0)#
+						clusters1[[i]] = gsub("'","",subtree$tip.label)#
+					}	else		{#
+						clusters1[[i]] = gsub("'","",tree$tip.label[tree$edge[NYC_introductions[i],2]])#
+					}#
+			}#
+		for (i in 2:length(clusters1))#
+			{#
+				for (j in 1:(i-1))#
+					{#
+						if (sum(clusters1[[i]]%in%clusters1[[j]]) == length(clusters1[[i]]))#
+							{#
+								clusters1[[j]] = clusters1[[j]][which(!clusters1[[j]]%in%clusters1[[i]])]#
+							}#
+						if (sum(clusters1[[j]]%in%clusters1[[i]]) == length(clusters1[[j]]))#
+							{#
+								clusters1[[i]] = clusters1[[i]][which(!clusters1[[i]]%in%clusters1[[j]])]#
+							}#
+					}#
+			}#
+		sampledSequences = gsub("'","",sampledSequences)#
+		if (!file.exists(paste0("Preliminary_discrete_runs/",variants[h],"_data.csv")))#
+			{#
+				samplingData = matrix(nrow=length(sampledSequences), ncol=9)#
+				colnames(samplingData) = c("sequence_ID","collection_date","lineage","state","county","location","zip_code","latitude","longitude")#
+				samplingData[,"sequence_ID"] = sampledSequences#
+				for (i in 1:dim(samplingData)[1])#
+					{#
+						if (sum(samplingData[i,"sequence_ID"]==metadata3[,"taxon"]) == 1)#
+							{#
+								index = which(metadata3[,"taxon"]==samplingData[i,"sequence_ID"])#
+								samplingData[i,"lineage"] = metadata3[index,"lineage"]#
+							}#
+						if (sum(samplingData[i,"sequence_ID"]==metadata2[,"name"]) == 1)#
+							{#
+								index = which(metadata2[,"name"]==samplingData[i,"sequence_ID"])#
+								samplingData[i,"collection_date"] = decimal_date(ymd(metadata2[index,"date"]))#
+							}#
+						if (sum(unlist(strsplit(samplingData[i,"sequence_ID"],"\\|"))[1]==metadata1[,"strain"]) == 1)#
+							{#
+								index = which(metadata1[,"strain"]==unlist(strsplit(samplingData[i,"sequence_ID"],"\\|"))[1])#
+								samplingData[i,"state"] = metadata1[index,"division"]#
+								samplingData[i,"county"] = gsub("County","",gsub(" ","",metadata1[index,"location"]))#
+								samplingData[i,"zip_code"] = metadata1[index,"zip"]#
+								if (!is.na(samplingData[i,"county"]))#
+									{#
+										if ((samplingData[i,"county"] == "")|(samplingData[i,"county"] == "New York City")) samplingData[i,"county"] = NA#
+									}#
+								if (!is.na(samplingData[i,"zip_code"]))#
+									{#
+										if (samplingData[i,"zip_code"] == "unknown") samplingData[i,"zip_code"] = NA#
+									}#
+							}#
+						if (!is.na(samplingData[i,"county"]))#
+							{#
+								if ((samplingData[i,"state"]=="New York")&(samplingData[i,"county"]%in%NYC_counties))#
+									{#
+										samplingData[i,"location"] = samplingData[i,"county"]#
+									}#
+							}#
+						if ((!is.na(samplingData[i,"zip_code"]))&(samplingData[i,"county"]%in%NYC_counties))#
+							{#
+								zipCode = gsub(" ","",unlist(strsplit(samplingData[i,"zip_code"],"-"))[1])#
+								if (nchar(zipCode) == 4) zipCode = paste0("0",zipCode)#
+								index = which(zipCodes@data[,"ZCTA5CE10"]==zipCode); maxArea = 0; pol = NULL#
+								if (length(index) == 1)#
+									{#
+										for (j in 1:length(zipCodes@polygons[[index]]@Polygons))#
+											{#
+												if (maxArea < zipCodes@polygons[[index]]@Polygons[[j]]@area)#
+													{#
+														maxArea = zipCodes@polygons[[index]]@Polygons[[j]]@area#
+														pol = zipCodes@polygons[[index]]@Polygons[[j]]#
+													}#
+											}#
+										coords = spsample(pol, 1, type="random")@coords#
+										samplingData[i,"longitude"] = coords[,"x"]#
+										samplingData[i,"latitude"] = coords[,"y"]#
+									}	else	{#
+										cat("Unmatched zip code: ",zipCode," (for ",variants[h],")\n",sep="")#
+									}#
+							}#
+					}#
+				write.csv(samplingData, paste0("Preliminary_discrete_runs/",variants[h],"_data.csv"), quote=F, row.names=F)#
+			}	#
+		samplingData = read.csv(paste0("Preliminary_discrete_runs/",variants[h],"_data.csv"), head=T)#
+		for (i in 1:length(NYC_introductions))#
+			{#
+				tab = c()#
+				if (i == 1)#
+					{#
+						clusters2 = list(); centroids = list()#
+					}#
+				for (j in 1:length(clusters1[[i]]))#
+					{#
+						index = which(samplingData[,"sequence_ID"]==clusters1[[i]][j])#
+						if (length(index) == 1)#
+							{#
+								collection_date = samplingData[index,"collection_date"]#
+								lineage = samplingData[index,"lineage"]#
+								state = samplingData[index,"state"]#
+								county = samplingData[index,"county"]#
+								location = gsub(" ","",samplingData[index,"location"])#
+								zip_code = samplingData[index,"zip_code"]#
+								latitude = samplingData[index,"latitude"]#
+								longitude = samplingData[index,"longitude"]#
+								line = cbind(collection_date, lineage, state, county, location, zip_code, latitude, longitude)#
+								row.names(line) = clusters1[[i]][j]; tab = rbind(tab, line)#
+							}#
+					}#
+				colnames(tab) = c("collection_date","lineage","state","county","location","zip_code","latitude","longitude")#
+				clusters2[[i]] = tab#
+			}#
+		clusters1_list[[h]] = clusters1; clusters2_list[[h]] = clusters2; NYC_introductions_list[[h]] = NYC_introductions
+h
+h=5
+if (file.exists(paste0("Preliminary_discrete_runs/",variants[h],"_DTA.tree")))#
+			{#
+				tree = readAnnotatedNexus(paste0("Preliminary_discrete_runs/",variants[h],"_DTA.tree")); indices = c()#
+			}	else	{#
+				tree = readAnnotatedNexus(paste0("Preliminary_discrete_runs/",variants[h],"_last.tree")); indices = c()#
+			}#
+		metadata1 = read.csv(paste0("All_NYU_alignment_data/All_NYU_alignment_data_26032022/",variants[h],"_metadata.csv"), head=T, sep=";")#
+		metadata2 = read.csv(paste0("IQ-TREE_TreeTime_runs/",variants[h],"_TreeTime.csv"), head=T, sep=",")#
+		if (file.exists(paste0("IQ-TREE_TreeTime_runs/",variants[h],"_lineages.csv")))#
+			{#
+				metadata3 = read.csv(paste0("IQ-TREE_TreeTime_runs/",variants[h],"_lineages.csv"), head=T, sep=",")#
+			}	else	{#
+				metadata3 = metadata2 # for those variants the "lineage" column is included in the main metadat file#
+				colnames(metadata3)[1] = "taxon"#
+			}#
+		NYC_branches = c(); NYC_introductions = c(); NYC_TipBranches = c(); sampledSequences = c()#
+		for (i in 1:dim(tree$edge)[1])#
+			{#
+				if (is.null(tree$annotations[[i]]))#
+					{#
+						print(c(h,i))#
+					}	else		{#
+						if (tree$annotations[[i]]$location == "NYC_counties")#
+							{#
+								NYC_branches = c(NYC_branches,i)#
+								index = which(tree$edge[,2]==tree$edge[i,1])#
+								if (tree$annotations[[index]]$location != "NYC_counties")#
+									{#
+										NYC_introductions = c(NYC_introductions, i)#
+									}#
+								if (!tree$edge[i,2]%in%tree$edge[,1])#
+									{#
+										NYC_TipBranches = c(NYC_TipBranches, i)#
+										sampledSequences = c(sampledSequences, tree$tip.label[tree$edge[i,2]])#
+									}#
+							}#
+					}#
+			}#
+		for (i in 1:length(NYC_introductions))#
+			{#
+				if (i == 1) clusters1 = list()#
+				if (tree$edge[NYC_introductions[i],2]%in%tree$edge[,1])#
+					{#
+						subtree = tree_subset(tree, tree$edge[NYC_introductions[i],2], levels_back=0)#
+						clusters1[[i]] = gsub("'","",subtree$tip.label)#
+					}	else		{#
+						clusters1[[i]] = gsub("'","",tree$tip.label[tree$edge[NYC_introductions[i],2]])#
+					}#
+			}#
+		for (i in 2:length(clusters1))#
+			{#
+				for (j in 1:(i-1))#
+					{#
+						if (sum(clusters1[[i]]%in%clusters1[[j]]) == length(clusters1[[i]]))#
+							{#
+								clusters1[[j]] = clusters1[[j]][which(!clusters1[[j]]%in%clusters1[[i]])]#
+							}#
+						if (sum(clusters1[[j]]%in%clusters1[[i]]) == length(clusters1[[j]]))#
+							{#
+								clusters1[[i]] = clusters1[[i]][which(!clusters1[[i]]%in%clusters1[[j]])]#
+							}#
+					}#
+			}#
+		sampledSequences = gsub("'","",sampledSequences)#
+		if (!file.exists(paste0("Preliminary_discrete_runs/",variants[h],"_data.csv")))#
+			{#
+				samplingData = matrix(nrow=length(sampledSequences), ncol=9)#
+				colnames(samplingData) = c("sequence_ID","collection_date","lineage","state","county","location","zip_code","latitude","longitude")#
+				samplingData[,"sequence_ID"] = sampledSequences#
+				for (i in 1:dim(samplingData)[1])#
+					{#
+						if (sum(samplingData[i,"sequence_ID"]==metadata3[,"taxon"]) == 1)#
+							{#
+								index = which(metadata3[,"taxon"]==samplingData[i,"sequence_ID"])#
+								samplingData[i,"lineage"] = metadata3[index,"lineage"]#
+							}#
+						if (sum(samplingData[i,"sequence_ID"]==metadata2[,"name"]) == 1)#
+							{#
+								index = which(metadata2[,"name"]==samplingData[i,"sequence_ID"])#
+								samplingData[i,"collection_date"] = decimal_date(ymd(metadata2[index,"date"]))#
+							}#
+						if (sum(unlist(strsplit(samplingData[i,"sequence_ID"],"\\|"))[1]==metadata1[,"strain"]) == 1)#
+							{#
+								index = which(metadata1[,"strain"]==unlist(strsplit(samplingData[i,"sequence_ID"],"\\|"))[1])#
+								samplingData[i,"state"] = metadata1[index,"division"]#
+								samplingData[i,"county"] = gsub("County","",gsub(" ","",metadata1[index,"location"]))#
+								samplingData[i,"zip_code"] = metadata1[index,"zip"]#
+								if (!is.na(samplingData[i,"county"]))#
+									{#
+										if ((samplingData[i,"county"] == "")|(samplingData[i,"county"] == "New York City")) samplingData[i,"county"] = NA#
+									}#
+								if (!is.na(samplingData[i,"zip_code"]))#
+									{#
+										if (samplingData[i,"zip_code"] == "unknown") samplingData[i,"zip_code"] = NA#
+									}#
+							}#
+						if (!is.na(samplingData[i,"county"]))#
+							{#
+								if ((samplingData[i,"state"]=="New York")&(samplingData[i,"county"]%in%NYC_counties))#
+									{#
+										samplingData[i,"location"] = samplingData[i,"county"]#
+									}#
+							}#
+						if ((!is.na(samplingData[i,"zip_code"]))&(samplingData[i,"county"]%in%NYC_counties))#
+							{#
+								zipCode = gsub(" ","",unlist(strsplit(samplingData[i,"zip_code"],"-"))[1])#
+								if (nchar(zipCode) == 4) zipCode = paste0("0",zipCode)#
+								index = which(zipCodes@data[,"ZCTA5CE10"]==zipCode); maxArea = 0; pol = NULL#
+								if (length(index) == 1)#
+									{#
+										for (j in 1:length(zipCodes@polygons[[index]]@Polygons))#
+											{#
+												if (maxArea < zipCodes@polygons[[index]]@Polygons[[j]]@area)#
+													{#
+														maxArea = zipCodes@polygons[[index]]@Polygons[[j]]@area#
+														pol = zipCodes@polygons[[index]]@Polygons[[j]]#
+													}#
+											}#
+										coords = spsample(pol, 1, type="random")@coords#
+										samplingData[i,"longitude"] = coords[,"x"]#
+										samplingData[i,"latitude"] = coords[,"y"]#
+									}	else	{#
+										cat("Unmatched zip code: ",zipCode," (for ",variants[h],")\n",sep="")#
+									}#
+							}#
+					}#
+				write.csv(samplingData, paste0("Preliminary_discrete_runs/",variants[h],"_data.csv"), quote=F, row.names=F)#
+			}	#
+		samplingData = read.csv(paste0("Preliminary_discrete_runs/",variants[h],"_data.csv"), head=T)#
+		for (i in 1:length(NYC_introductions))#
+			{#
+				tab = c()#
+				if (i == 1)#
+					{#
+						clusters2 = list(); centroids = list()#
+					}#
+				for (j in 1:length(clusters1[[i]]))#
+					{#
+						index = which(samplingData[,"sequence_ID"]==clusters1[[i]][j])#
+						if (length(index) == 1)#
+							{#
+								collection_date = samplingData[index,"collection_date"]#
+								lineage = samplingData[index,"lineage"]#
+								state = samplingData[index,"state"]#
+								county = samplingData[index,"county"]#
+								location = gsub(" ","",samplingData[index,"location"])#
+								zip_code = samplingData[index,"zip_code"]#
+								latitude = samplingData[index,"latitude"]#
+								longitude = samplingData[index,"longitude"]#
+								line = cbind(collection_date, lineage, state, county, location, zip_code, latitude, longitude)#
+								row.names(line) = clusters1[[i]][j]; tab = rbind(tab, line)#
+							}#
+					}#
+				colnames(tab) = c("collection_date","lineage","state","county","location","zip_code","latitude","longitude")#
+				clusters2[[i]] = tab#
+			}#
+		clusters1_list[[h]] = clusters1; clusters2_list[[h]] = clusters2; NYC_introductions_list[[h]] = NYC_introductions
+source("DTA_tree_extractions.r")#
+source("MCC_tree_extractions.r")#
+wd = getwd(); previousVersion = F
+h=4
+clusters2 = clusters2_list[[h]]#
+		setwd(paste0(wd,"/DTA_boroughs_analyses/",variants[h],"_DTA/"))#
+		treeFiles = list.files(); treeFiles = treeFiles[which(grepl(".trees",treeFiles))]#
+		for (i in 1:length(treeFiles))#
+			{#
+				dir.create(file.path(gsub(".trees","_ext",treeFiles[i])), showWarnings=F)#
+				trees = readAnnotatedNexus(treeFiles[i]); trees = trees[102:1001]#
+				for (j in 1:length(trees))#
+					{#
+						tree = trees[[j]]#
+						if (previousVersion)#
+							{#
+								tab = matrix(nrow=dim(tree$edge)[1], ncol=4)#
+								colnames(tab) = c("node1","node2","startLoc","endLoc")#
+								tab[,"node1"] = tree$edge[,1]; tab[,"node2"] = tree$edge[,2]#
+								for (k in 1:dim(tree$edge)[1])#
+									{#
+										tab[k,"endLoc"] = tree$annotations[[k]]$location#
+										index = which(tree$edge[,2]==tree$edge[k,1])#
+										if (length(index) == 1)#
+											{#
+												tab[k,"startLoc"] = tree$annotations[[index]]$location#
+											}	else		{#
+												if (!tree$edge[k,1]%in%tree$edge[,2])#
+													{#
+														tab[k,"startLoc"] = tree$root.annotation$location#
+													}#
+											}#
+									}#
+							}	else	{#
+								index = as.numeric(unlist(strsplit(gsub(".trees","",treeFiles[i]),"_"))[2])#
+								mostRecentSamplingDatum = max(as.numeric(clusters2[[index]][which(!is.na(clusters2[[index]][,"location"])),"collection_date"]))#
+								tab = DTA_tree_extractions(tree, mostRecentSamplingDatum)#
+								tab$cladeID = rep(index, dim(tab)[1])#
+							}#
+						write.csv(tab, paste0(gsub(".trees","_ext",treeFiles[i]),"/TreeExtractions_",j,".csv"), row.names=F, quote=F)#
+					}#
+			}#
+		dir.create(file.path("All_clades_ext"), showWarnings=F); tab = NULL#
+		for (i in 1:nberOfExtractionFiles)#
+			{#
+				for (j in 1:length(treeFiles))#
+					{#
+						if (j == 1)#
+							{#
+								tab = read.csv(paste0(gsub(".trees","_ext",treeFiles[j]),"/TreeExtractions_",i,".csv"))#
+							}	else	{#
+								tab = rbind(tab, read.csv(paste0(gsub(".trees","_ext",treeFiles[j]),"/TreeExtractions_",i,".csv")))#
+							}#
+					}#
+				write.csv(tab, paste0("All_clades_ext/TreeExtractions_",i,".csv"), row.names=F, quote=F)#
+			}#
+		matrices = list()#
+		for (i in 1:nberOfExtractionFiles)#
+			{#
+				mat = matrix(0, nrow=length(NYC_counties), ncol=length(NYC_counties))#
+				row.names(mat) = NYC_counties; colnames(mat) = NYC_counties#
+				tab = read.csv(paste0("All_clades_ext/TreeExtractions_",i,".csv"), head=T)#
+				for (j in 1:dim(tab)[1])#
+					{#
+						index1 = which(NYC_counties==tab[j,"startLoc"])#
+						index2 = which(NYC_counties==tab[j,"endLoc"])#
+						mat[index1,index2] = mat[index1,index2]+1#
+					}#
+				matrices[[i]] = mat#
+			}#
+		saveRDS(matrices, "Matrices.rds")#
+		log1 = scan(paste0("All_clades1.log"), what="", sep="\n", quiet=T, blank.lines.skip=F)#
+		write(log1[which(!grepl("# ",log1))], paste0("All_clades3.log"))#
+		log1 = read.table(paste0("All_clades3.log"), header=T, sep="\t"); log1 = log1[102:1001,]#
+		setwd(paste0(wd,"/DTA_boroughs_analyses/",variants[h],"_TSW/"))#
+		log2 = scan(paste0("All_clades1.log"), what="", sep="\n", quiet=T, blank.lines.skip=F)#
+		write(log2[which(!grepl("# ",log2))], paste0("All_clades3.log"))#
+		log2 = read.table(paste0("All_clades3.log"), header=T, sep="\t"); log2 = log2[102:1001,]#
+		BFs1 = matrix(nrow=length(NYC_counties), ncol=length(NYC_counties))#
+		BFs2 = matrix(nrow=length(NYC_counties), ncol=length(NYC_counties))#
+		row.names(BFs1) = NYC_counties; colnames(BFs1) = NYC_counties#
+		row.names(BFs2) = NYC_counties; colnames(BFs2) = NYC_counties#
+		for (i in 1:length(NYC_counties))#
+			{#
+				for (j in 1:length(NYC_counties))#
+					{#
+						if (i != j)#
+							{#
+								colName = paste0("location.indicators.",gsub(" ",".",NYC_counties[i]),".",gsub(" ",".",NYC_counties[j]))#
+								index1 = which(colnames(log1)==colName); index2 = which(colnames(log2)==colName)#
+								p = sum(log1[,index1]==1)/dim(log1)[1]#
+								K = 56 # length(locations)*(length(locations)-1) # K shoulf be divided by 2 if "symetric" case#
+								q = (log(2)+K-1)/(K*(K-1))#
+								BFs1[i,j] = (p/(1-p))/(q/(1-q))#
+								p1 = sum(log1[,index1]==1)/dim(log1)[1]#
+								p2 = sum(log2[,index2]==1)/dim(log2)[1]#
+								BFs2[i,j] = (p1/(1-p1))/(p2/(1-p2))#
+							}#
+					}#
+			}#
+		setwd(paste0(wd,"/DTA_boroughs_analyses/",variants[h],"_DTA/"))#
+		write.table(round(BFs1,1), paste0("BF_values.csv"), sep=",", quote=F)#
+		setwd(paste0(wd,"/DTA_boroughs_analyses/",variants[h],"_TSW/"))#
+		write.table(round(BFs2,1), paste0("BF_values.csv"), sep=",", quote=F)
+h
+h=5
+clusters2 = clusters2_list[[h]]#
+		setwd(paste0(wd,"/DTA_boroughs_analyses/",variants[h],"_DTA/"))#
+		treeFiles = list.files(); treeFiles = treeFiles[which(grepl(".trees",treeFiles))]#
+		for (i in 1:length(treeFiles))#
+			{#
+				dir.create(file.path(gsub(".trees","_ext",treeFiles[i])), showWarnings=F)#
+				trees = readAnnotatedNexus(treeFiles[i]); trees = trees[102:1001]#
+				for (j in 1:length(trees))#
+					{#
+						tree = trees[[j]]#
+						if (previousVersion)#
+							{#
+								tab = matrix(nrow=dim(tree$edge)[1], ncol=4)#
+								colnames(tab) = c("node1","node2","startLoc","endLoc")#
+								tab[,"node1"] = tree$edge[,1]; tab[,"node2"] = tree$edge[,2]#
+								for (k in 1:dim(tree$edge)[1])#
+									{#
+										tab[k,"endLoc"] = tree$annotations[[k]]$location#
+										index = which(tree$edge[,2]==tree$edge[k,1])#
+										if (length(index) == 1)#
+											{#
+												tab[k,"startLoc"] = tree$annotations[[index]]$location#
+											}	else		{#
+												if (!tree$edge[k,1]%in%tree$edge[,2])#
+													{#
+														tab[k,"startLoc"] = tree$root.annotation$location#
+													}#
+											}#
+									}#
+							}	else	{#
+								index = as.numeric(unlist(strsplit(gsub(".trees","",treeFiles[i]),"_"))[2])#
+								mostRecentSamplingDatum = max(as.numeric(clusters2[[index]][which(!is.na(clusters2[[index]][,"location"])),"collection_date"]))#
+								tab = DTA_tree_extractions(tree, mostRecentSamplingDatum)#
+								tab$cladeID = rep(index, dim(tab)[1])#
+							}#
+						write.csv(tab, paste0(gsub(".trees","_ext",treeFiles[i]),"/TreeExtractions_",j,".csv"), row.names=F, quote=F)#
+					}#
+			}#
+		dir.create(file.path("All_clades_ext"), showWarnings=F); tab = NULL#
+		for (i in 1:nberOfExtractionFiles)#
+			{#
+				for (j in 1:length(treeFiles))#
+					{#
+						if (j == 1)#
+							{#
+								tab = read.csv(paste0(gsub(".trees","_ext",treeFiles[j]),"/TreeExtractions_",i,".csv"))#
+							}	else	{#
+								tab = rbind(tab, read.csv(paste0(gsub(".trees","_ext",treeFiles[j]),"/TreeExtractions_",i,".csv")))#
+							}#
+					}#
+				write.csv(tab, paste0("All_clades_ext/TreeExtractions_",i,".csv"), row.names=F, quote=F)#
+			}#
+		matrices = list()#
+		for (i in 1:nberOfExtractionFiles)#
+			{#
+				mat = matrix(0, nrow=length(NYC_counties), ncol=length(NYC_counties))#
+				row.names(mat) = NYC_counties; colnames(mat) = NYC_counties#
+				tab = read.csv(paste0("All_clades_ext/TreeExtractions_",i,".csv"), head=T)#
+				for (j in 1:dim(tab)[1])#
+					{#
+						index1 = which(NYC_counties==tab[j,"startLoc"])#
+						index2 = which(NYC_counties==tab[j,"endLoc"])#
+						mat[index1,index2] = mat[index1,index2]+1#
+					}#
+				matrices[[i]] = mat#
+			}#
+		saveRDS(matrices, "Matrices.rds")#
+		log1 = scan(paste0("All_clades1.log"), what="", sep="\n", quiet=T, blank.lines.skip=F)#
+		write(log1[which(!grepl("# ",log1))], paste0("All_clades3.log"))#
+		log1 = read.table(paste0("All_clades3.log"), header=T, sep="\t"); log1 = log1[102:1001,]#
+		setwd(paste0(wd,"/DTA_boroughs_analyses/",variants[h],"_TSW/"))#
+		log2 = scan(paste0("All_clades1.log"), what="", sep="\n", quiet=T, blank.lines.skip=F)#
+		write(log2[which(!grepl("# ",log2))], paste0("All_clades3.log"))#
+		log2 = read.table(paste0("All_clades3.log"), header=T, sep="\t"); log2 = log2[102:1001,]#
+		BFs1 = matrix(nrow=length(NYC_counties), ncol=length(NYC_counties))#
+		BFs2 = matrix(nrow=length(NYC_counties), ncol=length(NYC_counties))#
+		row.names(BFs1) = NYC_counties; colnames(BFs1) = NYC_counties#
+		row.names(BFs2) = NYC_counties; colnames(BFs2) = NYC_counties#
+		for (i in 1:length(NYC_counties))#
+			{#
+				for (j in 1:length(NYC_counties))#
+					{#
+						if (i != j)#
+							{#
+								colName = paste0("location.indicators.",gsub(" ",".",NYC_counties[i]),".",gsub(" ",".",NYC_counties[j]))#
+								index1 = which(colnames(log1)==colName); index2 = which(colnames(log2)==colName)#
+								p = sum(log1[,index1]==1)/dim(log1)[1]#
+								K = 56 # length(locations)*(length(locations)-1) # K shoulf be divided by 2 if "symetric" case#
+								q = (log(2)+K-1)/(K*(K-1))#
+								BFs1[i,j] = (p/(1-p))/(q/(1-q))#
+								p1 = sum(log1[,index1]==1)/dim(log1)[1]#
+								p2 = sum(log2[,index2]==1)/dim(log2)[1]#
+								BFs2[i,j] = (p1/(1-p1))/(p2/(1-p2))#
+							}#
+					}#
+			}#
+		setwd(paste0(wd,"/DTA_boroughs_analyses/",variants[h],"_DTA/"))#
+		write.table(round(BFs1,1), paste0("BF_values.csv"), sep=",", quote=F)#
+		setwd(paste0(wd,"/DTA_boroughs_analyses/",variants[h],"_TSW/"))#
+		write.table(round(BFs2,1), paste0("BF_values.csv"), sep=",", quote=F)
+h
+for (h in 1:3)#length(variants))#
+	{#
+		if (file.exists(paste0("Preliminary_discrete_runs/",variants[h],"_DTA.tree")))#
+			{#
+				tree = readAnnotatedNexus(paste0("Preliminary_discrete_runs/",variants[h],"_DTA.tree")); indices = c()#
+			}	else	{#
+				tree = readAnnotatedNexus(paste0("Preliminary_discrete_runs/",variants[h],"_last.tree")); indices = c()#
+			}#
+		metadata1 = read.csv(paste0("All_NYU_alignment_data/All_NYU_alignment_data_26032022/",variants[h],"_metadata.csv"), head=T, sep=";")#
+		metadata2 = read.csv(paste0("IQ-TREE_TreeTime_runs/",variants[h],"_TreeTime.csv"), head=T, sep=",")#
+		if (file.exists(paste0("IQ-TREE_TreeTime_runs/",variants[h],"_lineages.csv")))#
+			{#
+				metadata3 = read.csv(paste0("IQ-TREE_TreeTime_runs/",variants[h],"_lineages.csv"), head=T, sep=",")#
+			}	else	{#
+				metadata3 = metadata2 # for those variants the "lineage" column is included in the main metadat file#
+				colnames(metadata3)[1] = "taxon"#
+			}#
+		NYC_branches = c(); NYC_introductions = c(); NYC_TipBranches = c(); sampledSequences = c()#
+		for (i in 1:dim(tree$edge)[1])#
+			{#
+				if (is.null(tree$annotations[[i]]))#
+					{#
+						print(c(h,i))#
+					}	else		{#
+						if (tree$annotations[[i]]$location == "NYC_counties")#
+							{#
+								NYC_branches = c(NYC_branches,i)#
+								index = which(tree$edge[,2]==tree$edge[i,1])#
+								if (tree$annotations[[index]]$location != "NYC_counties")#
+									{#
+										NYC_introductions = c(NYC_introductions, i)#
+									}#
+								if (!tree$edge[i,2]%in%tree$edge[,1])#
+									{#
+										NYC_TipBranches = c(NYC_TipBranches, i)#
+										sampledSequences = c(sampledSequences, tree$tip.label[tree$edge[i,2]])#
+									}#
+							}#
+					}#
+			}#
+		for (i in 1:length(NYC_introductions))#
+			{#
+				if (i == 1) clusters1 = list()#
+				if (tree$edge[NYC_introductions[i],2]%in%tree$edge[,1])#
+					{#
+						subtree = tree_subset(tree, tree$edge[NYC_introductions[i],2], levels_back=0)#
+						clusters1[[i]] = gsub("'","",subtree$tip.label)#
+					}	else		{#
+						clusters1[[i]] = gsub("'","",tree$tip.label[tree$edge[NYC_introductions[i],2]])#
+					}#
+			}#
+		for (i in 2:length(clusters1))#
+			{#
+				for (j in 1:(i-1))#
+					{#
+						if (sum(clusters1[[i]]%in%clusters1[[j]]) == length(clusters1[[i]]))#
+							{#
+								clusters1[[j]] = clusters1[[j]][which(!clusters1[[j]]%in%clusters1[[i]])]#
+							}#
+						if (sum(clusters1[[j]]%in%clusters1[[i]]) == length(clusters1[[j]]))#
+							{#
+								clusters1[[i]] = clusters1[[i]][which(!clusters1[[i]]%in%clusters1[[j]])]#
+							}#
+					}#
+			}#
+		sampledSequences = gsub("'","",sampledSequences)#
+		if (!file.exists(paste0("Preliminary_discrete_runs/",variants[h],"_data.csv")))#
+			{#
+				samplingData = matrix(nrow=length(sampledSequences), ncol=9)#
+				colnames(samplingData) = c("sequence_ID","collection_date","lineage","state","county","location","zip_code","latitude","longitude")#
+				samplingData[,"sequence_ID"] = sampledSequences#
+				for (i in 1:dim(samplingData)[1])#
+					{#
+						if (sum(samplingData[i,"sequence_ID"]==metadata3[,"taxon"]) == 1)#
+							{#
+								index = which(metadata3[,"taxon"]==samplingData[i,"sequence_ID"])#
+								samplingData[i,"lineage"] = metadata3[index,"lineage"]#
+							}#
+						if (sum(samplingData[i,"sequence_ID"]==metadata2[,"name"]) == 1)#
+							{#
+								index = which(metadata2[,"name"]==samplingData[i,"sequence_ID"])#
+								samplingData[i,"collection_date"] = decimal_date(ymd(metadata2[index,"date"]))#
+							}#
+						if (sum(unlist(strsplit(samplingData[i,"sequence_ID"],"\\|"))[1]==metadata1[,"strain"]) == 1)#
+							{#
+								index = which(metadata1[,"strain"]==unlist(strsplit(samplingData[i,"sequence_ID"],"\\|"))[1])#
+								samplingData[i,"state"] = metadata1[index,"division"]#
+								samplingData[i,"county"] = gsub("County","",gsub(" ","",metadata1[index,"location"]))#
+								samplingData[i,"zip_code"] = metadata1[index,"zip"]#
+								if (!is.na(samplingData[i,"county"]))#
+									{#
+										if ((samplingData[i,"county"] == "")|(samplingData[i,"county"] == "New York City")) samplingData[i,"county"] = NA#
+									}#
+								if (!is.na(samplingData[i,"zip_code"]))#
+									{#
+										if (samplingData[i,"zip_code"] == "unknown") samplingData[i,"zip_code"] = NA#
+									}#
+							}#
+						if (!is.na(samplingData[i,"county"]))#
+							{#
+								if ((samplingData[i,"state"]=="New York")&(samplingData[i,"county"]%in%NYC_counties))#
+									{#
+										samplingData[i,"location"] = samplingData[i,"county"]#
+									}#
+							}#
+						if ((!is.na(samplingData[i,"zip_code"]))&(samplingData[i,"county"]%in%NYC_counties))#
+							{#
+								zipCode = gsub(" ","",unlist(strsplit(samplingData[i,"zip_code"],"-"))[1])#
+								if (nchar(zipCode) == 4) zipCode = paste0("0",zipCode)#
+								index = which(zipCodes@data[,"ZCTA5CE10"]==zipCode); maxArea = 0; pol = NULL#
+								if (length(index) == 1)#
+									{#
+										for (j in 1:length(zipCodes@polygons[[index]]@Polygons))#
+											{#
+												if (maxArea < zipCodes@polygons[[index]]@Polygons[[j]]@area)#
+													{#
+														maxArea = zipCodes@polygons[[index]]@Polygons[[j]]@area#
+														pol = zipCodes@polygons[[index]]@Polygons[[j]]#
+													}#
+											}#
+										coords = spsample(pol, 1, type="random")@coords#
+										samplingData[i,"longitude"] = coords[,"x"]#
+										samplingData[i,"latitude"] = coords[,"y"]#
+									}	else	{#
+										cat("Unmatched zip code: ",zipCode," (for ",variants[h],")\n",sep="")#
+									}#
+							}#
+					}#
+				write.csv(samplingData, paste0("Preliminary_discrete_runs/",variants[h],"_data.csv"), quote=F, row.names=F)#
+			}	#
+		samplingData = read.csv(paste0("Preliminary_discrete_runs/",variants[h],"_data.csv"), head=T)#
+		for (i in 1:length(NYC_introductions))#
+			{#
+				tab = c()#
+				if (i == 1)#
+					{#
+						clusters2 = list(); centroids = list()#
+					}#
+				for (j in 1:length(clusters1[[i]]))#
+					{#
+						index = which(samplingData[,"sequence_ID"]==clusters1[[i]][j])#
+						if (length(index) == 1)#
+							{#
+								collection_date = samplingData[index,"collection_date"]#
+								lineage = samplingData[index,"lineage"]#
+								state = samplingData[index,"state"]#
+								county = samplingData[index,"county"]#
+								location = gsub(" ","",samplingData[index,"location"])#
+								zip_code = samplingData[index,"zip_code"]#
+								latitude = samplingData[index,"latitude"]#
+								longitude = samplingData[index,"longitude"]#
+								line = cbind(collection_date, lineage, state, county, location, zip_code, latitude, longitude)#
+								row.names(line) = clusters1[[i]][j]; tab = rbind(tab, line)#
+							}#
+					}#
+				colnames(tab) = c("collection_date","lineage","state","county","location","zip_code","latitude","longitude")#
+				clusters2[[i]] = tab#
+			}#
+		clusters1_list[[h]] = clusters1; clusters2_list[[h]] = clusters2; NYC_introductions_list[[h]] = NYC_introductions#
+	}
+file.exists(paste0("Preliminary_discrete_runs/",variants[h],"_DTA.tree")))
+file.exists(paste0("Preliminary_discrete_runs/",variants[h],"_DTA.tree"))
+setwd(wd)
+getwd()
+setwd(paste0(wd,"/DTA_boroughs_analyses/",variants[h],"_DTA/"))
+h=3
+setwd(paste0(wd,"/DTA_boroughs_analyses/",variants[h],"_DTA/"))
+treeFiles = list.files(); treeFiles = treeFiles[which(grepl(".trees",treeFiles))]
+nberOfExtractionFiles
+nberOfExtractionFiles=500
+dir.create(file.path("All_clades_ext"), showWarnings=F); tab = NULL#
+		for (i in 1:nberOfExtractionFiles)#
+			{#
+				for (j in 1:length(treeFiles))#
+					{#
+						if (j == 1)#
+							{#
+								tab = read.csv(paste0(gsub(".trees","_ext",treeFiles[j]),"/TreeExtractions_",i,".csv"))#
+							}	else	{#
+								tab = rbind(tab, read.csv(paste0(gsub(".trees","_ext",treeFiles[j]),"/TreeExtractions_",i,".csv")))#
+							}#
+					}#
+				write.csv(tab, paste0("All_clades_ext/TreeExtractions_",i,".csv"), row.names=F, quote=F)#
+			}#
+		matrices = list()#
+		for (i in 1:nberOfExtractionFiles)#
+			{#
+				mat = matrix(0, nrow=length(NYC_counties), ncol=length(NYC_counties))#
+				row.names(mat) = NYC_counties; colnames(mat) = NYC_counties#
+				tab = read.csv(paste0("All_clades_ext/TreeExtractions_",i,".csv"), head=T)#
+				for (j in 1:dim(tab)[1])#
+					{#
+						index1 = which(NYC_counties==tab[j,"startLoc"])#
+						index2 = which(NYC_counties==tab[j,"endLoc"])#
+						mat[index1,index2] = mat[index1,index2]+1#
+					}#
+				matrices[[i]] = mat#
+			}

@@ -1,0 +1,19 @@
+#NEXUS
+
+Begin taxa;
+	Dimensions ntax=3;
+	Taxlabels
+		hCoV-19/USA/NY-MSHSPSP-PV38739/2021
+		hCoV-19/USA/NY-MSHSPSP-PV38923/2021
+		hCoV-19/USA/NY-MSHSPSP-PV39354/2021
+		;
+End;
+
+Begin trees;
+	Translate
+		1 hCoV-19/USA/NY-MSHSPSP-PV38739/2021,
+		2 hCoV-19/USA/NY-MSHSPSP-PV38923/2021,
+		3 hCoV-19/USA/NY-MSHSPSP-PV39354/2021
+		;
+tree TREE1 = [&R] ((3[&length=0.1494600000000021,location.rate_95%_HPD={0.45163666538275876,0.6077381491411706},location="Nassau",location.prob=1.0,location.rate_median=0.5193907140039761,location.set={"Nassau"},location.set.prob={1.0},location.rate_range={0.41220760195308515,0.6972958479571918},height=0.0,location.rate=0.5228771232642532]:0.14946,2[&length=0.13945999999999972,location.rate_95%_HPD={0.45163666538275876,0.6077381491411706},location="Bronx",location.prob=1.0,location.rate_median=0.5193907140039761,location.set={"Bronx"},location.set.prob={1.0},location.rate_range={0.41220760195308515,0.6972958479571918},height=0.009999999999999835,location.rate=0.5228771232642532]:0.13946)[&length=6.533144870998764E-5,posterior=1.0,location.rate_95%_HPD={0.45163666538275876,0.6077381491411706},location="Bronx",location.prob=0.6233333333333333,location.rate_median=0.5193907140039761,location.set={"Nassau","Westchester","NewYork","Bronx"},location.set.prob={0.30333333333333334,0.0011111111111111111,0.07222222222222222,0.6233333333333333},location.rate_range={0.41220760195308515,0.6972958479571918},height=0.1494600000000021,location.rate=0.5228771232642532]:6.533144870998764E-5,1[&length=0.1115253314000018,location.rate_95%_HPD={0.45163666538275876,0.6077381491411706},location="Bronx",location.prob=1.0,location.rate_median=0.5193907140039761,location.set={"Bronx"},location.set.prob={1.0},location.rate_range={0.41220760195308515,0.6972958479571918},height=0.038000000048710715,location.rate=0.5228771232642532]:0.1115253314)[&length=0.0,posterior=1.0,location="Bronx",location.prob=0.6233333333333333,location.set={"Nassau","Westchester","NewYork","Bronx"},location.set.prob={0.30333333333333334,0.0011111111111111111,0.07222222222222222,0.6233333333333333},height=0.1495253314487111];
+End;

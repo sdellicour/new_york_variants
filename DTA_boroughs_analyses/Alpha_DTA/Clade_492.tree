@@ -1,0 +1,19 @@
+#NEXUS
+
+Begin taxa;
+	Dimensions ntax=3;
+	Taxlabels
+		hCoV-19/USA/NY-MSHSPSP-PV35456/2021
+		hCoV-19/USA/NY-MSHSPSP-PV35555/2021
+		hCoV-19/USA/NY-MSHSPSP-PV35565/2021
+		;
+End;
+
+Begin trees;
+	Translate
+		1 hCoV-19/USA/NY-MSHSPSP-PV35456/2021,
+		2 hCoV-19/USA/NY-MSHSPSP-PV35555/2021,
+		3 hCoV-19/USA/NY-MSHSPSP-PV35565/2021
+		;
+tree TREE1 = [&R] (3[&length=0.02946000000000021,location.rate_95%_HPD={2.610949523526424,3.3174182749708327},location="NewYork",location.prob=1.0,location.rate_median=2.9653942733474583,location.set={"NewYork"},location.set.prob={1.0},location.rate_range={2.394645734339174,3.5517888563772106},height=0.0,location.rate=2.9642043850935904]:0.02946,(1[&length=4.824863758000054E-4,location.rate_95%_HPD={2.610949523526424,3.3174182749708327},location="NewYork",location.prob=1.0,location.rate_median=2.9653942733474583,location.set={"NewYork"},location.set.prob={1.0},location.rate_range={2.394645734339174,3.5517888563772106},height=0.006000000004200095,location.rate=2.9642043850935904]:4.824863757999995E-4,2[&length=0.00348248637599994,location.rate_95%_HPD={2.610949523526424,3.3174182749708327},location="NewYork",location.prob=1.0,location.rate_median=2.9653942733474583,location.set={"NewYork"},location.set.prob={1.0},location.rate_range={2.394645734339174,3.5517888563772106},height=0.003000000004000022,location.rate=2.9642043850935904]:0.003482486376000002)[&length=0.02297751362000004,posterior=1.0,location.rate_95%_HPD={2.610949523526424,3.3174182749708327},location="NewYork",location.prob=1.0,location.rate_median=2.9653942733474583,location.set={"NewYork"},location.set.prob={1.0},location.rate_range={2.394645734339174,3.5517888563772106},height=0.0064824863800000835,location.rate=2.9642043850935904]:0.02297751362)[&length=0.0,posterior=1.0,location="NewYork",location.prob=0.9922222222222222,location.set={"Queens","Nassau","NewYork"},location.set.prob={0.005555555555555556,0.0022222222222222222,0.9922222222222222},height=0.02946000000000021];
+End;

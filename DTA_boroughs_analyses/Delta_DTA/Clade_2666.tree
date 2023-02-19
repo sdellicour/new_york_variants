@@ -1,0 +1,19 @@
+#NEXUS
+
+Begin taxa;
+	Dimensions ntax=3;
+	Taxlabels
+		hCoV-19/USA/NY-MSHSPSP-PV40936/2021
+		hCoV-19/USA/NY-NYULH3177/2021
+		hCoV-19/USA/NY-Wadsworth-21095939-01/2021
+		;
+End;
+
+Begin trees;
+	Translate
+		1 hCoV-19/USA/NY-MSHSPSP-PV40936/2021,
+		2 hCoV-19/USA/NY-NYULH3177/2021,
+		3 hCoV-19/USA/NY-Wadsworth-21095939-01/2021
+		;
+tree TREE1 = [&R] (3[&length=0.1546000000000003,location.rate_95%_HPD={0.45163666538275876,0.6077381491411706},location="Queens",location.prob=1.0,location.rate_median=0.5193907140039761,location.set={"Queens"},location.set.prob={1.0},location.rate_range={0.41220760195308515,0.6972958479571918},height=0.0,location.rate=0.5228771232642532]:0.1546,(2[&length=0.1113399999999987,location.rate_95%_HPD={0.45163666538275876,0.6077381491411706},location="Kings",location.prob=1.0,location.rate_median=0.5193907140039761,location.set={"Kings"},location.set.prob={1.0},location.rate_range={0.41220760195308515,0.6972958479571918},height=0.04099999999999985,location.rate=0.5228771232642532]:0.11133999999999998,1[&length=0.14433999999999972,location.rate_95%_HPD={0.45163666538275876,0.6077381491411706},location="Queens",location.prob=1.0,location.rate_median=0.5193907140039761,location.set={"Queens"},location.set.prob={1.0},location.rate_range={0.41220760195308515,0.6972958479571918},height=0.008000000000000005,location.rate=0.5228771232642532]:0.14434)[&length=0.0022599999999999834,posterior=1.0,location.rate_95%_HPD={0.45163666538275876,0.6077381491411706},location="Queens",location.prob=0.9777777777777777,location.rate_median=0.5193907140039761,location.set={"Queens","NewYork"},location.set.prob={0.9777777777777777,0.022222222222222223},location.rate_range={0.41220760195308515,0.6972958479571918},height=0.15233999999999887,location.rate=0.5228771232642532]:0.002260000000000012)[&length=0.0,posterior=1.0,location="Queens",location.prob=0.9777777777777777,location.set={"Queens","NewYork"},location.set.prob={0.9777777777777777,0.022222222222222223},height=0.1546000000000003];
+End;

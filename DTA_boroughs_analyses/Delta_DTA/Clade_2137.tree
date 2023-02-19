@@ -1,0 +1,19 @@
+#NEXUS
+
+Begin taxa;
+	Dimensions ntax=3;
+	Taxlabels
+		hCoV-19/USA/NY-NYULH3667/2021
+		hCoV-19/USA/NY-WMC2021-485/2021
+		hCoV-19/USA/NY-WMC2021-501/2021
+		;
+End;
+
+Begin trees;
+	Translate
+		1 hCoV-19/USA/NY-NYULH3667/2021,
+		2 hCoV-19/USA/NY-WMC2021-485/2021,
+		3 hCoV-19/USA/NY-WMC2021-501/2021
+		;
+tree TREE1 = [&R] (1[&length=0.1526099999999992,location.rate_95%_HPD={0.45163666538275876,0.6077381491411706},location="Suffolk",location.prob=1.0,location.rate_median=0.5193907140039761,location.set={"Suffolk"},location.set.prob={1.0},location.rate_range={0.41220760195308515,0.6972958479571918},height=0.0,location.rate=0.5228771232642532]:0.15261,(2[&length=0.11140000000000215,location.rate_95%_HPD={0.45163666538275876,0.6077381491411706},location="Westchester",location.prob=1.0,location.rate_median=0.5193907140039761,location.set={"Westchester"},location.set.prob={1.0},location.rate_range={0.41220760195308515,0.6972958479571918},height=0.0390000000000007,location.rate=0.5228771232642532]:0.11140000000000001,3[&length=0.13039999999999816,location.rate_95%_HPD={0.45163666538275876,0.6077381491411706},location="Westchester",location.prob=1.0,location.rate_median=0.5193907140039761,location.set={"Westchester"},location.set.prob={1.0},location.rate_range={0.41220760195308515,0.6972958479571918},height=0.01999999999999967,location.rate=0.5228771232642532]:0.1304)[&length=0.0022100000000000314,posterior=1.0,location.rate_95%_HPD={0.45163666538275876,0.6077381491411706},location="Westchester",location.prob=0.7522222222222222,location.rate_median=0.5193907140039761,location.set={"Westchester","Nassau","Suffolk","NewYork"},location.set.prob={0.7522222222222222,0.006666666666666667,0.2311111111111111,0.01},location.rate_range={0.41220760195308515,0.6972958479571918},height=0.1504000000000013,location.rate=0.5228771232642532]:0.0022099999999999898)[&length=0.0,posterior=1.0,location="Suffolk",location.prob=0.5377777777777778,location.set={"Westchester","Nassau","Suffolk","NewYork"},location.set.prob={0.4166666666666667,0.013333333333333334,0.5377777777777778,0.03222222222222222},height=0.1526099999999992];
+End;

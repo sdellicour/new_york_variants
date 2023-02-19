@@ -1,0 +1,19 @@
+#NEXUS
+
+Begin taxa;
+	Dimensions ntax=3;
+	Taxlabels
+		hCoV-19/USA/NY-Wadsworth-21052139-01/2021
+		hCoV-19/USA/NY-Wadsworth-21052606-01/2021
+		hCoV-19/USA/NY-Wadsworth-21052659-01/2021
+		;
+End;
+
+Begin trees;
+	Translate
+		1 hCoV-19/USA/NY-Wadsworth-21052139-01/2021,
+		2 hCoV-19/USA/NY-Wadsworth-21052606-01/2021,
+		3 hCoV-19/USA/NY-Wadsworth-21052659-01/2021
+		;
+tree TREE1 = [&R] (3[&length=0.08853053411999809,location.rate_95%_HPD={2.610949523526424,3.3174182749708327},location="Bronx",location.prob=1.0,location.rate_median=2.9653942733474583,location.set={"Bronx"},location.set.prob={1.0},location.rate_range={2.394645734339174,3.5517888563772106},height=0.0,location.rate=2.9642043850935904]:0.08853053412,(1[&length=0.07553999999999869,location.rate_95%_HPD={2.610949523526424,3.3174182749708327},location="Nassau",location.prob=1.0,location.rate_median=2.9653942733474583,location.set={"Nassau"},location.set.prob={1.0},location.rate_range={2.394645734339174,3.5517888563772106},height=0.011000000003999769,location.rate=2.9642043850935904]:0.07554,2[&length=0.06154000000000069,location.rate_95%_HPD={2.610949523526424,3.3174182749708327},location="Kings",location.prob=1.0,location.rate_median=2.9653942733474583,location.set={"Kings"},location.set.prob={1.0},location.rate_range={2.394645734339174,3.5517888563772106},height=0.025000000003999902,location.rate=2.9642043850935904]:0.06154)[&length=0.0019905341160000273,posterior=1.0,location.rate_95%_HPD={2.610949523526424,3.3174182749708327},location="Kings",location.prob=0.45,location.rate_median=2.9653942733474583,location.set={"Nassau","Queens","Suffolk","NewYork","Kings","Bronx"},location.set.prob={0.1711111111111111,0.042222222222222223,0.0033333333333333335,0.25,0.45,0.08333333333333333},location.rate_range={2.394645734339174,3.5517888563772106},height=0.08654000000400104,location.rate=2.9642043850935904]:0.0019905341160000034)[&length=0.0,posterior=1.0,location="Kings",location.prob=0.37,location.set={"Nassau","Queens","Suffolk","NewYork","Kings","Bronx"},location.set.prob={0.1711111111111111,0.051111111111111114,0.0033333333333333335,0.25,0.37,0.15444444444444444},height=0.08853053411999809];
+End;

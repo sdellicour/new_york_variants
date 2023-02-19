@@ -1,35 +1,24 @@
-# To do list and/or issues to deal with:
-	# - n.b.: current results and figures are based on TreeTime trees (and only 400 posterior
-	#	trees in the case of the BSSVS analysis conducted for Iota) --> to be updated !!!!
-
-# Ideas of invasion/dispersal metrics to compare the different variants:
-	# - comparison of the growth rate advantage (that will be computed by Sam + graphs)
-	# - evolution of the ratio between the number of circulating clusters and lineages (branches)
-	# - evolution of the averaged proportion of circulating lineages belonging to the same cluster
-	# - potential idea: something based on the Shannon entropy used in the two waves study ??
-	# - evolution of the averaged duration since the cluster introduction event (cluster TMRCA)
-	# - averaged ratio between the number of county transition events and the cluster size
-	# - average number of counties infected by a distinct introduction event (distinct cluster)
-	# - averaged proportion of phylogeny branches associated with a transition event between counties
-	# - dispersal statistics: weighted lineage dispersal velocity and weighted diffusion coefficient
-
 # 1. Selection of the background genomic sequences to include
 # 2. Preparing the inputs for the preliminary discrete phylogeographic analyses 
-# 3. Analysing the number of distinct intropduction events (not performed)
+# 3. Estimating the number of distinct intropduction events in the study area
 # 4. Getting the MCC trees from the preliminary discrete phylogeographic analyses
 # 5. Identifying the different clusters (clades following introduction events)
-# 6. Preparing the discrete phylogeographic analyses among counties
+# 6. Preparing the discrete phylogeographic analyses (DTA) among counties
 # 7. Preparing the continuous phylogeographic analyses (RRW, Cauchy model)
 # 8. Building the maximum clade consensus (MCC) trees for both analyses
 # 9. Extracting spatio-temporal information embedded in MCC and posterior trees
 # 10. Visualisations of the discrete and continuous phylogeographic reconstructions
 # 11. Dispersal statistics based on the continuous phylogeographic reconstructions
 # 12. Dispersal statistics based on the discrete phylogeographic reconstructions
+# 13. Assessing the sensitivity of new metrics p1 and p2 to cluster sizes
+# 14. Assessing the sensitivity of new metric p3 to the transition rate
 
 library(diagram)
+library(HDInterval)
 library(lubridate)
 library(seraphim)
 library(treeio)
+library(vioplot)
 
 writingFiles = TRUE; showingPlots = TRUE
 writingFiles = FALSE; showingPlots = FALSE
@@ -136,8 +125,8 @@ sink(NULL)
 
 for (h in 1:length(variants))
 	{
-		# tree = read.nexus(paste0("IQ-TREE_TreeTime_runs/",variants[h],"_TreeTime.tre"))
-		tree = read.nexus(paste0("Thorney_BEAST_analyses/",variants[h],"_Thorney.tree"))
+		# tree = read.nexus(paste0("Thorney_BEAST_analyses/",variants[h],"_Thorney.tree"))
+		tree = read.nexus(paste0("IQ-TREE_TreeTime_runs/",variants[h],"_TreeTime.tre"))
 		data1 = read.csv(paste0("IQ-TREE_TreeTime_runs/",variants[h],"_TreeTime.csv"), head=T)
 		data2 = read.csv(paste0("All_NYU_alignment_data/All_NYU_alignment_data_26032022/",variants[h],"_metadata.csv"), head=T, sep=";")
 		seqIDs1 = tree$tip.label; seqIDs2 = data1[,"name"]; NYtipsToExclude = c()
@@ -266,69 +255,16 @@ for (h in 1:length(variants))
 		sink(NULL)
 	}
 
-# 3. Analysing the number of distinct intropduction events (not performed)
+# 3. Estimating the number of distinct intropduction events in the study area
 
-burnIns = rep(31, length(variants))
+burnIns = rep(31, length(variants)); registerDoMC(cores=5)
 for (h in 1:length(variants))
 	{
 		trees = scan(paste0("Preliminary_discrete_runs/",variants[h],"_DTA.trees"), what="", sep="\n", quiet=T, blank.lines.skip=F)
 		data = read.table(paste0("Preliminary_discrete_runs/",variants[h],"_DTA.txt"), head=T)
 		indices1 = which(!grepl("tree STATE_",trees)); indices2 = which(grepl("tree STATE_",trees))
 		mostRecentSamplingDatum = max(decimal_date(ymd(data[,"collection_date"])), na.rm=T)
-		NYC_branches_list = rep(NA,length(trees)); NYC_introductions_list = rep(NA,length(trees))
-		NYC_tipBranches_list = rep(NA,length(trees)); NYC_tMRCAs_list = list()
-		clusters_of_one_sequence_list = rep(NA,length(trees))
-		for (i in (burnIns[h]+1):length(indices2))
-			{
-				tree1 = trees[c(indices1[1:(length(indices1)-1)],indices2[i],indices1[length(indices1)])]
-				write(tree1, paste0(variants[h],"_",i,".tree"))
-				tree2 = readAnnotatedNexus(paste0(variants[h],"_",i,".tree"))
-				NYC_branches = 0; NYC_introductions = 0; NYC_tipBranches = 0
-				NYC_tMRCAs = c(); clusters_of_one_sequence = 0
-				for (j in 1:dim(tree2$edge)[1])
-					{
-						if ((!is.null(tree2$annotations[[j]]$location))&&(tree2$annotations[[j]]$location == "NYC_counties"))
-							{
-								NYC_branches = NYC_branches + 1
-								index = which(tree2$edge[,2]==tree2$edge[j,1])
-								if ((!is.null(tree2$annotations[[index]]$location))&&(tree2$annotations[[index]]$location != "NYC_counties"))
-									{
-										NYC_introductions = NYC_introductions + 1
-										tMRCA = mostRecentSamplingDatum-nodeheight(tree2,tree2$edge[j,1])
-										NYC_tMRCAs = c(NYC_tMRCAs, tMRCA)
-										if (!tree2$edge[j,2]%in%tree2$edge[,1])
-											{
-												clusters_of_one_sequence = clusters_of_one_sequence + 1
-											}
-									}
-								if (!tree2$edge[j,2]%in%tree2$edge[,1])
-									{
-										NYC_tipBranches = NYC_tipBranches + 1
-									}
-							}
-					}
-				NYC_branches_list[i] = NYC_branches
-				NYC_introductions_list[i] = NYC_introductions
-				NYC_tipBranches_list[i] = NYC_tipBranches
-				NYC_tMRCAs_list[[i]] = NYC_tMRCAs
-				clusters_of_one_sequence_list[i] = clusters_of_one_sequence
-				file.remove(paste0(variants[h],"_",i,".tree"))
-			}
-		quantiles = quantile(NYC_introductions_list[!is.na(NYC_introductions_list)],probs=c(0.025,0.975))
-		cat("A minimum number of ",median(NYC_introductions_list[!is.na(NYC_introductions_list)])," lineage introductions (95% HPD interval = [",
-			quantiles[1],"-",quantiles[2],"])"," identified from the global phylogenetic analysis of ",NYC_tipBranches," ",variants[h]," sequences sampled in the NYC area","\n",sep="")
-		proportions_of_cluster_1 = clusters_of_one_sequence_list/NYC_introductions_list
-		quantiles = quantile(proportions_of_cluster_1[!is.na(proportions_of_cluster_1)],probs=c(0.025,0.975))
-		cat("Proportion of clusters of n = 1: ",median(proportions_of_cluster_1[!is.na(proportions_of_cluster_1)])," (95% HPD interval = [",quantiles[1],"-",quantiles[2],"])","\n",sep="")
-	}
-registerDoMC(cores=10)
-for (h in 1:length(variants))
-	{
-		trees = scan(paste0("Preliminary_discrete_runs/",variants[h],"_DTA.trees"), what="", sep="\n", quiet=T, blank.lines.skip=F)
-		data = read.table(paste0("Preliminary_discrete_runs/",variants[h],"_DTA.txt"), head=T)
-		indices1 = which(!grepl("tree STATE_",trees)); indices2 = which(grepl("tree STATE_",trees))
-		mostRecentSamplingDatum = max(decimal_date(ymd(data[,"collection_date"])), na.rm=T)
-		NYC_introductions_list = rep(NA,length(trees)); clusters_of_one_sequence_list = rep(NA,length(trees))
+		NYC_introductions_list = list(); clusters_of_one_sequence_list = list(); buffer = list()
 		buffer = foreach(i = (burnIns[h]+1):length(indices2)) %dopar% {
 		# for (i in (burnIns[h]+1):length(indices2)) {
 				tree1 = trees[c(indices1[1:(length(indices1)-1)],indices2[i],indices1[length(indices1)])]
@@ -358,29 +294,24 @@ for (h in 1:length(variants))
 					}
 				file.remove(paste0(variants[h],"_",i,".tree"))
 				cbind(NYC_tipBranches, NYC_introductions, clusters_of_one_sequence)
-				cbind(runif(1,1,10),runif(1,1,10),runif(1,1,10))
 			}
 		NYC_tipBranches = buffer[[length(buffer)]][1]
-		for (i in (burnIns[h]+1):length(indices2))
+		for (i in 1:length(buffer))
 			{
-				NYC_introductions_list[[i]] = buffer[[i]][2]
-				clusters_of_one_sequence_list[[i]] = buffer[[i]][3]
+				NYC_introductions_list[[i]] = buffer[[i]][1,2]
+				clusters_of_one_sequence_list[[i]] = buffer[[i]][1,3]
 			}
+		NYC_introductions_list = unlist(NYC_introductions_list)
+		clusters_of_one_sequence_list = unlist(clusters_of_one_sequence_list)
 		quantiles = quantile(NYC_introductions_list[!is.na(NYC_introductions_list)],probs=c(0.025,0.975))
+		HPD = round(HDInterval::hdi(NYC_introductions_list[!is.na(NYC_introductions_list)])[1:2],0)
 		cat("A minimum number of ",median(NYC_introductions_list[!is.na(NYC_introductions_list)])," lineage introductions (95% HPD interval = [",
-			quantiles[1],"-",quantiles[2],"])"," identified from the global phylogenetic analysis of ",NYC_tipBranches," ",variants[h]," sequences sampled in the NYC area",sep="")
+			HPD[1],"-",HPD[2],"])"," identified from the global phylogenetic analysis of ",NYC_tipBranches," ",variants[h]," sequences sampled in the NYC area","\n",sep="")
 		proportions_of_cluster_1 = clusters_of_one_sequence_list/NYC_introductions_list
 		quantiles = quantile(proportions_of_cluster_1[!is.na(proportions_of_cluster_1)],probs=c(0.025,0.975))
-		cat("Proportion of clusters of n = 1: ",median(proportions_of_cluster_1[!is.na(proportions_of_cluster_1)])," (95% HPD interval = [",quantiles[1],"-",quantiles[2],"])")
+		HPD = round(HDInterval::hdi(proportions_of_cluster_1[!is.na(proportions_of_cluster_1)])[1:2],3)
+		cat("Proportion of clusters of n = 1: ",median(proportions_of_cluster_1[!is.na(proportions_of_cluster_1)])," (95% HPD interval = [",HPD[1],"-",HPD[2],"])","\n",sep="")
 	}
-		# A minimum number of 297 lineage introductions (95% HPD interval = [285-315]) identified from the global phylogenetic analysis of 2519 Iota sequences sampled in the NYC area.
-			# Proportion of clusters of n = 1: 0.723 (95% HPD interval = [0.697-0.745])
-		# A minimum number of 787 lineage introductions (95% HPD interval = [754-835]) identified from the global phylogenetic analysis of 1655 Alpha sequences sampled in the NYC area.
-			# Proportion of clusters of n = 1: 0.688 (95% HPD interval = [0.675-0.702])
-		# A minimum number of 3258 lineage introductions (95% HPD interval = [3227-3292]) identified from the global phylogenetic analysis of 4796 O-BA1 sequences sampled in the NYC area.
-			# Proportion of clusters of n = 1: 0.763 (95% HPD interval = [0.757-0.769])
-		# A minimum number of 2368 lineage introductions (95% HPD interval = [2333-2397]) identified from the global phylogenetic analysis of 3123 O-BA1 sequences sampled in the NYC area.
-			# Proportion of clusters of n = 1: 0.833 (95% HPD interval = [0.827-0.840])
 
 # 4. Getting the MCC trees from the preliminary discrete phylogeographic analyses
 
@@ -575,12 +506,12 @@ for (i in 1:length(clusters2_list))
 	{
 		if (i == 1) cat("\tNumber of distinct clusters:\n",sep="")
 		cat("\t\t",variants[i],":\t",length(cluster_sizes_list[[i]]),"\n",sep="")
-	}	# 287 (Iota), 786 (Alpha), 3246 (Delta), 2364 (O-BA1)
+	}	# 312 (Iota), 784 (Alpha), 3646 (Delta), 2252 (O-BA1)
 for (i in 1:length(clusters2_list))
 	{
 		if (i == 1) cat("\tProportion of clusters of size = 1:\n",sep="")
 		cat("\t\t",variants[i],":\t",round(sum(cluster_sizes_list[[i]]==1)/length(cluster_sizes_list[[i]]),3),"\n",sep="")
-	}	# 0.74 (Iota), 0.70 (Alpha), 0.77 (Delta), 0.84 (O-BA1)
+	}	# 0.73 (Iota), 0.69 (Alpha), 0.84 (Delta), 0.82 (O-BA1)
 source("DTA_tree_extraction2.r")
 for (h in 1:length(variants))
 	{
@@ -604,7 +535,7 @@ for (h in 1:length(variants))
 		NYC_introduction_dates_list[[h]] = tab[indices,"endYear"] # to get the tMRCA's
 	}
 
-# 6. Preparing the discrete phylogeographic analyses among counties
+# 6. Preparing the discrete phylogeographic analyses (DTA) among counties
 
 tipSwapping = TRUE; tipSwapping = FALSE
 for (h in 1:length(variants))
@@ -1260,7 +1191,7 @@ for (h in 1:length(variants))
 								colName = paste0("location.indicators.",gsub(" ",".",NYC_counties[i]),".",gsub(" ",".",NYC_counties[j]))
 								index1 = which(colnames(log1)==colName); index2 = which(colnames(log2)==colName)
 								p = sum(log1[,index1]==1)/dim(log1)[1]
-								K = 56 # length(locations)*(length(locations)-1) # K shoulf be divided by 2 if "symetric" case
+								K = length(NYC_counties)
 								q = (log(2)+K-1)/(K*(K-1))
 								BFs1[i,j] = (p/(1-p))/(q/(1-q))
 								p1 = sum(log1[,index1]==1)/dim(log1)[1]
@@ -1273,7 +1204,7 @@ for (h in 1:length(variants))
 		write.table(round(BFs1,1), paste0("BF_values.csv"), sep=",", quote=F)
 		setwd(paste0(wd,"/DTA_boroughs_analyses/",variants[h],"_TSW/"))
 		write.table(round(BFs2,1), paste0("BF_values.csv"), sep=",", quote=F)
-			setwd(paste0(wd,"/RRW_diffusion_analyses/",variants[h],"_RRW/"))
+		setwd(paste0(wd,"/RRW_diffusion_analyses/",variants[h],"_RRW/"))
 		treeFiles = list.files(); treeFiles = gsub(".trees","",treeFiles[which(grepl(".trees",treeFiles))])
 		for (i in 1:length(treeFiles))
 			{
@@ -1464,9 +1395,9 @@ for (h in 1:length(variants))
 							}
 					}			
 			}
+		rast = raster(matrix(nrow=1, ncol=2)); rast[1] = minYear; rast[2] = maxYear
 		if (reportingIntroductionEvents)
 			{
-				rast = raster(matrix(nrow=1, ncol=2)); rast[1] = minYear; rast[2] = maxYear
 				selectedDates = NYC_introduction_dates_list[[h]]; selectedLabels = rep("", length(selectedDates))	
 				plot(rast, legend.only=T, add=T, col=colourScale, legend.width=0.5, legend.shrink=0.3, smallplot=c(0.47,0.96,0.12,0.14),
 					 legend.args=list(text="", cex=0.7, line=0.3, col="gray30"), horizontal=T,
@@ -1537,15 +1468,17 @@ for (h in 1:length(variants))
 for (h in 1:length(variants))
 	{
 		stats = read.table(paste0("RRW_dispersal_statistics/",variants[h],"_estimated_dispersal_statistics.txt"), head=T)
-		wldv = stats[,"weighted_branch_dispersal_velocity"]/365; wldv_md = round(median(wldv),2); wldv_qs = round(quantile(wldv,c(0.025,0.975)),2)
+		wldv = stats[,"weighted_branch_dispersal_velocity"]/365; wldv_md = round(median(wldv),2)
+		wldv_qs = round(quantile(wldv,c(0.025,0.975)),2); wldv_hpd = round(HDInterval::hdi(wldv)[1:2],2)
 		stats = read.table(paste0("RRW_dispersal_statistics/",variants[h],"_estimated_dispersal_statistics.txt"), head=T)
-		wdc = stats[,"weighted_diffusion_coefficient"]/365; wdc_md = round(median(wdc),1); wdc_qs = round(quantile(wdc,c(0.025,0.975)),1)
-		cat(variants[h],":\tWLDV = ",wldv_md," km/day [",wldv_qs[1],"-",wldv_qs[2],"]\t\tWDC = ",wdc_md," km2/year [",wdc_qs[1],"-",wdc_qs[2],"]","\n",sep="")	
+		wdc = stats[,"weighted_diffusion_coefficient"]/365; wdc_md = round(median(wdc),1)
+		wdc_qs = round(quantile(wdc,c(0.025,0.975)),1); wdc_hpd = round(HDInterval::hdi(wdc)[1:2],2)
+		cat(variants[h],":\tWLDV = ",wldv_md," km/day [",wldv_hpd[1],"-",wldv_hpd[2],"]\t\tWDC = ",wdc_md," km2/year [",wdc_hpd[1],"-",wdc_hpd[2],"]","\n",sep="")	
 	}
-		# Iota:		WLDV = 0.25 km/day [0.22-0.34]		WDC = 1.5 km2/year [1.3-2.9]
-		# Alpha:	WLDV = 0.50 km/day [0.39-0.87]		WDC = 3.0 km2/year [1.8-9.4]
-		# Delta:	WLDV = 1.13 km/day [0.82-2.21]		WDC = 8.8 km2/year [4.9-38.1]
-		# O-BA1:	WLDV = 1.71 km/day [1.23-3.32]		WDC = 12.0 km2/year [6.2-55.0]
+		# Iota:		WLDV = 0.27 km/day [0.24-0.32]		WDC = 1.7 km2/year [1.4-2.3]
+		# Alpha:	WLDV = 0.57 km/day [0.40-0.94]		WDC = 3.7 km2/year [1.9-12.0]
+		# Delta:	WLDV = 0.43 km/day [0.28-0.74]		WDC = 3.0 km2/year [1.4-9.6]
+		# O-BA1:	WLDV = 2.00 km/day [1.37-3.31]		WDC = 12.8 km2/year [6.7-41.4]
 
 # 12. Dispersal statistics based on the discrete phylogeographic reconstructions
 
@@ -1601,13 +1534,13 @@ for (h in 1:length(variants))
 		for (i in 1:dim(mat1b)[1])
 			{
 				mat1b[i,"time"] = mean(c(timePoints[i],timePoints[i+1])); mat1b[i,"median"] = median(mat1a[i,],na.rm=T)
-				mat1b[i,c("lower95hpd","higher95hpd")] = quantile(mat1a[i,],c(0.025,0.975),na.rm=T)
+				mat1b[i,c("lower95hpd","higher95hpd")] = HDInterval::hdi(mat1a[i,])[1:2] # quantile(mat1a[i,],c(0.025,0.975),na.rm=T)
 				mat2b[i,"time"] = mean(c(timePoints[i],timePoints[i+1])); mat2b[i,"median"] = median(mat2a[i,],na.rm=T)
-				mat2b[i,c("lower95hpd","higher95hpd")] = quantile(mat2a[i,],c(0.025,0.975),na.rm=T)
+				mat2b[i,c("lower95hpd","higher95hpd")] = HDInterval::hdi(mat2a[i,])[1:2] # quantile(mat2a[i,],c(0.025,0.975),na.rm=T)
 				mat3b[i,"time"] = mean(c(timePoints[i],timePoints[i+1])); mat3b[i,"median"] = median(mat3a[i,],na.rm=T)
-				mat3b[i,c("lower95hpd","higher95hpd")] = quantile(mat3a[i,],c(0.025,0.975),na.rm=T)
+				mat3b[i,c("lower95hpd","higher95hpd")] = HDInterval::hdi(mat3a[i,])[1:2] # quantile(mat3a[i,],c(0.025,0.975),na.rm=T)
 				mat4b[i,"time"] = mean(c(timePoints[i],timePoints[i+1])); mat4b[i,"median"] = median(mat4a[i,],na.rm=T)
-				mat4b[i,c("lower95hpd","higher95hpd")] = quantile(mat4a[i,],c(0.025,0.975),na.rm=T)
+				mat4b[i,c("lower95hpd","higher95hpd")] = HDInterval::hdi(mat4a[i,])[1:2] # quantile(mat4a[i,],c(0.025,0.975),na.rm=T)
 			}
 		# N.B.: logical to do not observe variations among trees as the BSSVS was performed on a fixed tree topology
 		mat1c = matrix(nrow=timeSlices, ncol=2); mat2c = matrix(nrow=timeSlices, ncol=2); mat3c = matrix(nrow=timeSlices, ncol=2); mat4c = matrix(nrow=timeSlices, ncol=2)
@@ -1646,7 +1579,8 @@ for (h in 2:length(variants))
 	{
 		disparsalStatistics = read.table(paste0("RRW_dispersal_statistics/",variants[h],"_estimated_dispersal_statistics.txt"), head=T)
 		WDC = disparsalStatistics[,"weighted_diffusion_coefficient"]/365 # to get km2/day
-		if (h == 2) plot(density(WDC), col=NA, axes=F, ann=F, xlim=c(0,30), ylim=c(0,0.43))
+		if (h == 1) plot(density(WDC), col=NA, axes=F, ann=F, xlim=c(0,30), ylim=c(0,3.2))
+		# if (h == 2) plot(density(WDC), col=NA, axes=F, ann=F, xlim=c(0,30), ylim=c(0,0.43))
 		polygon(density(WDC), col=variantColours2[h], border=NA); lines(density(WDC), lwd=1, col=variantColours1[h])
 	}
 axis(side=1, lwd.tick=0.2, cex.axis=0.65, lwd=0.2, tck=-0.03, col="gray30", col.axis="gray30", mgp=c(0,0.11,0))
@@ -1661,24 +1595,27 @@ wd = getwd()
 for (h in 1:length(variants))
 	{
 		setwd(paste0(wd,"/DTA_boroughs_analyses/",variants[h],"_DTA/"))
-		treeFiles = list.files(); treeFiles = treeFiles[which(grepl(".trees",treeFiles))]
 		AR_TE_CS = matrix(nrow=nberOfExtractionFiles, ncol=1)
 		for (i in 1:nberOfExtractionFiles)
-			{				
-				R_TE_CS = rep(NA, length(treeFiles))
-				for (j in 1:length(treeFiles))
+			{
+				tab = read.csv(paste0("All_clades_ext/TreeExtractions_",i,".csv"), head=T)
+				clades = unique(tab[,"cladeID"]); clades = clades[order(clades)]
+				R_TE_CS = rep(NA, length(clades))
+				for (j in 1:length(clades))
 					{
-						tab = read.csv(paste0(gsub(".trees","_ext",treeFiles[j]),"/TreeExtractions_",i,".csv"), head=T)
-						R_TE_CS[j] = length(which(tab[,"startLoc"]!=tab[,"endLoc"]))/length(which(!tab[,"node2"]%in%tab[,"node1"]))
+						sub = tab[which(tab[,"cladeID"]==clades[j]),]
+						R_TE_CS[j] = length(which(sub[,"startLoc"]!=sub[,"endLoc"]))/length(which(!sub[,"node2"]%in%sub[,"node1"]))
 					}
 				AR_TE_CS[i,1] = mean(R_TE_CS)
 			}
-		median = round(median(AR_TE_CS),2); quantiles = round(quantile(AR_TE_CS,c(0.025,0.975)),2)
-		cat(variants[h],": ",median,", 95% HPD = [",quantiles[1],"-",quantiles[2],"]\n",sep="")
-			# Iota:  0.36, 95% HPD = [0.35-0.40]
-			# Alpha: 0.34, 95% HPD = [0.33-0.36]
-			# Delta: 0.30, 95% HPD = [0.29-0.30]
-			# O-BA1: 0.44, 95% HPD = [0.42-0.46]
+		median = round(median(AR_TE_CS),2)
+		quantiles = round(quantile(AR_TE_CS,c(0.025,0.975)),2)
+		hpd = round(HDInterval::hdi(AR_TE_CS)[1:2],2)
+		cat(variants[h],": ",median,", 95% HPD = [",hpd[1],"-",hpd[2],"]\n",sep="")
+			# Iota:  0.34, 95% HPD = [0.32-0.36]
+			# Alpha: 0.38, 95% HPD = [0.36-0.39]
+			# Delta: 0.27, 95% HPD = [0.26-0.28]
+			# O-BA1: 0.44, 95% HPD = [0.43-0.45]
 	}
 setwd(wd)
 
@@ -1688,51 +1625,385 @@ wd = getwd()
 for (h in 1:length(variants))
 	{
 		setwd(paste0(wd,"/DTA_boroughs_analyses/",variants[h],"_DTA/"))
-		treeFiles = list.files(); treeFiles = treeFiles[which(grepl(".trees",treeFiles))]
 		AN_DC_DC = matrix(nrow=nberOfExtractionFiles, ncol=1)
 		for (i in 1:nberOfExtractionFiles)
 			{				
-				N_DC_DC = rep(NA, length(treeFiles))
-				for (j in 1:length(treeFiles))
+				tab = read.csv(paste0("All_clades_ext/TreeExtractions_",i,".csv"), head=T)
+				clades = unique(tab[,"cladeID"]); clades = clades[order(clades)]
+				N_DC_DC = rep(NA, length(clades))
+				for (j in 1:length(clades))
 					{
-						tab = read.csv(paste0(gsub(".trees","_ext",treeFiles[j]),"/TreeExtractions_",i,".csv"), head=T)
-						N_DC_DC[j] = length(unique(c(tab[,"startLoc"],tab[,"endLoc"])))
+						sub = tab[which(tab[,"cladeID"]==clades[j]),]
+						N_DC_DC[j] = length(unique(c(sub[,"startLoc"],sub[,"endLoc"])))
 					}
 				AN_DC_DC[i,1] = mean(N_DC_DC)
 			}
-		median = round(median(AN_DC_DC),2); quantiles = round(quantile(AN_DC_DC,c(0.025,0.975)),2)
-		cat(variants[h],": ",median,", 95% HPD = [",quantiles[1],"-",quantiles[2],"]\n",sep="")
-			# Iota:  2.93, 95% HPD = [2.90-3.03]
-			# Alpha: 2.70, 95% HPD = [2.68-2.75]
-			# Delta: 2.21, 95% HPD = [2.20-2.23]
-			# O-BA1: 2.71, 95% HPD = [2.67-2.74]
+		median = round(median(AN_DC_DC),2)
+		quantiles = round(quantile(AN_DC_DC,c(0.025,0.975)),2)
+		hpd = round(HDInterval::hdi(AN_DC_DC)[1:2],2)
+		cat(variants[h],": ",median,", 95% HPD = [",hpd[1],"-",hpd[2],"]\n",sep="")
+			# Iota:  2.67, 95% HPD = [2.63-2.73]
+			# Alpha: 2.81, 95% HPD = [2.78-2.85]
+			# Delta: 2.04, 95% HPD = [2.02-2.05]
+			# O-BA1: 2.88, 95% HPD = [2.85-2.92]
 	}
 setwd(wd)
 
-	# 12.4. Averaged proportion of phylogeny branches associated with a transition event between counties
+	# 12.4. Averaged proportion of phylogeny branches associated with a transition event between counties (p3)
 
 wd = getwd()
 for (h in 1:length(variants))
 	{
 		setwd(paste0(wd,"/DTA_boroughs_analyses/",variants[h],"_DTA/"))
-		treeFiles = list.files(); treeFiles = treeFiles[which(grepl(".trees",treeFiles))]
 		avgPropTransitionEvents = matrix(nrow=nberOfExtractionFiles, ncol=1)
 		for (i in 1:nberOfExtractionFiles)
 			{				
-				propTransitionEvents = rep(NA, length(treeFiles))
-				for (j in 1:length(treeFiles))
+				tab = read.csv(paste0("All_clades_ext/TreeExtractions_",i,".csv"), head=T)
+				clades = unique(tab[,"cladeID"]); clades = clades[order(clades)]
+				propTransitionEvents = rep(NA, length(clades))
+				for (j in 1:length(clades))
 					{
-						tab = read.csv(paste0(gsub(".trees","_ext",treeFiles[j]),"/TreeExtractions_",i,".csv"), head=T)
-						propTransitionEvents[j] = length(which(tab[,"startLoc"]!=tab[,"endLoc"]))/dim(tab)[1]
+						sub = tab[which(tab[,"cladeID"]==clades[j]),]
+						propTransitionEvents[j] = length(which(sub[,"startLoc"]!=sub[,"endLoc"]))/dim(sub)[1]
 					}
 				avgPropTransitionEvents[i,1] = mean(propTransitionEvents)
 			}
-		median = round(median(avgPropTransitionEvents),2); quantiles = round(quantile(avgPropTransitionEvents,c(0.025,0.975)),2)
-		cat(variants[h],": ",median,", 95% HPD = [",quantiles[1],"-",quantiles[2],"]\n",sep="")
-			# Iota:  0.23, 95% HPD = [0.22-0.25]
-			# Alpha: 0.22, 95% HPD = [0.21-0.24]
-			# Delta: 0.20, 95% HPD = [0.20-0.21]
-			# O-BA1: 0.30, 95% HPD = [0.29-0.31]
+		median = round(median(avgPropTransitionEvents),2)
+		quantiles = round(quantile(avgPropTransitionEvents,c(0.025,0.975)),2)
+		hpd = round(HDInterval::hdi(avgPropTransitionEvents)[1:2],2)
+		cat(variants[h],": ",median,", 95% HPD = [",hpd[1],"-",hpd[2],"]\n",sep="")
+			# Iota:  0.21, 95% HPD = [0.20-0.23]
+			# Alpha: 0.24, 95% HPD = [0.23-0.25]
+			# Delta: 0.18, 95% HPD = [0.18-0.19]
+			# O-BA1: 0.29, 95% HPD = [0.28-0.30]
 	}
 setwd(wd)
+
+# 13. Assessing the sensitivity of new metrics p1 and p2 to cluster sizes
+
+	# Simulations based on the resampling introduced clades for the Alpha variant: 
+		# - 1° simulations: resampling with replacement among Alpha, Delta and BA.1 clades while considering different minimum clade sizes
+		# - 2° simulations: resampling with replacement among Alpha clades while considering different numbers of sampled clusters
+		# - 100 simulations per maximum clade size or number of sampled clusters --> 100 curves per maximum clade size/number of sampled clusters
+
+introduction_times_Alpha = list(); clades_Alpha = list(); clades_variants = list(); clades_IDs = list()
+tab = read.csv("DTA_boroughs_analyses/Alpha_DTA/All_clades_ext/TreeExtractions_1.csv", head=T)
+buffer = unique(tab[,"cladeID"]); different_clades_Alpha = buffer[order(buffer)]
+for (i in 1:length(different_clades_Alpha))
+	{
+		sub = tab[which(tab[,"cladeID"]==different_clades_Alpha[i]),]
+		introduction_times_Alpha[[i]] = min(sub[,"startYear"]); clades_Alpha[[i]] = sub
+	}
+for (h in 2:length(variants))
+	{
+		tab = read.csv(paste0("DTA_boroughs_analyses/",variants[h],"_DTA/All_clades_ext/TreeExtractions_1.csv"), head=T)
+		buffer = unique(tab[,"cladeID"]); different_clades_variant = buffer[order(buffer)]; # print(length(different_clades_variant))
+		for (i in 1:length(different_clades_variant))
+			{
+				clades_variants[[length(clades_variants)+1]] = tab[which(tab[,"cladeID"]==different_clades_variant[i]),]
+				clades_IDs[[length(clades_IDs)+1]] = paste0(variants[h],"_",different_clades_variant[i])
+			}
+	}
+clade_sizes = rep(NA, length(clades_variants))
+for (i in 1:length(clades_variants))
+	{
+		sub = clades_variants[[i]]
+		clade_sizes[i] = length(which(!sub[,"node2"]%in%sub[,"node1"]))
+	}
+table = table(clade_sizes) # clade size values to consider for the simulations: >2, >5, and >10
+numberOfCLusters = length(different_clades_Alpha) # values to consider: 50, 100, and 200
+
+maximumClusterSizes = c(2,5,10); nberOfSimulations = 100
+for (i in 1:length(maximumClusterSizes))
+	{
+		directory = paste0("DTA_simulations_Alpha/Sensitivity_to_the_cluster_sizes/More_than_n=",maximumClusterSizes[i])
+		indices1 = which(clade_sizes>maximumClusterSizes[i])
+		for (j in 1:nberOfSimulations)
+			{
+				tab = c(); indices2 = sample(indices1, length(clades_Alpha), replace=T)
+				for (k in 1:length(introduction_times_Alpha))
+					{
+						sub = clades_variants[[indices2[k]]]; ID = clades_IDs[[indices2[k]]]
+						timeDiff = min(sub[,"startYear"])-introduction_times_Alpha[[k]]
+						sub[,"startYear"] = sub[,"startYear"]-timeDiff
+						sub[,"endYear"] = sub[,"endYear"]-timeDiff
+						sub[,"cladeID"] = ID; tab = rbind(tab, sub)
+					}
+				write.csv(tab, paste0(directory,"/TreeExtractions_",j,".csv"), row.names=F, quote=F)
+			}
+	}
+
+numbersOfClusters = c(10, 50, 150); nberOfSimulations = 100
+for (i in 1:length(numbersOfClusters))
+	{
+		directory = paste0("DTA_simulations_Alpha/Sensitivity_to_cluster_numbers/Cluster_number_",numbersOfClusters[i])
+		for (j in 1:nberOfSimulations)
+			{
+				tab = c(); indices2 = sample(1:length(clades_Alpha), numbersOfClusters[i], replace=T)
+				for (k in 1:numbersOfClusters[i])
+					{
+						sub = clades_Alpha[[indices2[k]]]; ID = clades_IDs[[indices2[k]]]
+						introduction_time_Alpha = sample(unlist(introduction_times_Alpha), 1)
+						timeDiff = min(sub[,"startYear"])-introduction_time_Alpha
+						sub[,"startYear"] = sub[,"startYear"]-timeDiff
+						sub[,"endYear"] = sub[,"endYear"]-timeDiff
+						sub[,"cladeID"] = ID; tab = rbind(tab, sub)
+					}
+				write.csv(tab, paste0(directory,"/TreeExtractions_",j,".csv"), row.names=F, quote=F)
+			}
+	}
+	
+nberOfDays = as.numeric(ymd("2022-03-31")-ymd("2020-08-01"))
+minYear = decimal_date(ymd("2020-08-01")); maxYear = decimal_date(ymd("2022-03-31"))
+timeSlices = nberOfDays; timePoints = seq(minYear,maxYear,(maxYear-minYear)/timeSlices)
+mat1s = list(); mat2s = list(); mat3s = list(); mat4s = list()
+for (i in 1:length(numbersOfClusters))
+	{
+		directory = paste0("DTA_simulations_Alpha/Sensitivity_to_the_cluster_sizes/More_than_n=",maximumClusterSizes[i])
+		directory = paste0("DTA_simulations_Alpha/Sensitivity_to_cluster_numbers/Cluster_number_",numbersOfClusters[i])
+		mat1a = matrix(nrow=timeSlices, ncol=nberOfSimulations) # p2: evolution of the ratio between the number of circulating clusters and lineages (branches)
+		mat2a = matrix(nrow=timeSlices, ncol=nberOfSimulations) # p1a: evolution of the averaged proportion of circulating lineages belonging to the same cluster
+		mat3a = matrix(nrow=timeSlices, ncol=nberOfSimulations) # p1b: evolution of the probability that two circulating lineages drawn at random belong to the same cluster
+		mat4a = matrix(nrow=timeSlices, ncol=nberOfSimulations) # evolution of the averaged duration since cluster TMRCA
+		for (j in 1:nberOfSimulations)
+			{
+				tab = read.csv(paste0(directory,"/TreeExtractions_",j,".csv"), head=T)
+				for (k in 2:length(timePoints))
+					{
+						sub = tab[which((tab[,"startYear"]<timePoints[k-1])&(tab[,"endYear"]>timePoints[k])),]
+						circulatingClades = sub[,"cladeID"]; mat1a[k-1,j] = length(unique(circulatingClades))/dim(sub)[1]
+						if (length(circulatingClades) != 0)
+							{
+								mat2a[k-1,j] = mean(table(circulatingClades))/dim(sub)[1]
+								mat3a[k-1,j] = sum((table(circulatingClades)/dim(sub)[1])^2)
+								tMRCAs = rep(NA, length(circulatingClades))
+								for (l in 1:length(tMRCAs))
+									{
+										tMRCAs[l] = min(tab[which(tab[,"cladeID"]==circulatingClades[l]),"startYear"])
+									}
+								mat4a[k-1,j] = mean(c(timePoints[k-1],timePoints[k]))-mean(tMRCAs)
+							}	else	{
+								mat2a[k-1,j] = 0; mat4a[k-1,j] = NA
+							}
+					}
+			}
+		mat1b = matrix(nrow=timeSlices, ncol=4); colnames(mat1b) = c("time","median","lower95hpd","higher95hpd")
+		mat2b = matrix(nrow=timeSlices, ncol=4); colnames(mat2b) = c("time","median","lower95hpd","higher95hpd")
+		mat3b = matrix(nrow=timeSlices, ncol=4); colnames(mat3b) = c("time","median","lower95hpd","higher95hpd")
+		mat4b = matrix(nrow=timeSlices, ncol=4); colnames(mat4b) = c("time","median","lower95hpd","higher95hpd")
+		for (j in 1:dim(mat1b)[1])
+			{
+				mat1b[j,"time"] = mean(c(timePoints[j],timePoints[j+1])); mat1b[j,"median"] = median(mat1a[j,],na.rm=T)
+				mat1b[j,c("lower95hpd","higher95hpd")] = HDInterval::hdi(mat1a[j,])[1:2] # quantile(mat1a[j,],c(0.025,0.975),na.rm=T)
+				mat2b[j,"time"] = mean(c(timePoints[j],timePoints[j+1])); mat2b[j,"median"] = median(mat2a[j,],na.rm=T)
+				mat2b[j,c("lower95hpd","higher95hpd")] = HDInterval::hdi(mat2a[j,])[1:2] # quantile(mat2a[j,],c(0.025,0.975),na.rm=T)
+				mat3b[j,"time"] = mean(c(timePoints[j],timePoints[j+1])); mat3b[j,"median"] = median(mat3a[j,],na.rm=T)
+				mat3b[j,c("lower95hpd","higher95hpd")] = HDInterval::hdi(mat3a[j,])[1:2] # quantile(mat3a[j,],c(0.025,0.975),na.rm=T)
+				mat4b[j,"time"] = mean(c(timePoints[j],timePoints[j+1])); mat4b[j,"median"] = median(mat4a[j,],na.rm=T)
+				mat4b[j,c("lower95hpd","higher95hpd")] = HDInterval::hdi(mat4a[j,])[1:2] # quantile(mat4a[j,],c(0.025,0.975),na.rm=T)
+			}
+		mat1c = matrix(nrow=timeSlices, ncol=4); mat2c = matrix(nrow=timeSlices, ncol=4); mat3c = matrix(nrow=timeSlices, ncol=4); mat4c = matrix(nrow=timeSlices, ncol=4)
+		colnames(mat1c) = c("time","sliddingW7d","lower95hpd_sW7d","higher95hpd_sW7d"); colnames(mat2c) = c("time","sliddingW7d","lower95hpd_sW7d","higher95hpd_sW7d")
+		colnames(mat3c) = c("time","sliddingW7d","lower95hpd_sW7d","higher95hpd_sW7d"); colnames(mat4c) = c("time","sliddingW7d","lower95hpd_sW7d","higher95hpd_sW7d")
+		for (j in 8:(dim(mat1c)[1]-7))
+			{
+				indices = seq(j-7,j+7)
+				mat1c[j,"time"] = mat1b[j,"time"]; mat1c[j,"sliddingW7d"] = mean(mat1b[indices,"median"],na.rm=T)
+				mat2c[j,"time"] = mat2b[j,"time"]; mat2c[j,"sliddingW7d"] = mean(mat2b[indices,"median"],na.rm=T)
+				mat3c[j,"time"] = mat3b[j,"time"]; mat3c[j,"sliddingW7d"] = mean(mat3b[indices,"median"],na.rm=T)
+				mat4c[j,"time"] = mat4b[j,"time"]; mat4c[j,"sliddingW7d"] = mean(mat4b[indices,"median"],na.rm=T)
+				mat1c[j,"lower95hpd_sW7d"] = mean(mat1b[indices,"lower95hpd"],na.rm=T); mat1c[j,"higher95hpd_sW7d"] = mean(mat1b[indices,"higher95hpd"],na.rm=T)
+				mat2c[j,"lower95hpd_sW7d"] = mean(mat2b[indices,"lower95hpd"],na.rm=T); mat2c[j,"higher95hpd_sW7d"] = mean(mat2b[indices,"higher95hpd"],na.rm=T)
+				mat3c[j,"lower95hpd_sW7d"] = mean(mat3b[indices,"lower95hpd"],na.rm=T); mat3c[j,"higher95hpd_sW7d"] = mean(mat3b[indices,"higher95hpd"],na.rm=T)
+				mat4c[j,"lower95hpd_sW7d"] = mean(mat4b[indices,"lower95hpd"],na.rm=T); mat4c[j,"higher95hpd_sW7d"] = mean(mat4b[indices,"higher95hpd"],na.rm=T)
+			}
+		mat1c = mat1c[-which(is.na(mat1c[,"time"])),]; mat2c = mat2c[-which(is.na(mat2c[,"time"])),]; mat4c = mat4c[-which(is.na(mat4c[,"time"])),]
+		mat1s[[i]] = mat1c; mat2s[[i]] = mat2c; mat3s[[i]] = mat3c; mat4s[[i]] = mat4c
+	}
+
+simulationColours1 = c(); simulationColours2 = c()
+simulationColours1[1] = rgb(254,153,41,255,maxColorValue=255); simulationColours2[1] = rgb(254,153,41,80,maxColorValue=255)
+simulationColours1[2] = rgb(217,95,14,255,maxColorValue=255); simulationColours2[2] = rgb(217,95,14,80,maxColorValue=255)
+simulationColours1[3] = rgb(153,52,4,255,maxColorValue=255); simulationColours2[3] = rgb(153,52,4,80,maxColorValue=255)
+
+# pdf(paste0("Figure_C1_NEW.pdf"), width=11, height=2.2) # dev.new(width=11, height=2.2)
+pdf(paste0("Figure_C2_NEW.pdf"), width=11, height=2.2) # dev.new(width=11, height=2.2)
+par(mfrow=c(1,2), oma=c(0,0,0,0), mar=c(1.5,3.0,0,1), mgp=c(1.2,0.2,0), lwd=0.2, col="gray30")
+plot(mat3s[[1]], col=NA, axes=F, ann=F, ylim=c(0,1))
+for (h in 1:length(maximumClusterSizes)) # reporting p1b
+	{
+		vS = 1-mat3s[[h]][,2]; xx_l = c(mat3s[[h]][,1],rev(mat3s[[h]][,1]))
+		yy_l = c(1-mat3s[[h]][,"higher95hpd_sW7d"],rev(1-mat3s[[h]][,"lower95hpd_sW7d"]))
+		xx_l = xx_l[which(!is.na(yy_l))]; yy_l = yy_l[which(!is.na(yy_l))]
+		getOption("scipen"); opt = options("scipen"=20); polygon(xx_l, yy_l, col=simulationColours2[h], border=0)		
+		lines(mat3s[[h]][,1], 1-mat3s[[h]][,2], lwd=1, col=simulationColours1[h])
+	}
+dates = c("2020-09-01","2021-01-01","2021-05-01","2021-09-01","2022-01-01","2022-05-01"); ats = decimal_date(ymd(dates))
+axis(side=1, lwd.tick=0.2, cex.axis=0.65, lwd=0.2, tck=-0.03, col="gray30", col.axis="gray30", mgp=c(0,0.11,0), at=ats, label=dates)
+axis(side=2, lwd.tick=0.2, cex.axis=0.65, lwd=0.2, tck=-0.03, col="gray30", col.axis="gray30", mgp=c(1,0.30,0), at=seq(0,1,0.2),
+	 label=c("1","0.8","0.6","0.4","0.2","0"))
+title(ylab="proportions p1 and p2", cex.lab=0.80, mgp=c(1.5,0,0), col.lab="gray30")
+plot(mat3s[[1]], col=NA, axes=F, ann=F, ylim=c(0,1))
+for (h in 1:length(maximumClusterSizes)) # reporting p2
+	{
+		vS = 1-mat1s[[h]][,2]; xx_l = c(mat1s[[h]][,1],rev(mat1s[[h]][,1]))
+		yy_l = c(1-mat1s[[h]][,"higher95hpd_sW7d"],rev(1-mat1s[[h]][,"lower95hpd_sW7d"]))
+		xx_l = xx_l[which(!is.na(yy_l))]; yy_l = yy_l[which(!is.na(yy_l))]
+		getOption("scipen"); opt = options("scipen"=20); polygon(xx_l, yy_l, col=simulationColours2[h], border=0)		
+		lines(mat1s[[h]][,1], 1-mat1s[[h]][,2], lwd=1, lty=2, col=simulationColours1[h])
+	}
+dates = c("2020-09-01","2021-01-01","2021-05-01","2021-09-01","2022-01-01","2022-05-01"); ats = decimal_date(ymd(dates))
+axis(side=1, lwd.tick=0.2, cex.axis=0.65, lwd=0.2, tck=-0.03, col="gray30", col.axis="gray30", mgp=c(0,0.11,0), at=ats, label=dates)
+axis(side=2, lwd.tick=0.2, cex.axis=0.65, lwd=0.2, tck=-0.03, col="gray30", col.axis="gray30", mgp=c(1,0.30,0), at=seq(0,1,0.2),
+	 label=c("1","0.8","0.6","0.4","0.2","0"))
+title(ylab="proportions p1 and p2", cex.lab=0.80, mgp=c(1.5,0,0), col.lab="gray30")
+dev.off()
+
+# 14. Assessing the sensitivity of new metric p3 to the transition rate and the number of transition events
+
+	# Simulations of new lineage transition histories among counties for the Alpha variant: 
+		# - simulations based on transition rate/number that are lower and higher than the actual rate/number
+		# - 100 simulations per transition rate/number --> violin plots for each transition rate/number
+
+tab = read.csv("DTA_boroughs_analyses/Alpha_DTA/All_clades_ext/TreeExtractions_1.csv", head=T)
+table = table(tab[,"endLoc"])[NYC_counties]; frequencies = table[1:8]/sum(table[1:8]); template = tab
+transitionRate = sum(tab[,"startLoc"]!=tab[,"endLoc"])/dim(tab)[1] # 0.262; to consider: 0.1, 0.2, 0.3, 0.4, and 0.5
+numberOfTransitions = sum(tab[,"startLoc"]!=tab[,"endLoc"]) # 386; to consider: 40, 80, 120, 160, 200
+clades_Alpha = list(); buffer = unique(tab[,"cladeID"]); different_clades_Alpha = buffer[order(buffer)]
+for (i in 1:length(different_clades_Alpha))
+	{
+		sub = tab[which(tab[,"cladeID"]==different_clades_Alpha[i]),]; clades_Alpha[[i]] = sub
+	}
+
+transitionRates = seq(0.1,0.5,0.1); nberOfSimulations = 100
+for (i in 1:length(transitionRates))
+	{
+		directory = paste0("DTA_simulations_Alpha/Sensitivity_to_transitionRate/Transition_rate_",gsub("\\.","",transitionRates[i]))
+		for (j in 1:nberOfSimulations)
+			{
+				tab = c()
+				for (k in 1:length(clades_Alpha))
+					{
+						sub = clades_Alpha[[k]]; transitions = c()
+						for (l in 1:dim(sub)[1])
+							{
+								if (runif(1,0,1) <= transitionRates[i])
+									{
+										transitions = c(transitions, l)
+									}
+							}
+						sub[,"startLoc"] = NA; sub[,"endLoc"] = NA
+						indices = which(!sub[,"node1"]%in%sub[,"node2"])
+						sub[indices,"startLoc"] = sample(NYC_counties, 1, prob=frequencies)
+						while (length(indices) != 0)
+							{
+								for (l in 1:length(indices))
+									{
+										if (!indices[l]%in%transitions)
+											{
+												sub[indices[l],"endLoc"] = sub[indices[l],"startLoc"]
+											}	else	{
+												NYC_counties_tmp = NYC_counties[which(NYC_counties!=sub[indices[l],"startLoc"])]
+												frequencies_tmp = frequencies[which(NYC_counties!=sub[indices[l],"startLoc"])]
+												sub[indices[l],"endLoc"] = sample(NYC_counties_tmp, 1, prob=frequencies_tmp)
+											}
+									}
+								indices = which(sub[,"node1"]%in%sub[indices,"node2"])
+								if (length(indices) > 0)
+									{
+										for (l in 1:length(indices))
+											{
+												sub[indices[l],"startLoc"] = sub[which(sub[,"node2"]==sub[indices[l],"node1"]),"endLoc"]
+											}
+									}
+							}
+						tab = rbind(tab, sub)
+					}
+				write.csv(tab, paste0(directory,"/TreeExtractions_",j,".csv"), row.names=F, quote=F)
+			}
+	}
+
+numberOfTransitions = seq(40,200,40); nberOfSimulations = 100
+template[,c("startLoc")] = NA; template[,c("endLoc")] = NA
+for (i in 1:length(numberOfTransitions))
+	{
+		directory = paste0("DTA_simulations_Alpha/Sensitivity_to_transition_events/Transition_events_",gsub("\\.","",numberOfTransitions[i]))
+		for (j in 1:nberOfSimulations)
+			{
+				tab = template; indices_transition = sample(1:dim(tab)[1], numberOfTransitions[i], replace=F)
+				transition = matrix(0, nrow=dim(tab)[1], ncol=1); colnames(transition) = "transitionEvent"
+				transition[indices_transition] = 1; tab = cbind(tab, transition); clades_buffer = list()
+				for (k in 1:length(different_clades_Alpha))
+					{
+						sub = tab[which(tab[,"cladeID"]==different_clades_Alpha[k]),]; clades_buffer[[k]] = sub
+					}
+				tab = c()
+				for (k in 1:length(clades_buffer))
+					{
+						sub = clades_buffer[[k]]; transitions = which(sub[,"transitionEvent"]==1)
+						sub[,"startLoc"] = NA; sub[,"endLoc"] = NA
+						indices = which(!sub[,"node1"]%in%sub[,"node2"])
+						sub[indices,"startLoc"] = sample(NYC_counties, 1, prob=frequencies)
+						while (length(indices) != 0)
+							{
+								for (l in 1:length(indices))
+									{
+										if (!indices[l]%in%transitions)
+											{
+												sub[indices[l],"endLoc"] = sub[indices[l],"startLoc"]
+											}	else	{
+												NYC_counties_tmp = NYC_counties[which(NYC_counties!=sub[indices[l],"startLoc"])]
+												frequencies_tmp = frequencies[which(NYC_counties!=sub[indices[l],"startLoc"])]
+												sub[indices[l],"endLoc"] = sample(NYC_counties_tmp, 1, prob=frequencies_tmp)
+											}
+									}
+								indices = which(sub[,"node1"]%in%sub[indices,"node2"])
+								if (length(indices) > 0)
+									{
+										for (l in 1:length(indices))
+											{
+												sub[indices[l],"startLoc"] = sub[which(sub[,"node2"]==sub[indices[l],"node1"]),"endLoc"]
+											}
+									}
+							}
+						tab = rbind(tab, sub)
+					}
+				write.csv(tab, paste0(directory,"/TreeExtractions_",j,".csv"), row.names=F, quote=F)
+			}
+	}
+
+avgPropTransitionEvents = matrix(nrow=nberOfSimulations, ncol=length(numberOfTransitions)) # p3
+for (i in 1:length(numberOfTransitions))
+	{
+		directory = paste0("DTA_simulations_Alpha/Sensitivity_to_transition_rates/Transition_rate_",gsub("\\.","",transitionRates[i]))
+		directory = paste0("DTA_simulations_Alpha/Sensitivity_to_transition_events/Transition_events_",numberOfTransitions[i])
+		for (j in 1:nberOfSimulations)
+			{	
+				tab = read.csv(paste0(directory,"/TreeExtractions_",j,".csv"), head=T)
+				clades = unique(tab[,"cladeID"]); clades = clades[order(clades)]
+				propTransitionEvents = rep(NA, length(clades))
+				for (k in 1:length(clades))
+					{
+						sub = tab[which(tab[,"cladeID"]==clades[k]),]
+						propTransitionEvents[k] = length(which(sub[,"startLoc"]!=sub[,"endLoc"]))/dim(sub)[1]
+					}
+				avgPropTransitionEvents[j,i] = mean(propTransitionEvents)
+			}
+		median = round(median(avgPropTransitionEvents[,i]),2)
+		hpd = round(HDInterval::hdi(avgPropTransitionEvents[,i])[1:2],2)
+		cat("Number of transitions = ",numberOfTransitions[i],": ",median,", 95% HPD = [",hpd[1],"-",hpd[2],"]\n",sep="")
+	}
+
+simulationColours1 = c(); simulationColours2 = c()
+simulationColours1[1] = rgb(191,211,230,255,maxColorValue=255); simulationColours2[1] = rgb(191,211,230,100,maxColorValue=255)
+simulationColours1[2] = rgb(158,188,218,255,maxColorValue=255); simulationColours2[2] = rgb(158,188,218,100,maxColorValue=255)
+simulationColours1[3] = rgb(140,150,198,255,maxColorValue=255); simulationColours2[3] = rgb(140,150,198,100,maxColorValue=255)
+simulationColours1[4] = rgb(140,107,177,255,maxColorValue=255); simulationColours2[4] = rgb(140,107,177,100,maxColorValue=255)
+simulationColours1[5] = rgb(136,65,157,255,maxColorValue=255); simulationColours2[5] = rgb(136,65,157,100,maxColorValue=255)
+
+pdf(paste0("Figure_C3_NEW.pdf"), width=3, height=5)
+par(mfrow=c(1,1), oma=c(0,0,0,0), mar=c(3,3,0,1), mgp=c(1.2,0.75,0), lwd=0.2, col="gray30")
+vioplot(avgPropTransitionEvents, border=simulationColours1, col=simulationColours2, use.cols=T, horizontal=T, lineCol=NA, rectCol=NA, 
+		colMed=NA, ann=F, axes=F, col.axis="gray30", col.lab="gray30")
+dev.off()
 

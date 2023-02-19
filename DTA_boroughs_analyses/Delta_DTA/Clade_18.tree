@@ -1,0 +1,23 @@
+#NEXUS
+
+Begin taxa;
+	Dimensions ntax=5;
+	Taxlabels
+		hCoV-19/USA/NY-WMC2021-295/2021
+		hCoV-19/USA/NY-WMC2021-310/2021
+		hCoV-19/USA/NY-WMC2021-311/2021
+		hCoV-19/USA/NY-WMC2021-312/2021
+		hCoV-19/USA/NY-WMC2021-314/2021
+		;
+End;
+
+Begin trees;
+	Translate
+		1 hCoV-19/USA/NY-WMC2021-295/2021,
+		2 hCoV-19/USA/NY-WMC2021-310/2021,
+		3 hCoV-19/USA/NY-WMC2021-311/2021,
+		4 hCoV-19/USA/NY-WMC2021-312/2021,
+		5 hCoV-19/USA/NY-WMC2021-314/2021
+		;
+tree TREE1 = [&R] ((5[&length=0.11981000000000087,location.rate_95%_HPD={0.45163666538275876,0.6077381491411706},location="Westchester",location.prob=1.0,location.rate_median=0.5193907140039761,location.set={"Westchester"},location.set.prob={1.0},location.rate_range={0.41220760195308515,0.6972958479571918},height=1.3877787807814457E-17,location.rate=0.5228771232642532]:0.11981,1[&length=0.11181000000000128,location.rate_95%_HPD={0.45163666538275876,0.6077381491411706},location="Westchester",location.prob=1.0,location.rate_median=0.5193907140039761,location.set={"Westchester"},location.set.prob={1.0},location.rate_range={0.41220760195308515,0.6972958479571918},height=0.008000000000000007,location.rate=0.5228771232642532]:0.11181)[&length=0.002269999999999998,posterior=1.0,location.rate_95%_HPD={0.45163666538275876,0.6077381491411706},location="Westchester",location.prob=1.0,location.rate_median=0.5193907140039761,location.set={"Westchester"},location.set.prob={1.0},location.rate_range={0.41220760195308515,0.6972958479571918},height=0.11981000000000087,location.rate=0.5228771232642532]:0.0022699999999999942,(3[&length=0.11386000000000161,location.rate_95%_HPD={0.45163666538275876,0.6077381491411706},location="Westchester",location.prob=1.0,location.rate_median=0.5193907140039761,location.set={"Westchester"},location.set.prob={1.0},location.rate_range={0.41220760195308515,0.6972958479571918},height=0.0,location.rate=0.5228771232642532]:0.11386,(4[&length=0.11158000000000017,location.rate_95%_HPD={0.45163666538275876,0.6077381491411706},location="Westchester",location.prob=1.0,location.rate_median=0.5193907140039761,location.set={"Westchester"},location.set.prob={1.0},location.rate_range={0.41220760195308515,0.6972958479571918},height=1.3877787807814457E-17,location.rate=0.5228771232642532]:0.11158,2[&length=0.11158000000000017,location.rate_95%_HPD={0.45163666538275876,0.6077381491411706},location="Westchester",location.prob=1.0,location.rate_median=0.5193907140039761,location.set={"Westchester"},location.set.prob={1.0},location.rate_range={0.41220760195308515,0.6972958479571918},height=1.3877787807814457E-17,location.rate=0.5228771232642532]:0.11158)[&length=0.002280000000000013,posterior=1.0,location.rate_95%_HPD={0.45163666538275876,0.6077381491411706},location="Westchester",location.prob=1.0,location.rate_median=0.5193907140039761,location.set={"Westchester"},location.set.prob={1.0},location.rate_range={0.41220760195308515,0.6972958479571918},height=0.11158000000000243,location.rate=0.5228771232642532]:0.0022799999999999904)[&length=0.008219999999999898,posterior=1.0,location.rate_95%_HPD={0.45163666538275876,0.6077381491411706},location="Westchester",location.prob=1.0,location.rate_median=0.5193907140039761,location.set={"Westchester"},location.set.prob={1.0},location.rate_range={0.41220760195308515,0.6972958479571918},height=0.11386000000000161,location.rate=0.5228771232642532]:0.008220000000000005)[&length=0.0,posterior=1.0,location="Westchester",location.prob=1.0,location.set={"Westchester"},location.set.prob={1.0},height=0.12207999999999788];
+End;

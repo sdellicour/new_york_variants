@@ -1,0 +1,21 @@
+#NEXUS
+
+Begin taxa;
+	Dimensions ntax=4;
+	Taxlabels
+		hCoV-19/USA/NY-MSHSPSP-PV29455/2021
+		hCoV-19/USA/NY-MSHSPSP-PV31879/2021
+		hCoV-19/USA/NY-NYULH1598/2021
+		hCoV-19/USA/NY-Wadsworth-21048008-01/2021
+		;
+End;
+
+Begin trees;
+	Translate
+		1 hCoV-19/USA/NY-MSHSPSP-PV29455/2021,
+		2 hCoV-19/USA/NY-MSHSPSP-PV31879/2021,
+		3 hCoV-19/USA/NY-NYULH1598/2021,
+		4 hCoV-19/USA/NY-Wadsworth-21048008-01/2021
+		;
+tree TREE1 = [&R] (3[&length=0.16710000000000244,location.rate_95%_HPD={2.610949523526424,3.3174182749708327},location="Queens",location.prob=1.0,location.rate_median=2.9653942733474583,location.set={"Queens"},location.set.prob={1.0},location.rate_range={2.394645734339174,3.5517888563772106},height=0.010999999979999914,location.rate=2.9642043850935904]:0.1671,(1[&length=0.00242999999999998,location.rate_95%_HPD={2.610949523526424,3.3174182749708327},location="Queens",location.prob=1.0,location.rate_median=2.9653942733474583,location.set={"Queens"},location.set.prob={1.0},location.rate_range={2.394645734339174,3.5517888563772106},height=0.1479999999800007,location.rate=2.9642043850935904]:0.0024300000000000155,(4[&length=0.0017937616829999566,location.rate_95%_HPD={2.610949523526424,3.3174182749708327},location="Nassau",location.prob=1.0,location.rate_median=2.9653942733474583,location.set={"Nassau"},location.set.prob={1.0},location.rate_range={2.394645734339174,3.5517888563772106},height=0.046999999996999185,location.rate=2.9642043850935904]:0.0017937616829999947,2[&length=0.048793761680000394,location.rate_95%_HPD={2.610949523526424,3.3174182749708327},location="NewYork",location.prob=1.0,location.rate_median=2.9653942733474583,location.set={"NewYork"},location.set.prob={1.0},location.rate_range={2.394645734339174,3.5517888563772106},height=0.0,location.rate=2.9642043850935904]:0.04879376167999999)[&length=0.10163623830000172,posterior=1.0,location.rate_95%_HPD={2.610949523526424,3.3174182749708327},location="Nassau",location.prob=0.8244444444444444,location.rate_median=2.9653942733474583,location.set={"Nassau","Queens","Suffolk","NewYork"},location.set.prob={0.8244444444444444,0.008888888888888889,0.0011111111111111111,0.16555555555555557},location.rate_range={2.394645734339174,3.5517888563772106},height=0.048793761680000394,location.rate=2.9642043850935904]:0.10163623829999999)[&length=0.027670000000000305,posterior=1.0,location.rate_95%_HPD={2.610949523526424,3.3174182749708327},location="Queens",location.prob=0.96,location.rate_median=2.9653942733474583,location.set={"Queens","Nassau","Suffolk","Kings"},location.set.prob={0.96,0.03,0.0033333333333333335,0.006666666666666667},location.rate_range={2.394645734339174,3.5517888563772106},height=0.15042999998000148,location.rate=2.9642043850935904]:0.02767)[&length=0.0,posterior=1.0,location="Queens",location.prob=0.9322222222222222,location.set={"Queens","Nassau","Westchester","Suffolk","Kings"},location.set.prob={0.9322222222222222,0.04,0.0011111111111111111,0.0044444444444444444,0.022222222222222223},height=0.17809999998000037];
+End;

@@ -1,0 +1,19 @@
+#NEXUS
+
+Begin taxa;
+	Dimensions ntax=3;
+	Taxlabels
+		hCoV-19/USA/NY-MSHSPSP-PV37353/2021
+		hCoV-19/USA/NY-NYULH2271/2021
+		hCoV-19/USA/NY-Wadsworth-21063415-01/2021
+		;
+End;
+
+Begin trees;
+	Translate
+		1 hCoV-19/USA/NY-MSHSPSP-PV37353/2021,
+		2 hCoV-19/USA/NY-NYULH2271/2021,
+		3 hCoV-19/USA/NY-Wadsworth-21063415-01/2021
+		;
+tree TREE1 = [&R] ((2[&length=0.049169999999999166,location.rate_95%_HPD={2.610949523526424,3.3174182749708327},location="Nassau",location.prob=1.0,location.rate_median=2.9653942733474583,location.set={"Nassau"},location.set.prob={1.0},location.rate_range={2.394645734339174,3.5517888563772106},height=0.0,location.rate=2.9642043850935904]:0.049170000000000005,1[&length=1.6999999990000014E-4,location.rate_95%_HPD={2.610949523526424,3.3174182749708327},location="Nassau",location.prob=1.0,location.rate_median=2.9653942733474583,location.set={"Nassau"},location.set.prob={1.0},location.rate_range={2.394645734339174,3.5517888563772106},height=0.04900000000009946,location.rate=2.9642043850935904]:1.6999999990000014E-4)[&length=0.050109999999999065,posterior=1.0,location.rate_95%_HPD={2.610949523526424,3.3174182749708327},location="Nassau",location.prob=1.0,location.rate_median=2.9653942733474583,location.set={"Nassau"},location.set.prob={1.0},location.rate_range={2.394645734339174,3.5517888563772106},height=0.049169999999999166,location.rate=2.9642043850935904]:0.05011,3[&length=0.03328000000000054,location.rate_95%_HPD={2.610949523526424,3.3174182749708327},location="Nassau",location.prob=1.0,location.rate_median=2.9653942733474583,location.set={"Nassau"},location.set.prob={1.0},location.rate_range={2.394645734339174,3.5517888563772106},height=0.06600000000000095,location.rate=2.9642043850935904]:0.033280000000000004)[&length=0.0,posterior=1.0,location="Nassau",location.prob=0.9911111111111112,location.set={"Nassau","Suffolk","NewYork","Kings"},location.set.prob={0.9911111111111112,0.0022222222222222222,0.0033333333333333335,0.0033333333333333335},height=0.09927999999999822];
+End;

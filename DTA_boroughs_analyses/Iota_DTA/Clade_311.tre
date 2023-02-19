@@ -1,0 +1,4 @@
+#NEXUS
+begin trees;
+	tree tree_1 = [&R] (hCoV-19/USA/NY-Wadsworth-21046900-01/2021:0.07085,(hCoV-19/USA/NY-Wadsworth-21036002-01/2021:0.00019,hCoV-19/USA/NY-Wadsworth-21039661-01/2021:0.02419):0.00266):1.318824452;
+end;

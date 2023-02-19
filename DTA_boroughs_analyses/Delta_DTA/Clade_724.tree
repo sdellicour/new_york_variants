@@ -1,0 +1,19 @@
+#NEXUS
+
+Begin taxa;
+	Dimensions ntax=3;
+	Taxlabels
+		hCoV-19/USA/NY-WMC2021-343/2021
+		hCoV-19/USA/NY-Wadsworth-21083375-01/2021
+		hCoV-19/USA/NY-Wadsworth-21088629-01/2021
+		;
+End;
+
+Begin trees;
+	Translate
+		1 hCoV-19/USA/NY-WMC2021-343/2021,
+		2 hCoV-19/USA/NY-Wadsworth-21083375-01/2021,
+		3 hCoV-19/USA/NY-Wadsworth-21088629-01/2021
+		;
+tree TREE1 = [&R] (2[&length=0.11164999999999828,location.rate_95%_HPD={0.45163666538275876,0.6077381491411706},location="Westchester",location.prob=1.0,location.rate_median=0.5193907140039761,location.set={"Westchester"},location.set.prob={1.0},location.rate_range={0.41220760195308515,0.6972958479571918},height=0.06300000000000079,location.rate=0.5228771232642532]:0.11165,(1[&length=0.14046000000000172,location.rate_95%_HPD={0.45163666538275876,0.6077381491411706},location="Westchester",location.prob=1.0,location.rate_median=0.5193907140039761,location.set={"Westchester"},location.set.prob={1.0},location.rate_range={0.41220760195308515,0.6972958479571918},height=0.013999999999999803,location.rate=0.5228771232642532]:0.14046000000000003,3[&length=0.15446000000000024,location.rate_95%_HPD={0.45163666538275876,0.6077381491411706},location="NewYork",location.prob=1.0,location.rate_median=0.5193907140039761,location.set={"NewYork"},location.set.prob={1.0},location.rate_range={0.41220760195308515,0.6972958479571918},height=0.0,location.rate=0.5228771232642532]:0.15446)[&length=0.02018999999999978,posterior=1.0,location.rate_95%_HPD={0.45163666538275876,0.6077381491411706},location="Westchester",location.prob=0.9744444444444444,location.rate_median=0.5193907140039761,location.set={"Westchester","NewYork"},location.set.prob={0.9744444444444444,0.025555555555555557},location.rate_range={0.41220760195308515,0.6972958479571918},height=0.15446000000000024,location.rate=0.5228771232642532]:0.020189999999999986)[&length=0.0,posterior=1.0,location="Westchester",location.prob=0.9766666666666667,location.set={"Westchester","NewYork"},location.set.prob={0.9766666666666667,0.023333333333333334},height=0.17465000000000241];
+End;

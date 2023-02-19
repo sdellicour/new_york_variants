@@ -1,0 +1,19 @@
+#NEXUS
+
+Begin taxa;
+	Dimensions ntax=3;
+	Taxlabels
+		hCoV-19/USA/NY-MSHSPSP-PV38106/2021
+		hCoV-19/USA/NY-MSHSPSP-PV38781/2021
+		hCoV-19/USA/NY-WMC2021-178/2021
+		;
+End;
+
+Begin trees;
+	Translate
+		1 hCoV-19/USA/NY-MSHSPSP-PV38106/2021,
+		2 hCoV-19/USA/NY-MSHSPSP-PV38781/2021,
+		3 hCoV-19/USA/NY-WMC2021-178/2021
+		;
+tree TREE1 = [&R] (1[&length=0.11114999999999865,location.rate_95%_HPD={0.45163666538275876,0.6077381491411706},location="NewYork",location.prob=1.0,location.rate_median=0.5193907140039761,location.set={"NewYork"},location.set.prob={1.0},location.rate_range={0.41220760195308515,0.6972958479571918},height=0.07999999999999868,location.rate=0.5228771232642532]:0.11115,(3[&length=0.11200999999999882,location.rate_95%_HPD={0.45163666538275876,0.6077381491411706},location="Westchester",location.prob=1.0,location.rate_median=0.5193907140039761,location.set={"Westchester"},location.set.prob={1.0},location.rate_range={0.41220760195308515,0.6972958479571918},height=0.04899999999999961,location.rate=0.5228771232642532]:0.11201,2[&length=0.161010000000002,location.rate_95%_HPD={0.45163666538275876,0.6077381491411706},location="Queens",location.prob=1.0,location.rate_median=0.5193907140039761,location.set={"Queens"},location.set.prob={1.0},location.rate_range={0.41220760195308515,0.6972958479571918},height=0.0,location.rate=0.5228771232642532]:0.16101)[&length=0.0301399999999996,posterior=1.0,location.rate_95%_HPD={0.45163666538275876,0.6077381491411706},location="NewYork",location.prob=0.8633333333333333,location.rate_median=0.5193907140039761,location.set={"Queens","Westchester","NewYork"},location.set.prob={0.12666666666666668,0.01,0.8633333333333333},location.rate_range={0.41220760195308515,0.6972958479571918},height=0.161010000000002,location.rate=0.5228771232642532]:0.03014)[&length=0.0,posterior=1.0,location="NewYork",location.prob=0.9544444444444444,location.set={"Queens","Westchester","NewYork"},location.set.prob={0.035555555555555556,0.01,0.9544444444444444},height=0.19114999999999588];
+End;

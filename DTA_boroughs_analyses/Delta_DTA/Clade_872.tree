@@ -1,0 +1,19 @@
+#NEXUS
+
+Begin taxa;
+	Dimensions ntax=3;
+	Taxlabels
+		hCoV-19/USA/NY-MSHSPSP-PV38283/2021
+		hCoV-19/USA/NY-MSHSPSP-PV38343/2021
+		hCoV-19/USA/NY-WMC2021-218/2021
+		;
+End;
+
+Begin trees;
+	Translate
+		1 hCoV-19/USA/NY-MSHSPSP-PV38283/2021,
+		2 hCoV-19/USA/NY-MSHSPSP-PV38343/2021,
+		3 hCoV-19/USA/NY-WMC2021-218/2021
+		;
+tree TREE1 = [&R] (1[&length=0.11129999999999997,location.rate_95%_HPD={0.45163666538275876,0.6077381491411706},location="Nassau",location.prob=1.0,location.rate_median=0.5193907140039761,location.set={"Nassau"},location.set.prob={1.0},location.rate_range={0.41220760195308515,0.6972958479571918},height=0.024999999999999765,location.rate=0.5228771232642532]:0.1113,(2[&length=0.11181999999999871,location.rate_95%_HPD={0.45163666538275876,0.6077381491411706},location="Nassau",location.prob=1.0,location.rate_median=0.5193907140039761,location.set={"Nassau"},location.set.prob={1.0},location.rate_range={0.41220760195308515,0.6972958479571918},height=0.018999999999999993,location.rate=0.5228771232642532]:0.11181999999999999,3[&length=0.13081999999999996,location.rate_95%_HPD={0.45163666538275876,0.6077381491411706},location="Westchester",location.prob=1.0,location.rate_median=0.5193907140039761,location.set={"Westchester"},location.set.prob={1.0},location.rate_range={0.41220760195308515,0.6972958479571918},height=0.0,location.rate=0.5228771232642532]:0.13082)[&length=0.005480000000000035,posterior=1.0,location.rate_95%_HPD={0.45163666538275876,0.6077381491411706},location="Nassau",location.prob=0.9966666666666667,location.rate_median=0.5193907140039761,location.set={"Nassau","NewYork"},location.set.prob={0.9966666666666667,0.0033333333333333335},location.rate_range={0.41220760195308515,0.6972958479571918},height=0.13081999999999996,location.rate=0.5228771232642532]:0.005480000000000013)[&length=0.0,posterior=1.0,location="Nassau",location.prob=0.9966666666666667,location.set={"Nassau","NewYork"},location.set.prob={0.9966666666666667,0.0033333333333333335},height=0.13630000000000214];
+End;

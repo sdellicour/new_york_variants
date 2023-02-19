@@ -1,0 +1,19 @@
+#NEXUS
+
+Begin taxa;
+	Dimensions ntax=3;
+	Taxlabels
+		hCoV-19/USA/NY-Wadsworth-21028837-01/2021
+		hCoV-19/USA/NY-Wadsworth-21030068-01/2021
+		hCoV-19/USA/NY-Wadsworth-21030068-01/2021|EPI_ISL_1397924|2021-02-26
+		;
+End;
+
+Begin trees;
+	Translate
+		1 hCoV-19/USA/NY-Wadsworth-21028837-01/2021,
+		2 hCoV-19/USA/NY-Wadsworth-21030068-01/2021,
+		3 hCoV-19/USA/NY-Wadsworth-21030068-01/2021|EPI_ISL_1397924|2021-02-26
+		;
+tree TREE1 = [&R] (1[&length=0.0423400000000001,location.rate_95%_HPD={2.610949523526424,3.3174182749708327},location="Westchester",location.prob=1.0,location.rate_median=2.9653942733474583,location.set={"Westchester"},location.set.prob={1.0},location.rate_range={2.394645734339174,3.5517888563772106},height=0.007999999995999884,location.rate=2.9642043850935904]:0.04234,(3[&length=0.0013609645159999865,location.rate_95%_HPD={2.610949523526424,3.3174182749708327},location="Westchester",location.prob=1.0,location.rate_median=2.9653942733474583,location.set={"Westchester"},location.set.prob={1.0},location.rate_range={2.394645734339174,3.5517888563772106},height=0.0,location.rate=2.9642043850935904]:0.001360964515999999,2[&length=0.0013609645159999865,location.rate_95%_HPD={2.610949523526424,3.3174182749708327},location="Westchester",location.prob=1.0,location.rate_median=2.9653942733474583,location.set={"Westchester"},location.set.prob={1.0},location.rate_range={2.394645734339174,3.5517888563772106},height=0.0,location.rate=2.9642043850935904]:0.001360964515999999)[&length=0.04897903548000018,posterior=1.0,location.rate_95%_HPD={2.610949523526424,3.3174182749708327},location="Westchester",location.prob=1.0,location.rate_median=2.9653942733474583,location.set={"Westchester"},location.set.prob={1.0},location.rate_range={2.394645734339174,3.5517888563772106},height=0.0013609645159999865,location.rate=2.9642043850935904]:0.04897903548)[&length=0.0,posterior=1.0,location="Westchester",location.prob=1.0,location.set={"Westchester"},location.set.prob={1.0},height=0.05033999999600003];
+End;

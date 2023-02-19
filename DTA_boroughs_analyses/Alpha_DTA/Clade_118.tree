@@ -1,0 +1,19 @@
+#NEXUS
+
+Begin taxa;
+	Dimensions ntax=3;
+	Taxlabels
+		hCoV-19/USA/NY-NYULH701/2021
+		hCoV-19/USA/NY-Wadsworth-21035518-01/2021
+		hCoV-19/USA/NY-Wadsworth-21049073-01/2021
+		;
+End;
+
+Begin trees;
+	Translate
+		1 hCoV-19/USA/NY-NYULH701/2021,
+		2 hCoV-19/USA/NY-Wadsworth-21035518-01/2021,
+		3 hCoV-19/USA/NY-Wadsworth-21049073-01/2021
+		;
+tree TREE1 = [&R] (1[&length=0.04658999999999987,location.rate_95%_HPD={2.610949523526424,3.3174182749708327},location="Richmond",location.prob=1.0,location.rate_median=2.9653942733474583,location.set={"Richmond"},location.set.prob={1.0},location.rate_range={2.394645734339174,3.5517888563772106},height=0.14799999999999872,location.rate=2.9642043850935904]:0.04658999999999999,(3[&length=0.15206999999999846,location.rate_95%_HPD={2.610949523526424,3.3174182749708327},location="Suffolk",location.prob=1.0,location.rate_median=2.9653942733474583,location.set={"Suffolk"},location.set.prob={1.0},location.rate_range={2.394645734339174,3.5517888563772106},height=0.0,location.rate=2.9642043850935904]:0.15207,2[&length=0.02607000000000042,location.rate_95%_HPD={2.610949523526424,3.3174182749708327},location="Kings",location.prob=1.0,location.rate_median=2.9653942733474583,location.set={"Kings"},location.set.prob={1.0},location.rate_range={2.394645734339174,3.5517888563772106},height=0.12600000000000158,location.rate=2.9642043850935904]:0.02607000000000001)[&length=0.042520000000000294,posterior=1.0,location.rate_95%_HPD={2.610949523526424,3.3174182749708327},location="Kings",location.prob=0.7133333333333334,location.rate_median=2.9653942733474583,location.set={"Nassau","Queens","Suffolk","NewYork","Kings","Richmond"},location.set.prob={0.034444444444444444,0.0077777777777777776,0.0022222222222222222,0.2388888888888889,0.7133333333333334,0.0033333333333333335},location.rate_range={2.394645734339174,3.5517888563772106},height=0.15206999999999846,location.rate=2.9642043850935904]:0.04252)[&length=0.0,posterior=1.0,location="NewYork",location.prob=0.4533333333333333,location.set={"Nassau","Queens","NewYork","Kings","Richmond"},location.set.prob={0.03777777777777778,0.013333333333333334,0.4533333333333333,0.3711111111111111,0.12444444444444444},height=0.19459000000000304];
+End;

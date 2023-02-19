@@ -1,0 +1,19 @@
+#NEXUS
+
+Begin taxa;
+	Dimensions ntax=3;
+	Taxlabels
+		hCoV-19/USA/NY-MSHSPSP-PV40595/2021
+		hCoV-19/USA/NY-MSHSPSP-PV41033/2021
+		hCoV-19/USA/NY-MSHSPSP-PV41131/2021
+		;
+End;
+
+Begin trees;
+	Translate
+		1 hCoV-19/USA/NY-MSHSPSP-PV40595/2021,
+		2 hCoV-19/USA/NY-MSHSPSP-PV41033/2021,
+		3 hCoV-19/USA/NY-MSHSPSP-PV41131/2021
+		;
+tree TREE1 = [&R] (1[&length=0.11182999999999857,location.rate_95%_HPD={0.45163666538275876,0.6077381491411706},location="Bronx",location.prob=1.0,location.rate_median=0.5193907140039761,location.set={"Bronx"},location.set.prob={1.0},location.rate_range={0.41220760195308515,0.6972958479571918},height=0.010999999999999916,location.rate=0.5228771232642532]:0.11183,(2[&length=0.11135000000000134,location.rate_95%_HPD={0.45163666538275876,0.6077381491411706},location="NewYork",location.prob=1.0,location.rate_median=0.5193907140039761,location.set={"NewYork"},location.set.prob={1.0},location.rate_range={0.41220760195308515,0.6972958479571918},height=0.005999999999999981,location.rate=0.5228771232642532]:0.11135,3[&length=0.11735000000000104,location.rate_95%_HPD={0.45163666538275876,0.6077381491411706},location="NewYork",location.prob=1.0,location.rate_median=0.5193907140039761,location.set={"NewYork"},location.set.prob={1.0},location.rate_range={0.41220760195308515,0.6972958479571918},height=0.0,location.rate=0.5228771232642532]:0.11735)[&length=0.005480000000000031,posterior=1.0,location.rate_95%_HPD={0.45163666538275876,0.6077381491411706},location="NewYork",location.prob=0.9988888888888889,location.rate_median=0.5193907140039761,location.set={"NewYork","Bronx"},location.set.prob={0.9988888888888889,0.0011111111111111111},location.rate_range={0.41220760195308515,0.6972958479571918},height=0.11735000000000104,location.rate=0.5228771232642532]:0.005479999999999999)[&length=0.0,posterior=1.0,location="NewYork",location.prob=0.9933333333333333,location.set={"NewYork","Bronx"},location.set.prob={0.9933333333333333,0.006666666666666667},height=0.12282999999999744];
+End;
