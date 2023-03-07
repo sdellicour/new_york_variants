@@ -11,7 +11,7 @@
 # 11. Dispersal statistics based on the continuous phylogeographic reconstructions
 # 12. Dispersal statistics based on the discrete phylogeographic reconstructions
 # 13. Assessing the sensitivity of new metrics p1 and p2 to cluster sizes
-# 14. Assessing the sensitivity of new metric p3 to the transition rate
+# 14. Assessing the sensitivity of new metric p3 to the number of transition events
 
 library(diagram)
 library(HDInterval)
@@ -1859,7 +1859,7 @@ axis(side=2, lwd.tick=0.2, cex.axis=0.65, lwd=0.2, tck=-0.03, col="gray30", col.
 title(ylab="proportions p1 and p2", cex.lab=0.80, mgp=c(1.5,0,0), col.lab="gray30")
 dev.off()
 
-# 14. Assessing the sensitivity of new metric p3 to the transition rate and the number of transition events
+# 14. Assessing the sensitivity of new metric p3 to the number of transition events
 
 	# Simulations of new lineage transition histories among counties for the Alpha variant: 
 		# - simulations based on transition rate/number that are lower and higher than the actual rate/number
